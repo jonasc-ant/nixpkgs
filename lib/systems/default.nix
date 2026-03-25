@@ -238,22 +238,21 @@ let
         # omit any `.so` build products such as libgcc_s.so.  When that happens,
         # it causes hard-to-troubleshoot build failures.
         hasSharedLibraries =
-          with final;
           (
-            isAndroid
-            || isGnu
-            || isMusl # Linux (allows multiple libcs)
-            || isDarwin
-            || isSunOS
-            || isOpenBSD
-            || isFreeBSD
-            || isNetBSD # BSDs
-            || isCygwin
-            || isMinGW
-            || isWindows # Windows
-            || isWasm # WASM
+            final.isAndroid
+            || final.isGnu
+            || final.isMusl # Linux (allows multiple libcs)
+            || final.isDarwin
+            || final.isSunOS
+            || final.isOpenBSD
+            || final.isFreeBSD
+            || final.isNetBSD # BSDs
+            || final.isCygwin
+            || final.isMinGW
+            || final.isWindows # Windows
+            || final.isWasm # WASM
           )
-          && !isStatic;
+          && !final.isStatic;
 
         # The difference between `isStatic` and `hasSharedLibraries` is mainly the
         # addition of the `staticMarker` (see make-derivation.nix).  Some

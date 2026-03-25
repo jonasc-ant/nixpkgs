@@ -27,6 +27,18 @@ res: pkgs: super:
 
 with pkgs;
 
+# Statically bind the most-referenced identifiers so they resolve via the
+# lexical scope rather than walking the `with pkgs;` dynamic scope on every
+# reference.  The with-scope remains for the long tail of package names.
+let
+  inherit (pkgs)
+    callPackage
+    callPackages
+    stdenv
+    buildPackages
+    ;
+in
+
 {
   # A module system style type tag
   #
