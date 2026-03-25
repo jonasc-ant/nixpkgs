@@ -564,13 +564,26 @@ let
       filterModules =
         modulesPath:
         { disabled, modules }:
-        let
-          keyFilter = filter (attrs: !isDisabled modulesPath disabled attrs);
-        in
-        map (attrs: attrs.module) (genericClosure {
-          startSet = keyFilter modules;
-          operator = attrs: keyFilter attrs.modules;
-        });
+        if disabled == [ ] then
+          # Fast path: nothing is disabled, so we only need genericClosure for
+          # deduplication. Avoids allocating a filter predicate and calling it
+          # once per visited module.
+          map (attrs: attrs.module) (genericClosure {
+            startSet = modules;
+            operator = attrs: attrs.modules;
+          })
+        else
+          let
+            # Partially apply isDisabled once so that its internal disabledKeys
+            # list is computed a single time and shared across all elements,
+            # instead of being rebuilt for every module visited.
+            isDisabledModule = isDisabled modulesPath disabled;
+            keyFilter = filter (attrs: !isDisabledModule attrs);
+          in
+          map (attrs: attrs.module) (genericClosure {
+            startSet = keyFilter modules;
+            operator = attrs: keyFilter attrs.modules;
+          });
 
       toGraph =
         modulesPath:
@@ -587,9 +600,13 @@ let
         in
         map toModuleGraph (filter (x: x.key != "lib/modules.nix") modules);
     in
-    modulesPath: initialModules: args: {
-      modules = filterModules modulesPath (collectStructuredModules unknownModule "" initialModules args);
-      graph = toGraph modulesPath (collectStructuredModules unknownModule "" initialModules args);
+    modulesPath: initialModules: args:
+    let
+      collected = collectStructuredModules unknownModule "" initialModules args;
+    in
+    {
+      modules = filterModules modulesPath collected;
+      graph = toGraph modulesPath collected;
     };
 
   /**
