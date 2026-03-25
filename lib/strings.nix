@@ -10,6 +10,17 @@ let
 
   asciiTable = import ./ascii-table.nix;
 
+  # Partially-applied regex matchers hoisted to file scope. While the
+  # evaluator caches compiled regexes by pattern string, hoisting the partial
+  # application avoids re-allocating the pattern string and re-hashing it on
+  # the hot path of frequently-called functions like escapeShellArg.
+  matchShellSafeChars = builtins.match "[[:alnum:],._+:@%/-]+";
+  matchPosixName = builtins.match "[a-zA-Z_][a-zA-Z0-9_]*";
+  # Regex from https://github.com/NixOS/nix/blob/d048577909e383439c2549e849c5c2f2016c997e/src/libexpr/lexer.l#L91
+  matchNixIdentifier = builtins.match "[a-zA-Z_][a-zA-Z0-9_'-]*";
+  matchCaStorePath = builtins.match "/[0-9a-z]{52}";
+  matchLeadingDots = builtins.match "\\.*(.*)";
+
 in
 
 rec {
@@ -1203,7 +1214,7 @@ rec {
     let
       string = toString arg;
     in
-    if match "[[:alnum:],._+:@%/-]+" string == null then
+    if matchShellSafeChars string == null then
       "'${replaceString "'" "'\\''" string}'"
     else
       string;
@@ -1263,7 +1274,7 @@ rec {
 
     :::
   */
-  isValidPosixName = name: match "[a-zA-Z_][a-zA-Z0-9_]*" name != null;
+  isValidPosixName = name: matchPosixName name != null;
 
   /**
     Translate a Nix value into a shell variable declaration, with proper escaping.
@@ -1449,8 +1460,7 @@ rec {
       ];
     in
     s:
-    # Regex from https://github.com/NixOS/nix/blob/d048577909e383439c2549e849c5c2f2016c997e/src/libexpr/lexer.l#L91
-    if (match "[a-zA-Z_][a-zA-Z0-9_'-]*" s != null) && (!lib.elem s nixKeywords) then
+    if (matchNixIdentifier s != null) && (!lib.elem s nixKeywords) then
       s
     else
       escapeNixString s;
@@ -1628,7 +1638,9 @@ rec {
 
         parts = lib.flatten (
           map (splitStringBy (
-            prev: curr: match "[a-z]" prev != null && match "[A-Z]" curr != null
+            # Direct ASCII range comparison is faster than builtins.match
+            # for single-character class tests in this per-character loop.
+            prev: curr: prev >= "a" && prev <= "z" && curr >= "A" && curr <= "Z"
           ) true) separators
         );
 
@@ -2690,7 +2702,7 @@ rec {
         # This is a workaround for https://github.com/NixOS/nix/issues/12361
         # which was needed during the experimental phase of ca-derivations and
         # should be removed once the issue has been resolved.
-        || builtins.match "/[0-9a-z]{52}" str != null
+        || matchCaStorePath str != null
       )
     else
       false;
@@ -2909,7 +2921,7 @@ rec {
         # resulting string is only used as a derivation name
         unsafeDiscardStringContext
         # Strip all leading "."
-        (x: elemAt (match "\\.*(.*)" x) 0)
+        (x: elemAt (matchLeadingDots x) 0)
         # Split out all invalid characters
         # https://github.com/NixOS/nix/blob/2.3.2/src/libstore/store-api.cc#L85-L112
         # https://github.com/NixOS/nix/blob/2242be83c61788b9c0736a92bb0b5c7bbfc40803/nix-rust/src/store/path.rs#L100-L125
