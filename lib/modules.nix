@@ -1051,20 +1051,19 @@ let
               { };
 
           bothHave = k: opt.options ? ${k} && res ? ${k};
+
+          getSubModules = opt.options.type.getSubModules or null;
+          submodules =
+            if getSubModules != null then
+              map (setDefaultModuleLocation opt._file) getSubModules ++ res.options
+            else
+              res.options;
         in
         if bothHave "default" || bothHave "example" || bothHave "description" || bothHave "apply" then
           # Keep in sync with the same error above!
           throw
             "The option `${showOption loc}' in `${opt._file}' is already declared in ${showFiles res.declarations}."
         else
-          let
-            getSubModules = opt.options.type.getSubModules or null;
-            submodules =
-              if getSubModules != null then
-                map (setDefaultModuleLocation opt._file) getSubModules ++ res.options
-              else
-                res.options;
-          in
           opt.options
           // res
           // {
