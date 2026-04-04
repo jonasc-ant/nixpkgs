@@ -442,6 +442,12 @@ let
       checkDependencyList = checkDependencyList' [ ];
       checkDependencyList' =
         positions: name: deps:
+        # Most dependency lists (depsBuildBuild, depsHostHost, depsTargetTarget,
+        # propagated variants) are empty for the vast majority of derivations.
+        # Skip the imap1 closure allocation entirely for the empty case.
+        if deps == [ ] then
+          [ ]
+        else
         imap1 (
           index: dep:
           if dep == null || isDerivation dep || builtins.isString dep || builtins.isPath dep then
