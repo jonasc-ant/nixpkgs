@@ -31,11 +31,16 @@ let
         # The same pkgs sets one probably intends
         // inputs.buildHost
         // inputs.hostTarget;
-      merge = name: {
-        inherit name;
-        value =
+      # Previously: merge = name: { inherit name; value = ... }; threaded
+      # through `lib.listToAttrs (map merge (lib.attrNames mash))`. listToAttrs
+      # forces every list element to extract `.name`, calling merge eagerly for
+      # the entire union of attribute names. On a typical NixOS eval that's 60k+
+      # calls of which ~140 ever have their `value` forced — the rest are pure
+      # closure-creation overhead. mapAttrs already knows the keys; this lets the
+      # 99.7% unforced ones stay as untouched thunks. As a bonus, mapAttrs hands
+      # us mash.${name} for free as the second lambda arg.
+      merge = name: defaultValue:
           let
-            defaultValue = mash.${name};
             # `or {}` is for the non-derivation attsert splicing case, where `{}` is the identity.
             value' = mapCrossIndex (x: x.${name} or { }) inputs;
 
@@ -65,9 +70,8 @@ let
             # Don't be fancy about non-derivations. But we could have used used
             # `__functor__` for functions instead.
             defaultValue;
-      };
     in
-    lib.listToAttrs (map merge (lib.attrNames mash));
+    builtins.mapAttrs merge mash;
 
   splicePackages =
     {
