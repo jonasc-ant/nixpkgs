@@ -1402,18 +1402,18 @@ let
   filterOverrides = defs: (filterOverrides' defs).values;
 
   filterOverrides' =
-    defs:
-    let
-      getPrio =
-        def: if def.value._type or "" == "override" then def.value.priority else defaultOverridePriority;
-      highestPrio = foldl' (prio: def: min (getPrio def) prio) 9999 defs;
-      strip =
-        def: if def.value._type or "" == "override" then def // { value = def.value.content; } else def;
-    in
-    {
-      values = concatMap (def: if getPrio def == highestPrio then [ (strip def) ] else [ ]) defs;
-      inherit highestPrio;
-    };
+    # Single-pass fold: one `_type` probe per def (was: 2 in getPrio×walks + 1 in strip).
+    # Threading {highestPrio, values} avoids the second walk entirely.
+    defs: foldl' (acc: def:
+      let
+        isOv = def.value._type or "" == "override";
+        p = if isOv then def.value.priority else defaultOverridePriority;
+        stripped = if isOv then def // { value = def.value.content; } else def;
+      in
+        if p < acc.highestPrio then { highestPrio = p; values = [ stripped ]; }
+        else if p == acc.highestPrio then { highestPrio = p; values = acc.values ++ [ stripped ]; }
+        else acc
+    ) { highestPrio = 9999; values = []; } defs;
 
   /**
     Sort a list of properties.  The sort priority of a property is
