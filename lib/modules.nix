@@ -1204,6 +1204,10 @@ let
             value:
             if value._type or null == "definition" then
               value
+            else if value._type or "" == "override" then
+              # Lift override metadata once here so filterOverrides' reads
+              # def.priority directly — strip+getPrio probes eliminated.
+              { inherit (m) file; value = value.content; priority = value.priority; }
             else
               {
                 inherit (m) file;
@@ -1402,16 +1406,15 @@ let
   filterOverrides = defs: (filterOverrides' defs).values;
 
   filterOverrides' =
+    # Override wrapper is lifted to def.priority at the defsNormalized
+    # boundary (mergeDefinitions), so this is a direct attr read — no
+    # _type probe, no strip realloc, no helper-lambda call.
     defs:
     let
-      getPrio =
-        def: if def.value._type or "" == "override" then def.value.priority else defaultOverridePriority;
-      highestPrio = foldl' (prio: def: min (getPrio def) prio) 9999 defs;
-      strip =
-        def: if def.value._type or "" == "override" then def // { value = def.value.content; } else def;
+      highestPrio = foldl' (prio: def: min (def.priority or defaultOverridePriority) prio) 9999 defs;
     in
     {
-      values = concatMap (def: if getPrio def == highestPrio then [ (strip def) ] else [ ]) defs;
+      values = filter (def: (def.priority or defaultOverridePriority) == highestPrio) defs;
       inherit highestPrio;
     };
 

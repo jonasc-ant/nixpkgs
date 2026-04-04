@@ -1195,7 +1195,7 @@ rec {
           # Prepares the type definitions for mergeOptionDecls, which
           # annotates submodules types with file locations
           optionModules = map (
-            { value, file }:
+            { value, file, ... }:
             {
               _file = file;
               # There's no way to merge types directly from the module system,
@@ -1226,7 +1226,7 @@ rec {
       allModules =
         defs:
         map (
-          { value, file }:
+          { value, file, ... }:
           if isAttrs value && shorthandOnlyDefinesConfig then
             {
               _file = file;
