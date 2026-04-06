@@ -16,7 +16,7 @@ jobs:
     if: github.repository_owner == 'NixOS' && github.ref == 'refs/heads/master' # ensure workflow_dispatch only runs on master
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - uses: cachix/install-nix-action@6004951b182f8860210c8d6f0d808ec5b1a33d28 # v25
         with:
           nix_path: nixpkgs=channel:nixpkgs-unstable
