@@ -52,12 +52,23 @@ let
             getOutputs (lib.optionalAttrs success value);
           getOutputs =
             value: lib.genAttrs (value.outputs or (lib.optional (value ? out) "out")) (output: value.${output});
+          # // forces its rhs to compute the merged keyset, so the
+          # original `// spliceReal (...)` recursed eagerly on every
+          # spliced derivation's outputs even when no specific output
+          # was selected. genAttrs over the *known* output names with
+          # the splice in the value-thunk defers it: `pkg.dev` forces
+          # the recursion, `pkg` alone doesn't. nixpkgs#338231: most
+          # spliceReal recursions under cross-python are this eager
+          # output walk.
+          outputNames = defaultValue.outputs or (lib.optional (defaultValue ? out) "out");
+          outputSplice = spliceReal (
+            mapCrossIndex tryGetOutputs value' // { hostTarget = getOutputs value'.hostTarget; }
+          );
         in
         # The derivation along with its outputs, which we recur
         # on to splice them together.
         if lib.isDerivation defaultValue then
-          augmentedValue
-          // spliceReal (mapCrossIndex tryGetOutputs value' // { hostTarget = getOutputs value'.hostTarget; })
+          augmentedValue // lib.genAttrs outputNames (out: outputSplice.${out})
         else if lib.isAttrs defaultValue then
           spliceReal value'
         else
