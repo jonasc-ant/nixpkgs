@@ -103,9 +103,10 @@ rec {
         # Simply checking whether `meta` is defined is insufficient,
         # as some fetchers and trivial builders do define meta.
         config: attrs:
-        # Order of checks optimised for short-circuiting the common case of having maintainers
-        (attrs.meta.maintainers or [ ] == [ ])
-        && (attrs.meta.teams or [ ] == [ ])
+        # `meta.maintainers` here is the check-meta–synthesized value that
+        # expands `teams.*.members`; test the literal `teams` list first.
+        (attrs.meta.teams or [ ] == [ ])
+        && (attrs.meta.maintainers or [ ] == [ ])
         && (!attrs ? outputHash)
         && (attrs ? meta.description);
       value.message = "This package has no declared maintainer, i.e. an empty `meta.maintainers` and `meta.teams` attribute.";
