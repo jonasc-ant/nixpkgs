@@ -875,12 +875,15 @@ let
           "`env` must be an attribute set of environment variables. Set `env.env` or pick a more specific name.";
         assert assertMsg (overlappingNames == [ ])
           "The `env` attribute set cannot contain any attributes passed to derivation. The following attributes are overlapping:\n${errors}";
-        mapAttrs (
-          n: v:
-          assert assertMsg (isString v || isBool v || isInt v || isDerivation v)
-            "The `env` attribute set can only contain derivation, string, boolean or integer attributes. The `${n}` attribute is of type ${builtins.typeOf v}.";
-          v
-        ) env';
+        if doCheckDependencyTypes then
+          mapAttrs (
+            n: v:
+            assert assertMsg (isString v || isBool v || isInt v || isDerivation v)
+              "The `env` attribute set can only contain derivation, string, boolean or integer attributes. The `${n}` attribute is of type ${builtins.typeOf v}.";
+            v
+          ) env'
+        else
+          env';
 
       # Fixed-output derivations may not reference other paths, which means that
       # for a fixed-output derivation, the corresponding inputDerivation should
