@@ -27,6 +27,9 @@ let
   examples = import ./examples.nix { inherit lib; };
   architectures = import ./architectures.nix { inherit lib; };
 
+  # System attrs are never __functor-style attrsets, so builtins.isFunction suffices.
+  removeFunctions = a: removeAttrs a (filter (n: builtins.isFunction a.${n}) (attrNames a));
+
   /**
     Elaborated systems contain functions, which means that they don't satisfy
     `==` for a lack of reflexivity.
@@ -42,11 +45,9 @@ let
     both arguments have been `elaborate`-d.
   */
   equals =
-    let
-      # System attrs are never __functor-style attrsets, so builtins.isFunction suffices.
-      removeFunctions = a: removeAttrs a (filter (n: builtins.isFunction a.${n}) (attrNames a));
-    in
-    a: b: removeFunctions a == removeFunctions b;
+    # `elaborate` memoises the function-stripped form as `_comparable`; fall
+    # back to computing it on the fly for ad-hoc system attrsets.
+    a: b: (a._comparable or (removeFunctions a)) == (b._comparable or (removeFunctions b));
 
   /**
     List of all Nix system doubles the nixpkgs flake will expose the package set
@@ -636,7 +637,13 @@ let
     assert foldl (pass: { assertion, message }: if assertion final then pass else throw message) true (
       final.parsed.abi.assertions or [ ]
     );
-    final;
+    final
+    // {
+      # Function-stripped form for `equals`, computed once per elaborated
+      # system instead of on every comparison. `final` here is the
+      # let-bound attrset above, so `_comparable` does not contain itself.
+      _comparable = removeFunctions final;
+    };
 
 in
 
