@@ -53,7 +53,7 @@ let
     ;
 
   getOptionalAttrs =
-    names: attrs: lib.getAttrs (lib.intersectLists names (lib.attrNames attrs)) attrs;
+    names: builtins.intersectAttrs (builtins.listToAttrs (map (n: { name = n; value = null; }) names));
 
   leftPadName =
     name: against:
