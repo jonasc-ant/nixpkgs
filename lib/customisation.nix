@@ -412,7 +412,36 @@ rec {
       outputs = drv.outputs or [ "out" ];
 
       commonAttrs =
-        drv // (listToAttrs outputsList) // { all = map (x: x.value) outputsList; } // passthru;
+        if outputs == [ "out" ] then
+          # Fast path for the common single-"out" case: build the
+          # self-referential .out / .all directly instead of going through
+          # map + listToAttrs over a singleton. This must produce the
+          # same attrset as the general path below.
+          let
+            outValue =
+              commonAttrs
+              // (
+                {
+                  inherit (drv.out) type outputName;
+                  outputSpecified = true;
+                  drvPath =
+                    assert condition;
+                    drv.out.drvPath;
+                  outPath =
+                    assert condition;
+                    drv.out.outPath;
+                }
+                // (
+                  if passthru ? overrideAttrs then
+                    { overrideAttrs = f: (passthru.overrideAttrs f).out; }
+                  else
+                    { }
+                )
+              );
+          in
+          drv // { out = outValue; all = [ outValue ]; } // passthru
+        else
+          drv // (listToAttrs outputsList) // { all = map (x: x.value) outputsList; } // passthru;
 
       outputToAttrListElement = outputName: {
         name = outputName;
