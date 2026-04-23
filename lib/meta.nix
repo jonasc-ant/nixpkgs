@@ -367,7 +367,16 @@ rec {
   */
   availableOn =
     platform: pkg:
-    ((!pkg ? meta.platforms) || any (platformMatch platform) pkg.meta.platforms)
+    (
+      (!pkg ? meta.platforms)
+      # Fast path: `lib.platforms.*` are lists of system-double strings,
+      # so the common case reduces to membership of `platform.system`.
+      # `builtins.elem` is equivalent to the string branch of
+      # `platformMatch` without a lambda call per entry; mixed-type `==`
+      # is `false`, so attrset patterns fall through to the `any` below.
+      || builtins.elem (platform.system or null) pkg.meta.platforms
+      || any (platformMatch platform) pkg.meta.platforms
+    )
     && all (elem: !platformMatch platform elem) (pkg.meta.badPlatforms or [ ]);
 
   /**
