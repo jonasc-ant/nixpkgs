@@ -402,6 +402,60 @@ let
   # !!! reason strings are hardcoded into OfBorg, make sure to keep them in sync
   # Along with a boolean flag for each reason
   checkValidity =
+    # Module-level fast path: under default config (checkMeta off, no
+    # license blocklist, non-source allowed) the metaInvalid /
+    # checkOutputsToInstall / hasBlocklistedLicense /
+    # hasDeniedNonSourceProvenance branches are decidably false without
+    # inspecting attrs. Select a per-derivation body that drops them and
+    # inlines the remaining trivial predicate wrappers, avoiding ~8
+    # lambda applications per derivation. The unfree / unsupported /
+    # insecure checks are kept — they fire independently of checkMeta.
+    if
+      !config.checkMeta
+      && blocklist == [ ]
+      && allowNonSource
+      && !(config ? allowNonSourcePredicate)
+    then
+      attrs:
+      if
+        hasUnfreeLicense attrs && !allowUnfree && !allowUnfreePredicate attrs && !(hasAllowlistedLicense attrs)
+      then
+        {
+          reason = "unfree";
+          msg = "has an unfree license (‘${showLicense attrs.meta.license}’)";
+          remediation = remediate_allowlist "Unfree" (remediate_predicate "allowUnfreePredicate" attrs);
+        }
+      else if !(availableOn hostPlatform attrs) && !allowUnsupportedSystem then
+        let
+          toPretty' = toPretty {
+            allowPrettyValues = true;
+            indent = "  ";
+          };
+        in
+        {
+          reason = "unsupported";
+          msg = ''
+            is not available on the requested hostPlatform:
+              hostPlatform.system = "${hostPlatform.system}"
+              package.meta.platforms = ${toPretty' (attrs.meta.platforms or [ ])}
+              package.meta.badPlatforms = ${toPretty' (attrs.meta.badPlatforms or [ ])}
+          '';
+          remediation = remediate_allowlist "UnsupportedSystem" "";
+        }
+      else if
+        (attrs.meta.knownVulnerabilities or [ ]) != [ ] && !allowInsecure && !allowInsecurePredicate attrs
+      then
+        {
+          reason = "insecure";
+          msg = "is marked as insecure";
+          remediation = remediate_insecure attrs;
+        }
+      else
+        null
+    else
+      checkValidityFull;
+
+  checkValidityFull =
     attrs:
     # Check meta attribute types first, to make sure it is always called even when there are other issues
     # Note that this is not a full type check and functions below still need to by careful about their inputs!
