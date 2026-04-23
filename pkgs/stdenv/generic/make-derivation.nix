@@ -35,7 +35,6 @@ let
     isString
     mapAttrs
     mapNullable
-    optional
     optionalString
     optionals
     pipe
@@ -413,7 +412,7 @@ let
           } requires __structuredAttrs if {dis,}allowedRequisites or {dis,}allowedReferences is set"
         else
           actualValue;
-      outputs' = outputs ++ optional separateDebugInfo' "debug";
+      outputs' = outputs ++ (if separateDebugInfo' then [ "debug" ] else [ ]);
 
       noNonNativeDeps =
         builtins.length (
@@ -488,13 +487,15 @@ let
         doCheck = doCheck';
         doInstallCheck = doInstallCheck';
         buildInputs' =
-          buildInputs ++ optionals doCheck checkInputs ++ optionals doInstallCheck installCheckInputs;
+          buildInputs
+          ++ (if doCheck then checkInputs else [ ])
+          ++ (if doInstallCheck then installCheckInputs else [ ]);
         nativeBuildInputs' =
           nativeBuildInputs
-          ++ optional separateDebugInfo' ../../build-support/setup-hooks/separate-debug-info.sh
-          ++ optional isWindows ../../build-support/setup-hooks/win-dll-link.sh
-          ++ optionals doCheck nativeCheckInputs
-          ++ optionals doInstallCheck nativeInstallCheckInputs;
+          ++ (if separateDebugInfo' then [ ../../build-support/setup-hooks/separate-debug-info.sh ] else [ ])
+          ++ (if isWindows then [ ../../build-support/setup-hooks/win-dll-link.sh ] else [ ])
+          ++ (if doCheck then nativeCheckInputs else [ ])
+          ++ (if doInstallCheck then nativeInstallCheckInputs else [ ]);
 
         outputs = outputs';
 
@@ -555,7 +556,7 @@ let
               # suffix. But we have some weird ones with run-time deps that are
               # just used for their side-affects. Those might as well since the
               # hash can't be the same. See #32986.
-              hostSuffix = optionalString (!dontAddHostSuffix) stdenvHostSuffix;
+              hostSuffix = if dontAddHostSuffix then "" else stdenvHostSuffix;
 
               # Disambiguate statically built packages. This was originally
               # introduce as a means to prevent nix-env to get confused between
@@ -617,9 +618,9 @@ let
               if configurePlatforms == defaultConfigurePlatforms then
                 defaultConfigurePlatformsFlags
               else
-                optional (elem "build" configurePlatforms) buildPlatformConfigureFlag
-                ++ optional (elem "host" configurePlatforms) hostPlatformConfigureFlag
-                ++ optional (elem "target" configurePlatforms) targetPlatformConfigureFlag
+                (if elem "build" configurePlatforms then [ buildPlatformConfigureFlag ] else [ ])
+                ++ (if elem "host" configurePlatforms then [ hostPlatformConfigureFlag ] else [ ])
+                ++ (if elem "target" configurePlatforms then [ targetPlatformConfigureFlag ] else [ ])
             );
 
           inherit patches;
