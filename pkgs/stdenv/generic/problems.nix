@@ -438,11 +438,33 @@ rec {
       # This is here so that it gets cached for a (checkProblems config) thunk
       inherit (genHandlerSwitch config)
         handlerForProblem
+        switch
         ;
-      # Makes sure that automatic problems can cache with just config applied
-      automaticProblemsConfigCache = map (
-        problem: problem // { condition = problem.condition config; }
-      ) automaticProblems;
+      # Resolve the handler for an automatic problem (name == kind == kindName)
+      # without a package name. Returns the handler string when it is the same
+      # for every package, or null when package-specific overrides exist.
+      staticHandler =
+        kind:
+        if isString switch then
+          switch
+        else
+          let
+            s = switch.kindSpecific.${kind} or switch.kindFallback;
+          in
+          if isString s then
+            s
+          else
+            let
+              s' = s.nameSpecific.${kind} or s.nameFallback;
+            in
+            if isString s' then s' else null;
+      # Makes sure that automatic problems can cache with just config applied.
+      # Problems whose handler is "ignore" for every package can never make the
+      # fast path fail, so drop them here and let `all` below iterate fewer
+      # entries (and skip their per-derivation `condition`).
+      automaticProblemsConfigCache = filter (
+        problem: staticHandler problem.kindName != "ignore"
+      ) (map (problem: problem // { condition = problem.condition config; }) automaticProblems);
     in
     attrs:
     let
