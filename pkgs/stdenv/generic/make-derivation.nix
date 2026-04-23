@@ -449,7 +449,10 @@ let
       checkDependencyList = checkDependencyList' [ ];
       checkDependencyList' =
         positions: name: deps:
-        imap1 (
+        if deps == [ ] then
+          [ ]
+        else
+          imap1 (
           index: dep:
           if dep == null || isDerivation dep || builtins.isString dep || builtins.isPath dep then
             dep
