@@ -77,6 +77,12 @@ let
     inherit (stdenv) hostPlatform;
   };
 
+  # checkDependencyList lints buildInputs etc. for non-derivation values.
+  # It is a dev-time check; under default config (checkMeta = false) skip
+  # the per-dependency isDerivation/isString/isPath probe entirely.
+  doCheckDependencyTypes = config.checkMeta or false;
+  noopCheckDependencyList = _: lib.id;
+
   # Based off lib.makeExtensible, with modifications:
   makeDerivationExtensible =
     rattrs:
@@ -446,7 +452,8 @@ let
         hardeningEnable ++ remove "all" hardeningDisable
       );
 
-      checkDependencyList = checkDependencyList' [ ];
+      checkDependencyList =
+        if doCheckDependencyTypes then checkDependencyList' [ ] else noopCheckDependencyList;
       checkDependencyList' =
         positions: name: deps:
         if deps == [ ] then
