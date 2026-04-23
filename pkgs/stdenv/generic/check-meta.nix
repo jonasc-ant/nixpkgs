@@ -542,7 +542,7 @@ let
             findFirst hasOutput null outputs
         )
       ]
-      ++ optional (hasOutput "man") "man";
+      ++ (if hasOutput "man" then [ "man" ] else [ ]);
 
       # CI scripts look at these to determine pings. Note that we should filter nulls out of this,
       # or nix-env complains: https://github.com/NixOS/nix/blob/2.18.8/src/nix-env/nix-env.cc#L963
