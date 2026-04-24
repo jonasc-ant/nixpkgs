@@ -1052,9 +1052,13 @@ let
             else
               { };
 
-          bothHave = k: opt.options ? ${k} && res ? ${k};
+          # Conflict check on default/example/description/apply. One
+          # intersectAttrs (keys only; values stay unforced) replaces
+          # the previous `bothHave k = opt.options?k && res?k` 4-call
+          # lambda probe — same membership predicate, zero lambdas.
+          common = builtins.intersectAttrs opt.options res;
         in
-        if bothHave "default" || bothHave "example" || bothHave "description" || bothHave "apply" then
+        if common ? default || common ? example || common ? description || common ? apply then
           # Keep in sync with the same error above!
           throw
             "The option `${showOption loc}' in `${opt._file}' is already declared in ${showFiles res.declarations}."
