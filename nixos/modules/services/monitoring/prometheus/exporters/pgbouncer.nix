@@ -177,20 +177,4 @@ in
       cfg.connectionEnvFile
     ];
   };
-
-  imports = [
-    (lib.mkRemovedOptionModule [ "connectionStringFile" ] ''
-      As replacement, the option `services.prometheus.exporters.pgbouncer.connectionEnvFile`
-      has been added. In contrast to `connectionStringFile` it must be an environment file
-      with the connection string being set to `PGBOUNCER_EXPORTER_CONNECTION_STRING`.
-
-      The change was necessary since the former option wrote the contents of the file
-      into the cmdline of the exporter making the connection string effectively
-      world-readable.
-    '')
-    {
-      options.warnings = options.warnings;
-      options.assertions = options.assertions;
-    }
-  ];
 }

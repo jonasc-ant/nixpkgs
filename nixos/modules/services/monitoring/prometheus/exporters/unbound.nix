@@ -19,19 +19,6 @@ let
     ;
 in
 {
-  imports = [
-    (mkRemovedOptionModule [
-      "controlInterface"
-    ] "This option was removed, use the `unbound.host` option instead.")
-    (mkRemovedOptionModule [
-      "fetchType"
-    ] "This option was removed, use the `unbound.host` option instead.")
-    {
-      options.warnings = options.warnings;
-      options.assertions = options.assertions;
-    }
-  ];
-
   port = 9167;
   extraOpts = {
     telemetryPath = mkOption {

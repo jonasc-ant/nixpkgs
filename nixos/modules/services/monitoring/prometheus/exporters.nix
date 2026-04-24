@@ -265,28 +265,19 @@ let
       name,
       port,
       extraOpts,
-      imports,
     }:
     {
       ${name} = mkOption {
-        type = types.submodule [
-          {
-            inherit imports;
-            options = (
-              mkExporterOpts {
-                inherit name port;
-              }
-              // extraOpts
-            );
-          }
-          (
-            { config, ... }:
-            mkIf config.openFirewall {
-              firewallFilter = mkDefault "-p tcp -m tcp --dport ${toString config.port}";
-              firewallRules = mkDefault ''tcp dport ${toString config.port} accept comment "${name}-exporter"'';
-            }
-          )
-        ];
+        type = types.record {
+          declarations = [ ./exporters.nix ];
+          fields = mkExporterOpts { inherit name port; } // extraOpts;
+          finalise =
+            { self, ... }:
+            mkIf self.openFirewall {
+              firewallFilter = mkDefault "-p tcp -m tcp --dport ${toString self.port}";
+              firewallRules = mkDefault ''tcp dport ${toString self.port} accept comment "${name}-exporter"'';
+            };
+        };
         internal = true;
         default = { };
       };
@@ -300,7 +291,6 @@ let
           inherit name;
           inherit (opts) port;
           extraOpts = opts.extraOpts or { };
-          imports = opts.imports or [ ];
         }
       ) exporterOpts
     )
@@ -427,6 +417,12 @@ in
           The Rspamd exporter has been removed. You can use the Rspamd /metrics endpoint directly instead:
           https://docs.rspamd.com/developers/protocol#controller-http-endpoints
         '')
+        # The per-exporter option type is `types.record`, which rejects
+        # unknown fields with an error listing the valid ones. That covers
+        # the per-exporter `mkRemovedOptionModule`/`mkRenamedOptionModule`
+        # entries that used to live in individual `exporters/*.nix` files —
+        # records cannot host nested option declarations, so those modules
+        # are dropped and the unknown-field error serves as the guard.
       ];
     };
     description = "Prometheus exporter configuration";
