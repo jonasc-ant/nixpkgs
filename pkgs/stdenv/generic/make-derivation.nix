@@ -23,7 +23,6 @@ let
     extendDerivation
     filter
     filterAttrs
-    getDev
     head
     imap1
     isAttrs
@@ -500,50 +499,74 @@ let
 
         outputs = outputs';
 
+        # Each dependency goes through `lib.getDev` after splice selection.
+        # That is `getOutput "dev"`, i.e. a curry through lib/attrsets.nix
+        # plus a dynamic `pkg.${output}` lookup, once per dependency. With
+        # ~40K deps in a typical closure this is the hottest single lambda
+        # in lib/. Inlined here so each map lambda resolves `.dev` directly.
+        # The `outputSpecified` guard must stay: callers pass `pkg.out` /
+        # `pkg.lib` directly in *Inputs, and those carry
+        # `outputSpecified = true` via `lib.extendDerivation`.
+        devOf = d: if d.outputSpecified or false then d else d.dev or d.out or d;
+
         dependencies = [
           [
-            (map (drv: getDev drv.__spliced.buildBuild or drv) (
+            (map (drv: devOf drv.__spliced.buildBuild or drv) (
               checkDependencyList "depsBuildBuild" depsBuildBuild
             ))
-            (map (drv: getDev drv.__spliced.buildHost or drv) (
-              checkDependencyList "nativeBuildInputs" nativeBuildInputs'
-            ))
-            (map (drv: getDev drv.__spliced.buildTarget or drv) (
+            (map (
+              drv:
+              let
+                d = drv.__spliced.buildHost or drv;
+              in
+              if d.outputSpecified or false then d else d.dev or d.out or d
+            ) (checkDependencyList "nativeBuildInputs" nativeBuildInputs'))
+            (map (drv: devOf drv.__spliced.buildTarget or drv) (
               checkDependencyList "depsBuildTarget" depsBuildTarget
             ))
           ]
           [
-            (map (drv: getDev drv.__spliced.hostHost or drv) (checkDependencyList "depsHostHost" depsHostHost))
-            (map (drv: getDev drv.__spliced.hostTarget or drv) (checkDependencyList "buildInputs" buildInputs'))
+            (map (drv: devOf drv.__spliced.hostHost or drv) (checkDependencyList "depsHostHost" depsHostHost))
+            (map (
+              drv:
+              let
+                d = drv.__spliced.hostTarget or drv;
+              in
+              if d.outputSpecified or false then d else d.dev or d.out or d
+            ) (checkDependencyList "buildInputs" buildInputs'))
           ]
           [
-            (map (drv: getDev drv.__spliced.targetTarget or drv) (
+            (map (drv: devOf drv.__spliced.targetTarget or drv) (
               checkDependencyList "depsTargetTarget" depsTargetTarget
             ))
           ]
         ];
         propagatedDependencies = [
           [
-            (map (drv: getDev drv.__spliced.buildBuild or drv) (
+            (map (drv: devOf drv.__spliced.buildBuild or drv) (
               checkDependencyList "depsBuildBuildPropagated" depsBuildBuildPropagated
             ))
-            (map (drv: getDev drv.__spliced.buildHost or drv) (
+            (map (drv: devOf drv.__spliced.buildHost or drv) (
               checkDependencyList "propagatedNativeBuildInputs" propagatedNativeBuildInputs
             ))
-            (map (drv: getDev drv.__spliced.buildTarget or drv) (
+            (map (drv: devOf drv.__spliced.buildTarget or drv) (
               checkDependencyList "depsBuildTargetPropagated" depsBuildTargetPropagated
             ))
           ]
           [
-            (map (drv: getDev drv.__spliced.hostHost or drv) (
+            (map (drv: devOf drv.__spliced.hostHost or drv) (
               checkDependencyList "depsHostHostPropagated" depsHostHostPropagated
             ))
-            (map (drv: getDev drv.__spliced.hostTarget or drv) (
-              checkDependencyList "propagatedBuildInputs" propagatedBuildInputs
-            ))
+            (map (
+              drv:
+              let
+                d = drv.__spliced.hostTarget or drv;
+              in
+              if d.outputSpecified or false then d else d.dev or d.out or d
+            ) (checkDependencyList "propagatedBuildInputs" propagatedBuildInputs))
           ]
           [
-            (map (drv: getDev drv.__spliced.targetTarget or drv) (
+            (map (drv: devOf drv.__spliced.targetTarget or drv) (
               checkDependencyList "depsTargetTargetPropagated" depsTargetTargetPropagated
             ))
           ]
