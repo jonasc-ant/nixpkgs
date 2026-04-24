@@ -80,7 +80,6 @@ let
   # It is a dev-time check; under default config (checkMeta = false) skip
   # the per-dependency isDerivation/isString/isPath probe entirely.
   doCheckDependencyTypes = config.checkMeta or false;
-  noopCheckDependencyList = _: lib.id;
 
   # Based off lib.makeExtensible, with modifications:
   makeDerivationExtensible =
@@ -451,8 +450,12 @@ let
         hardeningEnable ++ remove "all" hardeningDisable
       );
 
+      # When the check is disabled, `builtins.seq` stands in for the
+      # checker: it has the same `name: deps: deps` shape (the name
+      # literals are already-evaluated strings, so forcing them is free)
+      # but is a primop, so the 12 call sites cost zero lambda calls.
       checkDependencyList =
-        if doCheckDependencyTypes then checkDependencyList' [ ] else noopCheckDependencyList;
+        if doCheckDependencyTypes then checkDependencyList' [ ] else builtins.seq;
       checkDependencyList' =
         positions: name: deps:
         if deps == [ ] then
