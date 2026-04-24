@@ -6,6 +6,61 @@ let
   # The end-state replaces this hand-written map with a readDir over
   # nixos/modules/by-prefix/ — see backlog/p2-h12.
   byPrefix = {
+    "hardware.acpilight"                          = ./hardware/acpilight.nix;
+    "hardware.apple"                              = ./hardware/apple-touchbar.nix;
+    "hardware.bladeRF"                            = ./hardware/bladeRF.nix;
+    "hardware.block"                              = ./hardware/iosched.nix;
+    "hardware.brillo"                             = ./hardware/brillo.nix;
+    "hardware.bumblebee"                          = ./hardware/video/bumblebee.nix;
+    "hardware.ckb-next"                           = ./hardware/ckb-next.nix;
+    "hardware.coral"                              = ./hardware/coral.nix;
+    "hardware.decklink"                           = ./hardware/decklink.nix;
+    "hardware.digitalbitbox"                      = ./hardware/digitalbitbox.nix;
+    "hardware.facetimehd"                         = ./hardware/video/webcam/facetimehd.nix;
+    "hardware.facter"                             = ./hardware/facter;
+    "hardware.flipperzero"                        = ./hardware/flipperzero.nix;
+    "hardware.flirc"                              = ./hardware/flirc.nix;
+    "hardware.fw-fanctrl"                         = ./hardware/fw-fanctrl.nix;
+    "hardware.glasgow"                            = ./hardware/glasgow.nix;
+    "hardware.gpgSmartcards"                      = ./hardware/gpgsmartcards.nix;
+    "hardware.hackrf"                             = ./hardware/hackrf.nix;
+    "hardware.hid-fanatecff"                      = ./hardware/hid-fanatecff.nix;
+    "hardware.infiniband"                         = ./hardware/infiniband.nix;
+    "hardware.inputmodule"                        = ./hardware/inputmodule.nix;
+    "hardware.intel-gpu-tools"                    = ./hardware/video/intel-gpu-tools.nix;
+    "hardware.ipu6"                               = ./hardware/video/webcam/ipu6.nix;
+    "hardware.kryoflux"                           = ./hardware/kryoflux.nix;
+    "hardware.ksm"                                = ./hardware/ksm.nix;
+    "hardware.ledger"                             = ./hardware/ledger.nix;
+    "hardware.libftdi"                            = ./hardware/libftdi.nix;
+    "hardware.libjaylink"                         = ./hardware/libjaylink.nix;
+    "hardware.logitech"                           = ./hardware/logitech.nix;
+    "hardware.mcelog"                             = ./hardware/mcelog.nix;
+    "hardware.mwProCapture"                       = ./hardware/video/capture/mwprocapture.nix;
+    "hardware.new-lg4ff"                          = ./hardware/new-lg4ff.nix;
+    "hardware.nfc-nci"                            = ./hardware/nfc-nci.nix;
+    "hardware.nitrokey"                           = ./hardware/nitrokey.nix;
+    "hardware.onlykey"                            = ./hardware/onlykey/default.nix;
+    "hardware.openrazer"                          = ./hardware/openrazer.nix;
+    "hardware.opentabletdriver"                   = ./hardware/opentabletdriver.nix;
+    "hardware.parallels"                          = ./virtualisation/parallels-guest.nix;
+    "hardware.pcmcia"                             = ./hardware/pcmcia.nix;
+    "hardware.raid"                               = ./hardware/raid/hpsa.nix;
+    "hardware.saleae-logic"                       = ./hardware/saleae-logic.nix;
+    "hardware.sata"                               = ./hardware/sata.nix;
+    "hardware.sheep_net"                          = ./hardware/sheep-net.nix;
+    "hardware.steam-hardware"                     = ./hardware/steam-hardware.nix;
+    "hardware.system76"                           = ./hardware/system-76.nix;
+    "hardware.tenstorrent"                        = ./hardware/tenstorrent.nix;
+    "hardware.ubertooth"                          = ./hardware/ubertooth.nix;
+    "hardware.uinput"                             = ./hardware/uinput.nix;
+    "hardware.uni-sync"                           = ./hardware/uni-sync.nix;
+    "hardware.usb-modeswitch"                     = ./hardware/usb-modeswitch.nix;
+    "hardware.usbStorage"                         = ./hardware/usb-storage.nix;
+    "hardware.wooting"                            = ./hardware/wooting.nix;
+    "hardware.xone"                               = ./hardware/xone.nix;
+    "hardware.xpadneo"                            = ./hardware/xpadneo.nix;
+    "hardware.xpad-noone"                         = ./hardware/xpad-noone.nix;
     "programs._1password"                        = ./programs/_1password.nix;
     "programs._1password-gui"                    = ./programs/_1password-gui.nix;
     "programs.alvr"                              = ./programs/alvr.nix;
@@ -1280,6 +1335,15 @@ let
     "services.zrepl"                             = ./services/backup/zrepl.nix;
     "services.zwave-js"                          = ./services/home-automation/zwave-js.nix;
     "services.zwave-js-ui"                       = ./services/home-automation/zwave-js-ui.nix;
+    "virtualisation.appvm"                        = ./virtualisation/appvm.nix;
+    "virtualisation.cri-o"                        = ./virtualisation/cri-o.nix;
+    "virtualisation.hypervGuest"                  = ./virtualisation/hyperv-guest.nix;
+    "virtualisation.kvmgt"                        = ./virtualisation/kvmgt.nix;
+    "virtualisation.oci-containers"               = ./virtualisation/oci-containers.nix;
+    "virtualisation.rosetta"                      = ./virtualisation/rosetta.nix;
+    "virtualisation.spiceUSBRedirection"          = ./virtualisation/spice-usb-redirection.nix;
+    "virtualisation.waydroid"                     = ./virtualisation/waydroid.nix;
+    "virtualisation.xen"                          = ./virtualisation/xen-dom0.nix;
   };
   core = [
   # keep-sorted start case=no numeric=yes
@@ -1331,14 +1395,8 @@ let
   ./config/xdg/sounds.nix
   ./config/xdg/terminal-exec.nix
   ./config/zram.nix
-  ./hardware/acpilight.nix
   ./hardware/all-firmware.nix
   ./hardware/all-hardware.nix
-  ./hardware/apple-touchbar.nix
-  ./hardware/bladeRF.nix
-  ./hardware/brillo.nix
-  ./hardware/ckb-next.nix
-  ./hardware/coral.nix
   ./hardware/corectrl.nix
   ./hardware/cpu/amd-microcode.nix
   ./hardware/cpu/amd-ryzen-smu.nix
@@ -1347,75 +1405,27 @@ let
   ./hardware/cpu/intel-npu.nix
   ./hardware/cpu/intel-sgx.nix
   ./hardware/cpu/x86-msr.nix
-  ./hardware/decklink.nix
   ./hardware/device-tree.nix
-  ./hardware/digitalbitbox.nix
-  ./hardware/facter
-  ./hardware/flipperzero.nix
-  ./hardware/flirc.nix
-  ./hardware/fw-fanctrl.nix
-  ./hardware/glasgow.nix
-  ./hardware/gpgsmartcards.nix
   ./hardware/graphics.nix
-  ./hardware/hackrf.nix
-  ./hardware/hid-fanatecff.nix
   ./hardware/i2c.nix
-  ./hardware/infiniband.nix
-  ./hardware/inputmodule.nix
-  ./hardware/iosched.nix
   ./hardware/keyboard/qmk.nix
   ./hardware/keyboard/teck.nix
   ./hardware/keyboard/uhk.nix
   ./hardware/keyboard/zsa.nix
-  ./hardware/kryoflux.nix
-  ./hardware/ksm.nix
-  ./hardware/ledger.nix
-  ./hardware/libftdi.nix
-  ./hardware/libjaylink.nix
-  ./hardware/logitech.nix
-  ./hardware/mcelog.nix
   ./hardware/network/ath-user-regd.nix
   ./hardware/network/b43.nix
   ./hardware/network/eg25-manager.nix
   ./hardware/network/intel-2200bg.nix
-  ./hardware/new-lg4ff.nix
-  ./hardware/nfc-nci.nix
-  ./hardware/nitrokey.nix
-  ./hardware/onlykey/default.nix
-  ./hardware/openrazer.nix
-  ./hardware/opentabletdriver.nix
-  ./hardware/pcmcia.nix
   ./hardware/printers.nix
-  ./hardware/raid/hpsa.nix
   ./hardware/rtl-sdr.nix
-  ./hardware/saleae-logic.nix
-  ./hardware/sata.nix
   ./hardware/sensor/hddtemp.nix
   ./hardware/sensor/iio.nix
-  ./hardware/sheep-net.nix
-  ./hardware/steam-hardware.nix
-  ./hardware/system-76.nix
-  ./hardware/tenstorrent.nix
   ./hardware/tuxedo-drivers.nix
-  ./hardware/ubertooth.nix
-  ./hardware/uinput.nix
-  ./hardware/uni-sync.nix
-  ./hardware/usb-modeswitch.nix
-  ./hardware/usb-storage.nix
-  ./hardware/video/bumblebee.nix
-  ./hardware/video/capture/mwprocapture.nix
   ./hardware/video/displaylink.nix
-  ./hardware/video/intel-gpu-tools.nix
   ./hardware/video/nvidia.nix
   ./hardware/video/switcheroo-control.nix
   ./hardware/video/uvcvideo/default.nix
   ./hardware/video/virtualbox.nix
-  ./hardware/video/webcam/facetimehd.nix
-  ./hardware/video/webcam/ipu6.nix
-  ./hardware/wooting.nix
-  ./hardware/xone.nix
-  ./hardware/xpad-noone.nix
-  ./hardware/xpadneo.nix
   ./i18n/input-method/default.nix
   ./i18n/input-method/fcitx5.nix
   ./i18n/input-method/hime.nix
@@ -2000,40 +2010,30 @@ let
   ./tasks/trackpoint.nix
   ./testing/service-runner.nix
   ./virtualisation/amazon-options.nix
-  ./virtualisation/appvm.nix
   ./virtualisation/build-vm.nix
   ./virtualisation/container-config.nix
   ./virtualisation/containerd.nix
   ./virtualisation/containers.nix
-  ./virtualisation/cri-o.nix
   ./virtualisation/docker-rootless.nix
   ./virtualisation/docker.nix
   ./virtualisation/ecs-agent.nix
-  ./virtualisation/hyperv-guest.nix
   ./virtualisation/incus-agent.nix
   ./virtualisation/incus.nix
-  ./virtualisation/kvmgt.nix
   ./virtualisation/libvirtd.nix
   ./virtualisation/lxc.nix
   ./virtualisation/lxcfs.nix
   ./virtualisation/nixos-containers.nix
-  ./virtualisation/oci-containers.nix
   ./virtualisation/oci-options.nix
   ./virtualisation/openstack-options.nix
   ./virtualisation/openvswitch.nix
-  ./virtualisation/parallels-guest.nix
   ./virtualisation/podman/default.nix
   ./virtualisation/qemu-guest-agent.nix
-  ./virtualisation/rosetta.nix
-  ./virtualisation/spice-usb-redirection.nix
   ./virtualisation/virtualbox-guest.nix
   ./virtualisation/virtualbox-host.nix
   ./virtualisation/vmware-guest.nix
   ./virtualisation/vmware-host.nix
   ./virtualisation/waagent.nix
-  ./virtualisation/waydroid.nix
   ./virtualisation/xe-guest-utilities.nix
-  ./virtualisation/xen-dom0.nix
   # keep-sorted end
   {
     documentation.nixos.extraModules = [
