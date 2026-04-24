@@ -37,7 +37,6 @@ let
     remove
     splitString
     subtractLists
-    toFunction
     unique
     zipAttrsWith
     ;
@@ -63,7 +62,9 @@ let
     Most arguments are also passed through to the underlying call of [`derivation`](https://nixos.org/manual/nix/stable/language/derivations).
     :::
   */
-  mkDerivation = fnOrAttrs: makeDerivationExtensible (toFunction fnOrAttrs);
+  mkDerivation =
+    fnOrAttrs:
+    makeDerivationExtensible (if builtins.isFunction fnOrAttrs then fnOrAttrs else _: fnOrAttrs);
 
   checkMeta = import ./check-meta.nix {
     inherit lib config;

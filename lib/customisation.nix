@@ -29,7 +29,6 @@ let
     flatten
     deepSeq
     extends
-    toFunction
     id
     ;
   inherit (lib.strings) levenshtein levenshteinAtMost;
@@ -924,7 +923,11 @@ rec {
       (
         fpargs:
         transformDrv (
-          constructDrv (extendsWithExclusion excludeDrvArgNames extendDrvArgs (toFunction fpargs))
+          constructDrv (
+            extendsWithExclusion excludeDrvArgNames extendDrvArgs (
+              if builtins.isFunction fpargs then fpargs else _: fpargs
+            )
+          )
         )
       )
       # Add __functionArgs
