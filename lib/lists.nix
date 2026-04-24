@@ -746,7 +746,7 @@ rec {
 
     :::
   */
-  count = pred: foldl' (c: x: if pred x then c + 1 else c) 0;
+  count = pred: builtins.foldl' (c: x: if pred x then c + 1 else c) 0;
 
   /**
     Return a singleton list or an empty list, depending on a boolean
@@ -1898,7 +1898,7 @@ rec {
 
     :::
   */
-  unique = foldl' (acc: e: if elem e acc then acc else acc ++ [ e ]) [ ];
+  unique = builtins.foldl' (acc: e: if elem e acc then acc else acc ++ [ e ]) [ ];
 
   /**
     Removes duplicate strings from the `list`. O(n log n) complexity.
