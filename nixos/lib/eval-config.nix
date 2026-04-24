@@ -36,6 +36,16 @@ evalConfigArgs@{
 let
   inherit (lib) optional;
 
+  # p2-h12 prototype: module-list.nix may be a flat list (legacy) or a
+  # { core, byPrefix } split. Normalise so downstream sees a list plus
+  # the byPrefix map carried via specialArgs._byPrefix into evalModules.
+  baseSpec =
+    if lib.isList baseModules then
+      { core = baseModules; byPrefix = { }; }
+    else
+      baseModules;
+  baseModulesFlat = baseSpec.core ++ builtins.attrValues baseSpec.byPrefix;
+
   evalModulesMinimal =
     (import ./default.nix {
       inherit lib;
@@ -105,9 +115,10 @@ let
     locatedModules ++ legacyModules;
 
   noUserModules = evalModulesMinimal {
-    inherit prefix specialArgs;
+    inherit prefix;
+    specialArgs = specialArgs // { _byPrefix = baseSpec.byPrefix; };
     modules =
-      baseModules
+      baseSpec.core
       ++ extraModules
       ++ [
         pkgsModule
@@ -121,10 +132,11 @@ let
       _module.args = {
         inherit
           noUserModules
-          baseModules
           extraModules
           modules
           ;
+        # Legacy flat shape for in-tree consumers (documentation, specialisation).
+        baseModules = baseModulesFlat;
       };
     };
   };

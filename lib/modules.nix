@@ -129,6 +129,25 @@ let
         };
       regularModules = modules ++ legacyModules;
 
+      # p2-h12 prototype: lazy byPrefix module loading.
+      # specialArgs._byPrefix maps an option-path prefix ("services.nginx")
+      # to a module path. Those modules are NOT in `modules`; definitions
+      # under a covered prefix are tolerated by checkUnmatched instead of
+      # erroring. The eager re-merge ("import that path and re-merge")
+      # is intentionally deferred — every write under e.g. services.nginx
+      # from another base module is wrapped in `mkIf <that-module>.enable`
+      # and so is a no-op for any config that doesn't enable the writer;
+      # forcing a re-merge on those would double the merge cost and hide
+      # the call-count delta this prototype exists to measure.
+      byPrefix = specialArgs._byPrefix or { };
+      coversDefn =
+        if byPrefix == { } then
+          _: false
+        else
+          def:
+          length def.prefix >= 2
+          && byPrefix ? ${head def.prefix + "." + builtins.elemAt def.prefix 1};
+
       # This internal module declare internal options under the `_module'
       # attribute.  These options are fragile, as they are used by the
       # module system to change the interpretation of modules.
@@ -300,10 +319,16 @@ let
         else
           recursiveUpdate freeformConfig declaredConfig;
 
+      uncoveredUnmatched =
+        if byPrefix == { } then
+          merged.unmatchedDefns
+        else
+          filter (def: !coversDefn def) merged.unmatchedDefns;
+
       checkUnmatched =
-        if config._module.check && config._module.freeformType == null && merged.unmatchedDefns != [ ] then
+        if config._module.check && config._module.freeformType == null && uncoveredUnmatched != [ ] then
           let
-            firstDef = head merged.unmatchedDefns;
+            firstDef = head uncoveredUnmatched;
             baseMsg =
               let
                 optText = showOption (prefix ++ firstDef.prefix);

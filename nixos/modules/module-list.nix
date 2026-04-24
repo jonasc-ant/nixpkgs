@@ -1,4 +1,23 @@
-[
+let
+  # p2-h12 prototype: write-triggered lazy module loading.
+  # Modules listed here are NOT eagerly merged into the option tree;
+  # lib/modules.nix tolerates definitions under these prefixes without
+  # a matching declaration (instead of the usual checkUnmatched error).
+  # The end-state replaces this hand-written map with a readDir over
+  # nixos/modules/by-prefix/ — see backlog/p2-h12.
+  byPrefix = {
+    "services.gitea"          = ./services/misc/gitea.nix;
+    "services.grafana"        = ./services/monitoring/grafana.nix;
+    "services.jellyfin"       = ./services/misc/jellyfin.nix;
+    "services.mastodon"       = ./services/web-apps/mastodon.nix;
+    "services.matrix-synapse" = ./services/matrix/synapse.nix;
+    "services.nextcloud"      = ./services/web-apps/nextcloud.nix;
+    "services.nginx"          = ./services/web-servers/nginx/default.nix;
+    "services.postgresql"     = ./services/databases/postgresql.nix;
+    "services.prometheus"     = ./services/monitoring/prometheus/default.nix;
+    "services.redis"          = ./services/databases/redis.nix;
+  };
+  core = [
   # keep-sorted start case=no numeric=yes
   ./config/appstream.nix
   ./config/console.nix
@@ -548,9 +567,7 @@
   ./services/databases/pgbouncer.nix
   ./services/databases/pgmanage.nix
   ./services/databases/postgres-websockets.nix
-  ./services/databases/postgresql.nix
   ./services/databases/postgrest.nix
-  ./services/databases/redis.nix
   ./services/databases/rethinkdb.nix
   ./services/databases/surrealdb.nix
   ./services/databases/tigerbeetle.nix
@@ -812,7 +829,6 @@
   ./services/matrix/mjolnir.nix
   ./services/matrix/pantalaimon.nix
   ./services/matrix/synapse-auto-compressor.nix
-  ./services/matrix/synapse.nix
   ./services/matrix/tuwunel.nix
   ./services/misc/airsonic.nix
   ./services/misc/amazon-ssm-agent.nix
@@ -867,7 +883,6 @@
   ./services/misc/fstrim.nix
   ./services/misc/gammu-smsd.nix
   ./services/misc/geoipupdate.nix
-  ./services/misc/gitea.nix
   ./services/misc/gitlab.nix
   ./services/misc/gitolite.nix
   ./services/misc/gitweb.nix
@@ -887,7 +902,6 @@
   ./services/misc/invidious-router.nix
   ./services/misc/irkerd.nix
   ./services/misc/jackett.nix
-  ./services/misc/jellyfin.nix
   ./services/misc/kiwix-serve.nix
   ./services/misc/klipper.nix
   ./services/misc/languagetool.nix
@@ -1025,7 +1039,6 @@
   ./services/monitoring/grafana-image-renderer.nix
   ./services/monitoring/grafana-reporter.nix
   ./services/monitoring/grafana-to-ntfy.nix
-  ./services/monitoring/grafana.nix
   ./services/monitoring/graphite.nix
   ./services/monitoring/hdaps.nix
   ./services/monitoring/heapster.nix
@@ -1055,7 +1068,6 @@
   ./services/monitoring/prometheus/alertmanager-ntfy.nix
   ./services/monitoring/prometheus/alertmanager-webhook-logger.nix
   ./services/monitoring/prometheus/alertmanager.nix
-  ./services/monitoring/prometheus/default.nix
   ./services/monitoring/prometheus/exporters.nix
   ./services/monitoring/prometheus/pushgateway.nix
   ./services/monitoring/prometheus/sachet.nix
@@ -1703,7 +1715,6 @@
   ./services/web-apps/linkwarden.nix
   ./services/web-apps/lubelogger.nix
   ./services/web-apps/mainsail.nix
-  ./services/web-apps/mastodon.nix
   ./services/web-apps/matomo.nix
   ./services/web-apps/mattermost.nix
   ./services/web-apps/mealie.nix
@@ -1720,7 +1731,6 @@
   ./services/web-apps/netbox.nix
   ./services/web-apps/nextcloud-notify_push.nix
   ./services/web-apps/nextcloud-whiteboard-server.nix
-  ./services/web-apps/nextcloud.nix
   ./services/web-apps/nextjs-ollama-llm-ui.nix
   ./services/web-apps/nexus.nix
   ./services/web-apps/nifi.nix
@@ -1822,7 +1832,6 @@
   ./services/web-servers/mighttpd2.nix
   ./services/web-servers/minio.nix
   ./services/web-servers/molly-brown.nix
-  ./services/web-servers/nginx/default.nix
   ./services/web-servers/nginx/gitweb.nix
   ./services/web-servers/nginx/tailscale-auth.nix
   ./services/web-servers/phpfpm/default.nix
@@ -2032,4 +2041,8 @@
       ./image/repart.nix
     ];
   }
-]
+];
+in
+# Prototype exports the structured shape. Consumers that still want the
+# legacy flat list use `core ++ builtins.attrValues byPrefix`.
+{ inherit core byPrefix; }
