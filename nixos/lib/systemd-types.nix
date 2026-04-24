@@ -36,7 +36,6 @@ let
 
   inherit (lib)
     mkDefault
-    mkDerivedConfig
     mkEnableOption
     mkIf
     mkOption
@@ -54,7 +53,6 @@ let
     path
     record
     singleLineStr
-    submodule
     ;
 
   # ── typed-unit records ──────────────────────────────────────────────
@@ -141,28 +139,29 @@ let
     });
   };
 
-  initrdStorePathModule =
-    { config, ... }:
-    {
-      options = {
-        enable = (mkEnableOption "copying of this file and symlinking it") // {
-          default = true;
-        };
+  initrdStorePathFields = {
+    enable = (mkEnableOption "copying of this file and symlinking it") // {
+      default = true;
+    };
 
-        target = mkOption {
-          type = nullOr path;
-          description = ''
-            Path of the symlink.
-          '';
-          default = null;
-        };
+    target = mkOption {
+      type = nullOr path;
+      description = ''
+        Path of the symlink.
+      '';
+      default = null;
+    };
 
-        source = mkOption {
-          type = path;
-          description = "Path of the source file.";
-        };
+    source = mkOption {
+      type = path;
+      description = "Path of the source file.";
+    };
 
-        dlopen = {
+    dlopen = mkOption {
+      default = { };
+      type = record {
+        inherit declarations;
+        fields = {
           usePriority = mkOption {
             type = enum [
               "required"
@@ -191,6 +190,7 @@ let
         };
       };
     };
+  };
 
 in
 
@@ -341,37 +341,34 @@ in
     coercedTo (oneOf [
       singleLineStr
       package
-    ]) (source: { inherit source; }) (submodule initrdStorePathModule)
+    ]) (source: { inherit source; }) (record {
+      inherit declarations;
+      fields = initrdStorePathFields;
+    })
   );
 
-  initrdContents = attrsOf (
-    submodule (
+  initrdContents = attrsOf (record {
+    inherit declarations;
+    fields = initrdStorePathFields // {
+      text = mkOption {
+        default = null;
+        type = nullOr lines;
+        description = "Text of the file.";
+      };
+    };
+    finalise =
+      { name, self, fields, ... }:
       {
-        config,
-        options,
-        name,
-        ...
-      }:
-      {
-        imports = [ initrdStorePathModule ];
-        options = {
-          text = mkOption {
-            default = null;
-            type = nullOr lines;
-            description = "Text of the file.";
-          };
-        };
-
-        config = {
-          target = mkDefault name;
-          source = mkIf (config.text != null) (
-            let
-              name' = "initrd-" + baseNameOf name;
-            in
-            mkDerivedConfig options.text (pkgs.writeText name')
-          );
-        };
-      }
-    )
-  );
+        target = mkDefault name;
+        # `mkDerivedConfig` expects an evaluated option (with `.value`
+        # / `.highestPrio`); the record-finalise `fields.text` is the
+        # raw `mergeDefinitions` result, so apply the same priority
+        # propagation by hand.
+        source = mkIf (self.text != null) (
+          lib.mkOverride (fields.text.defsFinal'.highestPrio or lib.modules.defaultOverridePriority) (
+            pkgs.writeText ("initrd-" + baseNameOf name) self.text
+          )
+        );
+      };
+  });
 }
