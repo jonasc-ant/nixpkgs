@@ -336,12 +336,12 @@ rec {
   };
   stage1CommonUnitOptions = commonUnitOptions;
 
-  serviceOptions =
-    { name, config, ... }:
-    {
-      options = {
+  # Static option attrset for `serviceOptions` — split out so it can be
+  # reused as a `lib.types.record` field set (record fields must not
+  # close over the per-element `name`/`config`).
+  serviceOnlyOptions = {
 
-        environment = mkOption {
+    environment = mkOption {
           default = { };
           type =
             with types;
@@ -476,14 +476,19 @@ rec {
           '';
         };
 
-        jobScripts = mkOption {
-          type = with types; coercedTo path singleton (listOf path);
-          internal = true;
-          description = "A list of all job script derivations of this unit.";
-          default = [ ];
-        };
+    jobScripts = mkOption {
+      type = with types; coercedTo path singleton (listOf path);
+      internal = true;
+      description = "A list of all job script derivations of this unit.";
+      default = [ ];
+    };
 
-      };
+  };
+
+  serviceOptions =
+    { name, config, ... }:
+    {
+      options = serviceOnlyOptions;
 
       config = mkMerge [
         (mkIf (config.preStart != "") rec {

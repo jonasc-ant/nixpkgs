@@ -10,14 +10,9 @@ let
   toplevelConfig = config;
   inherit (lib) types;
   inherit (utils.systemdUtils.lib) mkPathSafeName;
-in
-{
-  options.systemd.services = lib.mkOption {
-    type = types.attrsOf (
-      types.submodule (
-        { name, config, ... }:
-        {
-          options.confinement.enable = lib.mkOption {
+
+  confinementOptions = {
+    enable = lib.mkOption {
             type = types.bool;
             default = false;
             description = ''
@@ -27,7 +22,7 @@ in
             '';
           };
 
-          options.confinement.fullUnit = lib.mkOption {
+    fullUnit = lib.mkOption {
             type = types.bool;
             default = false;
             description = ''
@@ -44,7 +39,7 @@ in
             '';
           };
 
-          options.confinement.packages = lib.mkOption {
+    packages = lib.mkOption {
             type = types.listOf (types.either types.str types.package);
             default = [ ];
             description =
@@ -75,7 +70,7 @@ in
               '';
           };
 
-          options.confinement.binSh = lib.mkOption {
+    binSh = lib.mkOption {
             type = types.nullOr types.path;
             default = toplevelConfig.environment.binsh;
             defaultText = lib.literalExpression "config.environment.binsh";
@@ -90,7 +85,7 @@ in
             '';
           };
 
-          options.confinement.mode = lib.mkOption {
+    mode = lib.mkOption {
             type = types.enum [
               "full-apivfs"
               "chroot-only"
@@ -119,14 +114,24 @@ in
               :::
             '';
           };
-
-          config =
-            let
-              inherit (config.confinement) binSh fullUnit;
-              wantsAPIVFS = lib.mkDefault (config.confinement.mode == "full-apivfs");
-            in
-            lib.mkIf config.confinement.enable {
-              serviceConfig = {
+  };
+in
+{
+  options.systemd.services = lib.mkOption {
+    type = types.attrsOf (
+      types.record {
+        fields.confinement = {
+          type = types.record { fields = confinementOptions; };
+          default = { };
+          description = "Confinement (chroot) options for this service.";
+        };
+        finalise =
+          { self, ... }:
+          let
+            wantsAPIVFS = lib.mkDefault (self.confinement.mode == "full-apivfs");
+          in
+          lib.mkIf self.confinement.enable {
+            serviceConfig = {
                 ReadOnlyPaths = [ "+/" ];
                 RuntimeDirectory = [ "confinement/%n" ];
                 RootDirectory = "/run/confinement/%n";
@@ -152,31 +157,8 @@ in
                 ProtectKernelModules = wantsAPIVFS;
                 ProtectKernelTunables = wantsAPIVFS;
               };
-              confinement.packages =
-                let
-                  execOpts = [
-                    "ExecReload"
-                    "ExecStart"
-                    "ExecStartPost"
-                    "ExecStartPre"
-                    "ExecStop"
-                    "ExecStopPost"
-                  ];
-                  execPkgs = lib.concatMap (
-                    opt:
-                    let
-                      isSet = config.serviceConfig ? ${opt};
-                    in
-                    lib.flatten (lib.optional isSet config.serviceConfig.${opt})
-                  ) execOpts;
-                  unitAttrs = toplevelConfig.systemd.units."${name}.service";
-                  allPkgs = lib.singleton (builtins.toJSON unitAttrs);
-                  unitPkgs = if fullUnit then allPkgs else execPkgs;
-                in
-                unitPkgs ++ lib.optional (binSh != null) binSh;
             };
-        }
-      )
+      }
     );
   };
 
@@ -207,9 +189,30 @@ in
     lib.mapAttrsToList (
       name: cfg:
       let
+        inherit (cfg.confinement) binSh fullUnit;
+        execOpts = [
+          "ExecReload"
+          "ExecStart"
+          "ExecStartPost"
+          "ExecStartPre"
+          "ExecStop"
+          "ExecStopPost"
+        ];
+        execPkgs = lib.concatMap (
+          opt:
+          let
+            isSet = cfg.serviceConfig ? ${opt};
+          in
+          lib.flatten (lib.optional isSet cfg.serviceConfig.${opt})
+        ) execOpts;
+        unitAttrs = toplevelConfig.systemd.units."${name}.service";
+        allPkgs = lib.singleton (builtins.toJSON unitAttrs);
+        unitPkgs = if fullUnit then allPkgs else execPkgs;
+        autoPackages = unitPkgs ++ lib.optional (binSh != null) binSh;
+
         rootPaths =
           let
-            contents = lib.concatStringsSep "\n" cfg.confinement.packages;
+            contents = lib.concatStringsSep "\n" (cfg.confinement.packages ++ autoPackages);
           in
           pkgs.writeText "${mkPathSafeName name}-string-contexts.txt" contents;
 

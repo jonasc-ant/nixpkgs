@@ -21,22 +21,17 @@ let
     ;
 
   inherit (systemdUtils.unitOptions)
-    stage1AutomountOptions
-    stage1CommonUnitOptions
-    stage1MountOptions
-    stage1PathOptions
-    stage1ServiceOptions
-    stage1SliceOptions
-    stage1SocketOptions
-    stage1TimerOptions
-    stage2AutomountOptions
+    automountOptions
+    commonUnitOptions
+    mountOptions
+    pathOptions
+    serviceOnlyOptions
+    serviceOptions
+    sliceOptions
+    socketOptions
     stage2CommonUnitOptions
-    stage2MountOptions
-    stage2PathOptions
     stage2ServiceOptions
-    stage2SliceOptions
-    stage2SocketOptions
-    stage2TimerOptions
+    timerOptions
     ;
 
   inherit (lib)
@@ -57,9 +52,94 @@ let
     oneOf
     package
     path
+    record
     singleLineStr
     submodule
     ;
+
+  # ── typed-unit records ──────────────────────────────────────────────
+  # Each `systemd.{services,sockets,…}.<name>` element used to be a
+  # `submodule [ optionsModule unitConfig typeConfig ]`, paying a full
+  # `evalModules` fixpoint per element. The composition is fixed and
+  # the option set is static, so we flatten it into a `record`:
+  #   • `fields`  — the union of the composed modules' `options` sets
+  #                 (plain `mkOption` results are valid record fields).
+  #   • `finalise` — a list of adapters that call the existing
+  #                 `*Config` modules with `config = self` /
+  #                 `options = fields`, so the cross-field defaults are
+  #                 byte-identical to the submodule formulation.
+  #
+  # `record` runs `pushDownProperties` over each finalise result, so the
+  # adapters may return `mkMerge`/`mkIf` at their top level (as
+  # `serviceOptions` does for the script→Exec* mapping).
+
+  declarations = [ ./systemd-unit-options.nix ];
+
+  # Field sets (static option attrsets, no per-element closure).
+  stage1Base = commonUnitOptions.options;
+  stage2Base = stage1Base // stage2CommonUnitOptions.options;
+
+  # Adapter: call a `{ name, config, options, lib, ... }: { config = …; }`
+  # module with the record-finalise arguments. `fields` (the per-field
+  # `mergeDefinitions` results) stand in for `options` — they expose
+  # `.isDefined`, which is the only `options.*` property the adapters read.
+  call =
+    f:
+    { name, self, fields, ... }:
+    (f {
+      inherit name lib;
+      config = self;
+      options = fields;
+    }).config;
+
+  unitFin = call unitConfig;
+
+  mkTypedUnit =
+    container: extraFields: extraFinalise:
+    {
+      stage1 = container (record {
+        inherit declarations;
+        fields = stage1Base // extraFields;
+        finalise = [ unitFin ] ++ extraFinalise;
+      });
+      stage2 = container (record {
+        inherit declarations;
+        fields = stage2Base // extraFields;
+        finalise = [ unitFin ] ++ extraFinalise;
+      });
+    };
+
+  target = mkTypedUnit attrsOf { } [ (call targetConfig) ];
+  socket = mkTypedUnit attrsOf socketOptions.options [ (call socketConfig) ];
+  timer = mkTypedUnit attrsOf timerOptions.options [ (call timerConfig) ];
+  path' = mkTypedUnit attrsOf pathOptions.options [ (call pathConfig) ];
+  slice = mkTypedUnit attrsOf sliceOptions.options [ (call sliceConfig) ];
+  mount = mkTypedUnit listOf mountOptions.options [ (call mountConfig) ];
+  automount = mkTypedUnit listOf automountOptions.options [ (call automountConfig) ];
+
+  service = {
+    stage1 = attrsOf (record {
+      inherit declarations;
+      fields = stage1Base // serviceOnlyOptions;
+      finalise = [
+        unitFin
+        (call serviceOptions)
+        (call stage1ServiceConfig)
+      ];
+    });
+    stage2 = attrsOf (record {
+      inherit declarations;
+      fields = stage2Base // serviceOnlyOptions // stage2ServiceOptions.options;
+      finalise = [
+        unitFin
+        (call serviceOptions)
+        # `stage2ServiceConfig` is `{ imports = [serviceConfig]; config.path = … }`.
+        # `call` only reads `.config`, so we apply the import explicitly.
+        (call stage1ServiceConfig)
+        (call stage2ServiceConfig)
+      ];
+    });
+  };
 
   initrdStorePathModule =
     { config, ... }:
@@ -228,93 +308,34 @@ in
     }
   );
 
-  services = attrsOf (submodule [
-    stage2ServiceOptions
-    unitConfig
-    stage2ServiceConfig
-  ]);
-  initrdServices = attrsOf (submodule [
-    stage1ServiceOptions
-    unitConfig
-    stage1ServiceConfig
-  ]);
+  services = service.stage2;
+  initrdServices = service.stage1;
 
-  targets = attrsOf (submodule [
-    stage2CommonUnitOptions
-    unitConfig
-    targetConfig
-  ]);
-  initrdTargets = attrsOf (submodule [
-    stage1CommonUnitOptions
-    unitConfig
-    targetConfig
-  ]);
+  targets = target.stage2;
+  initrdTargets = target.stage1;
 
-  sockets = attrsOf (submodule [
-    stage2SocketOptions
-    unitConfig
-    socketConfig
-  ]);
-  initrdSockets = attrsOf (submodule [
-    stage1SocketOptions
-    unitConfig
-    socketConfig
-  ]);
+  sockets = socket.stage2;
+  initrdSockets = socket.stage1;
 
-  timers = attrsOf (submodule [
-    stage2TimerOptions
-    unitConfig
-    timerConfig
-  ]);
-  initrdTimers = attrsOf (submodule [
-    stage1TimerOptions
-    unitConfig
-    timerConfig
-  ]);
+  timers = timer.stage2;
+  initrdTimers = timer.stage1;
 
-  paths = attrsOf (submodule [
-    stage2PathOptions
-    unitConfig
-    pathConfig
-  ]);
-  initrdPaths = attrsOf (submodule [
-    stage1PathOptions
-    unitConfig
-    pathConfig
-  ]);
+  paths = path'.stage2;
+  initrdPaths = path'.stage1;
 
-  slices = attrsOf (submodule [
-    stage2SliceOptions
-    unitConfig
-    sliceConfig
-  ]);
-  initrdSlices = attrsOf (submodule [
-    stage1SliceOptions
-    unitConfig
-    sliceConfig
-  ]);
+  slices = slice.stage2;
+  initrdSlices = slice.stage1;
 
-  mounts = listOf (submodule [
-    stage2MountOptions
-    unitConfig
-    mountConfig
-  ]);
-  initrdMounts = listOf (submodule [
-    stage1MountOptions
-    unitConfig
-    mountConfig
-  ]);
+  mounts = mount.stage2;
+  initrdMounts = mount.stage1;
 
-  automounts = listOf (submodule [
-    stage2AutomountOptions
-    unitConfig
-    automountConfig
-  ]);
-  initrdAutomounts = attrsOf (submodule [
-    stage1AutomountOptions
-    unitConfig
-    automountConfig
-  ]);
+  automounts = automount.stage2;
+  # NB: stage1 automounts is `attrsOf`, not `listOf` — see initrd.nix.
+  initrdAutomounts = attrsOf (record {
+    inherit declarations;
+    fields = stage1Base // automountOptions.options;
+    finalise = [ unitFin (call automountConfig) ];
+  });
 
   initrdStorePath = listOf (
     coercedTo (oneOf [

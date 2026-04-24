@@ -1157,6 +1157,21 @@ rec {
     }@args:
     let
       fieldNames = attrNames fields;
+      finalises = if finalise == null then [ ] else lib.toList finalise;
+      # Local copy of `lib.modules.pushDownProperties` (which is
+      # deprecated for external use). Lets a `finalise` return
+      # `mkMerge`/`mkIf`/`mkOverride` at its top level, mirroring what
+      # a submodule's `config = …` block can do.
+      push =
+        cfg:
+        if cfg._type or "" == "merge" then
+          builtins.concatMap push cfg.contents
+        else if cfg._type or "" == "if" then
+          map (mapAttrs (_: v: lib.mkIf cfg.condition v)) (push cfg.content)
+        else if cfg._type or "" == "override" then
+          map (mapAttrs (_: v: lib.mkOverride cfg.priority v)) (push cfg.content)
+        else
+          [ cfg ];
     in
     mkOptionType {
       name = "record";
@@ -1179,23 +1194,25 @@ rec {
           byField = zipAttrsWith (_: ds: ds) pushed;
           unknown = builtins.removeAttrs byField fieldNames;
 
-          extra =
-            if finalise == null then
-              { }
-            else
-              finalise {
-                inherit name;
-                self = final;
-                fields = fieldMerges;
-              };
+          # `finalise` may be a single function or a list of functions
+          # (the list form arises when two record types are merged via
+          # `binOp` and both carry a finalise).
+          extras = builtins.concatMap (
+            f:
+            push (f {
+              inherit name;
+              self = final;
+              fields = fieldMerges;
+            })
+          ) finalises;
 
           fieldDefs =
             n: field:
             (byField.${n} or [ ])
-            ++ lib.optional (extra ? ${n}) {
+            ++ map (e: {
               file = "finalise of record `${showOption loc}'";
-              value = extra.${n};
-            }
+              value = e.${n};
+            }) (builtins.filter (e: e ? ${n}) extras)
             ++ lib.optional (field ? default) {
               file = "default of record field `${showOption (loc ++ [ n ])}'";
               value = lib.mkOptionDefault field.default;
@@ -1251,17 +1268,12 @@ rec {
       functor = defaultFunctor "record" // {
         type = lib.types.record;
         payload = args;
-        binOp =
-          lhs: rhs:
-          if lhs.finalise or null != null && rhs.finalise or null != null then
-            null
-          else
-            {
-              fields = lhs.fields // rhs.fields;
-              declarations = (lhs.declarations or [ ]) ++ (rhs.declarations or [ ]);
-              finalise = if lhs.finalise or null != null then lhs.finalise or null else rhs.finalise or null;
-              description = lhs.description or rhs.description or "record";
-            };
+        binOp = lhs: rhs: {
+          fields = lhs.fields // rhs.fields;
+          declarations = (lhs.declarations or [ ]) ++ (rhs.declarations or [ ]);
+          finalise = lib.toList (lhs.finalise or [ ]) ++ lib.toList (rhs.finalise or [ ]);
+          description = lhs.description or rhs.description or "record";
+        };
       };
     };
 
