@@ -11,8 +11,9 @@ let
     else
       true;
 
-  kernelItem = types.submodule {
-    options = {
+  kernelItem = types.record {
+    declarations = [ ./kernel_config.nix ];
+    fields = {
       tristate = mkOption {
         type = types.enum [
           "y"
