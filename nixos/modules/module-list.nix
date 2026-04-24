@@ -6,145 +6,604 @@ let
   # The end-state replaces this hand-written map with a readDir over
   # nixos/modules/by-prefix/ — see backlog/p2-h12.
   byPrefix = {
-    "services._3proxy"                    = ./services/networking/3proxy.nix;
-    "services.agorakit"                   = ./services/web-apps/agorakit.nix;
-    "services.akkoma"                     = ./services/web-apps/akkoma.nix;
-    "services.anubis"                     = ./services/networking/anubis.nix;
-    "services.athens"                     = ./services/development/athens.nix;
-    "services.authelia"                   = ./services/security/authelia.nix;
-    "services.bind"                       = ./services/networking/bind.nix;
-    "services.bookstack"                  = ./services/web-apps/bookstack.nix;
-    "services.borgbackup"                 = ./services/backup/borgbackup.nix;
-    "services.caddy"                      = ./services/web-servers/caddy/default.nix;
-    "services.cassandra"                  = ./services/databases/cassandra.nix;
-    "services.clamav"                     = ./services/security/clamav.nix;
-    "services.cloudlog"                   = ./services/web-apps/cloudlog.nix;
-    "services.coturn"                     = ./services/networking/coturn.nix;
-    "services.crowdsec"                   = ./services/security/crowdsec.nix;
-    "services.davis"                      = ./services/web-apps/davis.nix;
-    "services.dawarich"                   = ./services/web-apps/dawarich.nix;
-    "services.dependency-track"           = ./services/web-apps/dependency-track.nix;
-    "services.discourse"                  = ./services/web-apps/discourse.nix;
-    "services.dokuwiki"                   = ./services/web-apps/dokuwiki.nix;
-    "services.dolibarr"                   = ./services/web-apps/dolibarr.nix;
-    "services.dovecot2"                   = ./services/mail/dovecot.nix;
-    "services.drupal"                     = ./services/web-apps/drupal.nix;
-    "services.fail2ban"                   = ./services/security/fail2ban.nix;
-    "services.firefly-iii"                = ./services/web-apps/firefly-iii.nix;
-    "services.forgejo"                    = ./services/misc/forgejo.nix;
-    "services.foundationdb"               = ./services/databases/foundationdb.nix;
-    "services.frigate"                    = ./services/video/frigate.nix;
-    "services.gitea"                      = ./services/misc/gitea.nix;
-    "services.gitlab"                     = ./services/misc/gitlab.nix;
-    "services.gitlab-runner"              = ./services/continuous-integration/gitlab-runner/runner.nix;
-    "services.grafana"                    = ./services/monitoring/grafana.nix;
-    "services.graphite"                   = ./services/monitoring/graphite.nix;
-    "services.h2o"                        = ./services/web-servers/h2o/default.nix;
-    "services.headscale"                  = ./services/networking/headscale.nix;
-    "services.home-assistant"             = ./services/home-automation/home-assistant.nix;
-    "services.homebridge"                 = ./services/home-automation/homebridge.nix;
-    "services.hostapd"                    = ./services/networking/hostapd.nix;
-    "services.httpd"                      = ./services/web-servers/apache-httpd/default.nix;
-    "services.hydra"                      = ./services/continuous-integration/hydra/default.nix;
-    "services.i2pd"                       = ./services/networking/i2pd.nix;
-    "services.immich"                     = ./services/web-apps/immich.nix;
-    "services.influxdb2"                  = ./services/databases/influxdb2.nix;
-    "services.invidious"                  = ./services/web-apps/invidious.nix;
-    "services.invoiceplane"               = ./services/web-apps/invoiceplane.nix;
-    "services.jellyfin"                   = ./services/misc/jellyfin.nix;
-    "services.jibri"                      = ./services/networking/jibri/default.nix;
-    "services.jitsi-meet"                 = ./services/web-apps/jitsi-meet.nix;
-    "services.kea"                        = ./services/networking/kea.nix;
-    "services.keycloak"                   = ./services/web-apps/keycloak.nix;
-    "services.kimai"                      = ./services/web-apps/kimai.nix;
-    "services.kismet"                     = ./services/networking/kismet.nix;
-    "services.knot"                       = ./services/networking/knot.nix;
-    "services.kubo"                       = ./services/network-filesystems/kubo.nix;
-    "services.lasuite-docs"               = ./services/web-apps/lasuite-docs.nix;
-    "services.lasuite-meet"               = ./services/web-apps/lasuite-meet.nix;
-    "services.libinput"                   = ./services/hardware/libinput.nix;
-    "services.librenms"                   = ./services/monitoring/librenms.nix;
-    "services.librespeed"                 = ./services/web-apps/librespeed.nix;
-    "services.limesurvey"                 = ./services/web-apps/limesurvey.nix;
-    "services.maddy"                      = ./services/mail/maddy.nix;
-    "services.mailman"                    = ./services/mail/mailman.nix;
-    "services.mastodon"                   = ./services/web-apps/mastodon.nix;
-    "services.matrix-synapse"             = ./services/matrix/synapse.nix;
-    "services.mattermost"                 = ./services/web-apps/mattermost.nix;
-    "services.maubot"                     = ./services/matrix/maubot.nix;
-    "services.mautrix-discord"            = ./services/matrix/mautrix-discord.nix;
-    "services.mautrix-meta"               = ./services/matrix/mautrix-meta.nix;
-    "services.mediatomb"                  = ./services/misc/mediatomb.nix;
-    "services.mediawiki"                  = ./services/web-apps/mediawiki.nix;
-    "services.misskey"                    = ./services/web-apps/misskey.nix;
-    "services.mobilizon"                  = ./services/web-apps/mobilizon.nix;
-    "services.monica"                     = ./services/web-apps/monica.nix;
-    "services.mosquitto"                  = ./services/networking/mosquitto.nix;
-    "services.movim"                      = ./services/web-apps/movim.nix;
-    "services.mpd"                        = ./services/audio/mpd.nix;
-    "services.murmur"                     = ./services/networking/murmur.nix;
-    "services.mysql"                      = ./services/databases/mysql.nix;
-    "services.n8n"                        = ./services/misc/n8n.nix;
-    "services.ncps"                       = ./services/networking/ncps.nix;
-    "services.neo4j"                      = ./services/databases/neo4j.nix;
-    "services.netbird"                    = ./services/networking/netbird.nix;
-    "services.netbox"                     = ./services/web-apps/netbox.nix;
-    "services.netdata"                    = ./services/monitoring/netdata.nix;
-    "services.nextcloud"                  = ./services/web-apps/nextcloud.nix;
-    "services.nextcloud-spreed-signaling" = ./services/networking/nextcloud-spreed-signaling.nix;
-    "services.nginx"                      = ./services/web-servers/nginx/default.nix;
-    "services.nitter"                     = ./services/misc/nitter.nix;
-    "services.nsd"                        = ./services/networking/nsd.nix;
-    "services.oauth2-proxy"               = ./services/security/oauth2-proxy.nix;
-    "services.outline"                    = ./services/web-apps/outline.nix;
-    "services.pangolin"                   = ./services/networking/pangolin.nix;
-    "services.paperless"                  = ./services/misc/paperless.nix;
-    "services.parsedmarc"                 = ./services/monitoring/parsedmarc.nix;
-    "services.pdfding"                    = ./services/web-apps/pdfding.nix;
-    "services.peering-manager"            = ./services/web-apps/peering-manager.nix;
-    "services.peertube"                   = ./services/web-apps/peertube.nix;
-    "services.pgbackrest"                 = ./services/backup/pgbackrest.nix;
-    "services.pgbouncer"                  = ./services/databases/pgbouncer.nix;
-    "services.pihole-ftl"                 = ./services/networking/pihole-ftl.nix;
-    "services.pixelfed"                   = ./services/web-apps/pixelfed.nix;
-    "services.postgresql"                 = ./services/databases/postgresql.nix;
-    "services.pretalx"                    = ./services/web-apps/pretalx.nix;
-    "services.pretix"                     = ./services/web-apps/pretix.nix;
-    "services.prometheus"                 = ./services/monitoring/prometheus/default.nix;
-    "services.prosody"                    = ./services/networking/prosody.nix;
-    "services.public-inbox"               = ./services/mail/public-inbox.nix;
-    "services.radicle"                    = ./services/misc/radicle.nix;
-    "services.redis"                      = ./services/databases/redis.nix;
-    "services.redmine"                    = ./services/misc/redmine.nix;
-    "services.reposilite"                 = ./services/web-apps/reposilite.nix;
-    "services.restic"                     = ./services/backup/restic.nix;
-    "services.rspamd"                     = ./services/mail/rspamd.nix;
-    "services.searx"                      = ./services/networking/searx.nix;
-    "services.slurm"                      = ./services/computing/slurm/slurm.nix;
-    "services.snipe-it"                   = ./services/web-apps/snipe-it.nix;
-    "services.speedtest-tracker"          = ./services/web-apps/speedtest-tracker.nix;
-    "services.stash"                      = ./services/web-apps/stash.nix;
-    "services.strichliste"                = ./services/web-apps/strichliste.nix;
-    "services.sympa"                      = ./services/mail/sympa.nix;
-    "services.syncoid"                    = ./services/backup/syncoid.nix;
-    "services.syncthing"                  = ./services/networking/syncthing.nix;
-    "services.tarsnap"                    = ./services/backup/tarsnap.nix;
-    "services.teeworlds"                  = ./services/games/teeworlds.nix;
-    "services.thanos"                     = ./services/monitoring/thanos.nix;
-    "services.tinc"                       = ./services/networking/tinc.nix;
-    "services.tomcat"                     = ./services/web-servers/tomcat.nix;
-    "services.tor"                        = ./services/security/tor.nix;
-    "services.transmission"               = ./services/torrent/transmission.nix;
-    "services.tt-rss"                     = ./services/web-apps/tt-rss.nix;
-    "services.warpgate"                   = ./services/security/warpgate.nix;
-    "services.weblate"                    = ./services/web-apps/weblate.nix;
-    "services.wordpress"                  = ./services/web-apps/wordpress.nix;
-    "services.writefreely"                = ./services/web-apps/writefreely.nix;
-    "services.wstunnel"                   = ./services/networking/wstunnel.nix;
-    "services.xtreemfs"                   = ./services/network-filesystems/xtreemfs.nix;
-    "services.zammad"                     = ./services/development/zammad.nix;
-    "services.znapzend"                   = ./services/backup/znapzend.nix;
-    "services.zoneminder"                 = ./services/misc/zoneminder.nix;
+    "programs.atop"                              = ./programs/atop.nix;
+    "programs.atuin"                             = ./programs/atuin.nix;
+    "programs.captive-browser"                   = ./programs/captive-browser.nix;
+    "programs.chromium"                          = ./programs/chromium.nix;
+    "programs.dconf"                             = ./programs/dconf.nix;
+    "programs.direnv"                            = ./programs/direnv.nix;
+    "programs.firefox"                           = ./programs/firefox.nix;
+    "programs.neovim"                            = ./programs/neovim.nix;
+    "programs.nix-required-mounts"               = ./programs/nix-required-mounts.nix;
+    "programs.opengamepadui"                     = ./programs/opengamepadui.nix;
+    "programs.pay-respects"                      = ./programs/pay-respects.nix;
+    "programs.proxychains"                       = ./programs/proxychains.nix;
+    "programs.regreet"                           = ./programs/regreet.nix;
+    "programs.rust-motd"                         = ./programs/rust-motd.nix;
+    "programs.starship"                          = ./programs/starship.nix;
+    "programs.steam"                             = ./programs/steam.nix;
+    "programs.sway"                              = ./programs/wayland/sway.nix;
+    "programs.tmux"                              = ./programs/tmux.nix;
+    "programs.uwsm"                              = ./programs/wayland/uwsm.nix;
+    "services._3proxy"                           = ./services/networking/3proxy.nix;
+    "services.acme-dns"                          = ./services/networking/acme-dns.nix;
+    "services.acpid"                             = ./services/hardware/acpid.nix;
+    "services.actual"                            = ./services/web-apps/actual.nix;
+    "services.adguardhome"                       = ./services/networking/adguardhome.nix;
+    "services.aesmd"                             = ./services/security/aesmd.nix;
+    "services.agate"                             = ./services/web-servers/agate.nix;
+    "services.agorakit"                          = ./services/web-apps/agorakit.nix;
+    "services.airsonic"                          = ./services/misc/airsonic.nix;
+    "services.akkoma"                            = ./services/web-apps/akkoma.nix;
+    "services.alps"                              = ./services/web-apps/alps.nix;
+    "services.amazon-cloudwatch-agent"           = ./services/monitoring/amazon-cloudwatch-agent.nix;
+    "services.amule"                             = ./services/networking/amuled.nix;
+    "services.ananicy"                           = ./services/misc/ananicy.nix;
+    "services.angrr"                             = ./services/misc/angrr.nix;
+    "services.anubis"                            = ./services/networking/anubis.nix;
+    "services.anuko-time-tracker"                = ./services/web-apps/anuko-time-tracker.nix;
+    "services.apcupsd"                           = ./services/monitoring/apcupsd.nix;
+    "services.archisteamfarm"                    = ./services/games/archisteamfarm.nix;
+    "services.aria2"                             = ./services/networking/aria2.nix;
+    "services.armagetronad"                      = ./services/games/armagetronad.nix;
+    "services.asterisk"                          = ./services/networking/asterisk.nix;
+    "services.athens"                            = ./services/development/athens.nix;
+    "services.atticd"                            = ./services/networking/atticd.nix;
+    "services.atuin"                             = ./services/misc/atuin.nix;
+    "services.authelia"                          = ./services/security/authelia.nix;
+    "services.automysqlbackup"                   = ./services/backup/automysqlbackup.nix;
+    "services.autorandr"                         = ./services/misc/autorandr.nix;
+    "services.awstats"                           = ./services/logging/awstats.nix;
+    "services.babeld"                            = ./services/networking/babeld.nix;
+    "services.bacula-fd"                         = ./services/backup/bacula.nix;
+    "services.bcg"                               = ./services/misc/bcg.nix;
+    "services.bepasty"                           = ./services/misc/bepasty.nix;
+    "services.biboumi"                           = ./services/networking/biboumi.nix;
+    "services.bind"                              = ./services/networking/bind.nix;
+    "services.bird-lg"                           = ./services/networking/bird-lg.nix;
+    "services.bitcoind"                          = ./services/networking/bitcoind.nix;
+    "services.bitlbee"                           = ./services/networking/bitlbee.nix;
+    "services.bitmagnet"                         = ./services/torrent/bitmagnet.nix;
+    "services.bitwarden-directory-connector-cli" = ./services/security/bitwarden-directory-connector-cli.nix;
+    "services.bluemap"                           = ./services/web-apps/bluemap.nix;
+    "services.bluesky-pds"                       = ./services/web-apps/bluesky-pds.nix;
+    "services.bookstack"                         = ./services/web-apps/bookstack.nix;
+    "services.borgbackup"                        = ./services/backup/borgbackup.nix;
+    "services.borgmatic"                         = ./services/backup/borgmatic.nix;
+    "services.bosun"                             = ./services/monitoring/bosun.nix;
+    "services.broadcast-box"                     = ./services/video/broadcast-box.nix;
+    "services.btrbk"                             = ./services/backup/btrbk.nix;
+    "services.buildbot-master"                   = ./services/continuous-integration/buildbot/master.nix;
+    "services.buildbot-worker"                   = ./services/continuous-integration/buildbot/worker.nix;
+    "services.buildkite-agents"                  = ./services/continuous-integration/buildkite-agents.nix;
+    "services.c2fmzq-server"                     = ./services/web-apps/c2fmzq-server.nix;
+    "services.caddy"                             = ./services/web-servers/caddy/default.nix;
+    "services.cage"                              = ./services/wayland/cage.nix;
+    "services.calibre-server"                    = ./services/misc/calibre-server.nix;
+    "services.calibre-web"                       = ./services/web-apps/calibre-web.nix;
+    "services.canaille"                          = ./services/security/canaille.nix;
+    "services.cassandra"                         = ./services/databases/cassandra.nix;
+    "services.certmgr"                           = ./services/security/certmgr.nix;
+    "services.certspotter"                       = ./services/monitoring/certspotter.nix;
+    "services.cgminer"                           = ./services/misc/cgminer.nix;
+    "services.changedetection-io"                = ./services/web-apps/changedetection-io.nix;
+    "services.chhoto-url"                        = ./services/web-apps/chhoto-url.nix;
+    "services.chrony"                            = ./services/networking/ntp/chrony.nix;
+    "services.cjdns"                             = ./services/networking/cjdns.nix;
+    "services.clamav"                            = ./services/security/clamav.nix;
+    "services.clickhouse"                        = ./services/databases/clickhouse.nix;
+    "services.clight"                            = ./services/x11/clight.nix;
+    "services.cloudflared"                       = ./services/networking/cloudflared.nix;
+    "services.cloudflare-ddns"                   = ./services/networking/cloudflare-ddns.nix;
+    "services.cloudlog"                          = ./services/web-apps/cloudlog.nix;
+    "services.cockpit"                           = ./services/monitoring/cockpit.nix;
+    "services.cockroachdb"                       = ./services/databases/cockroachdb.nix;
+    "services.cocoon"                            = ./services/web-apps/cocoon.nix;
+    "services.coder"                             = ./services/web-apps/coder.nix;
+    "services.code-server"                       = ./services/web-apps/code-server.nix;
+    "services.collabora-online"                  = ./services/web-apps/collabora-online.nix;
+    "services.consul"                            = ./services/networking/consul.nix;
+    "services.coturn"                            = ./services/networking/coturn.nix;
+    "services.couchdb"                           = ./services/databases/couchdb.nix;
+    "services.crab-hole"                         = ./services/networking/crab-hole.nix;
+    "services.crossfire-server"                  = ./services/games/crossfire-server.nix;
+    "services.cross-seed"                        = ./services/torrent/cross-seed.nix;
+    "services.crowdsec"                          = ./services/security/crowdsec.nix;
+    "services.crowdsec-firewall-bouncer"         = ./services/security/crowdsec-firewall-bouncer.nix;
+    "services.cryptpad"                          = ./services/web-apps/cryptpad.nix;
+    "services.cyrus-imap"                        = ./services/mail/cyrus-imap.nix;
+    "services.dashy"                             = ./services/web-apps/dashy.nix;
+    "services.datadog-agent"                     = ./services/monitoring/datadog-agent.nix;
+    "services.davfs2"                            = ./services/network-filesystems/davfs2.nix;
+    "services.davis"                             = ./services/web-apps/davis.nix;
+    "services.dawarich"                          = ./services/web-apps/dawarich.nix;
+    "services.db-rest"                           = ./services/misc/db-rest.nix;
+    "services.deluge"                            = ./services/torrent/deluge.nix;
+    "services.dependency-track"                  = ./services/web-apps/dependency-track.nix;
+    "services.dex"                               = ./services/web-apps/dex.nix;
+    "services.dgraph"                            = ./services/databases/dgraph.nix;
+    "services.diod"                              = ./services/network-filesystems/diod.nix;
+    "services.discourse"                         = ./services/web-apps/discourse.nix;
+    "services.distccd"                           = ./services/development/distccd.nix;
+    "services.dnsdist"                           = ./services/networking/dnsdist.nix;
+    "services.documize"                          = ./services/web-apps/documize.nix;
+    "services.docuseal"                          = ./services/web-apps/docuseal.nix;
+    "services.doh-server"                        = ./services/networking/doh-server.nix;
+    "services.dokuwiki"                          = ./services/web-apps/dokuwiki.nix;
+    "services.dolibarr"                          = ./services/web-apps/dolibarr.nix;
+    "services.dovecot2"                          = ./services/mail/dovecot.nix;
+    "services.dragonflydb"                       = ./services/databases/dragonflydb.nix;
+    "services.drasl"                             = ./services/web-apps/drasl.nix;
+    "services.draupnir"                          = ./services/matrix/draupnir.nix;
+    "services.druid"                             = ./services/cluster/druid/default.nix;
+    "services.drupal"                            = ./services/web-apps/drupal.nix;
+    "services.dsnet"                             = ./services/networking/dsnet.nix;
+    "services.dspam"                             = ./services/mail/dspam.nix;
+    "services.duplicity"                         = ./services/backup/duplicity.nix;
+    "services.earlyoom"                          = ./services/system/earlyoom.nix;
+    "services.easytier"                          = ./services/networking/easytier.nix;
+    "services.ebusd"                             = ./services/home-automation/ebusd.nix;
+    "services.endlessh-go"                       = ./services/security/endlessh-go.nix;
+    "services.engelsystem"                       = ./services/web-apps/engelsystem.nix;
+    "services.ente"                              = ./services/web-apps/ente.nix;
+    "services.epgstation"                        = ./services/video/epgstation/default.nix;
+    "services.ergo"                              = ./services/networking/ergo.nix;
+    "services.ergochat"                          = ./services/networking/ergochat.nix;
+    "services.esphome"                           = ./services/home-automation/esphome.nix;
+    "services.etebase-server"                    = ./services/misc/etebase-server.nix;
+    "services.evremap"                           = ./services/misc/evremap.nix;
+    "services.factorio"                          = ./services/games/factorio.nix;
+    "services.fail2ban"                          = ./services/security/fail2ban.nix;
+    "services.fastnetmon-advanced"               = ./services/networking/fastnetmon-advanced.nix;
+    "services.fcron"                             = ./services/scheduling/fcron.nix;
+    "services.fedimintd"                         = ./services/networking/fedimintd.nix;
+    "services.filebeat"                          = ./services/logging/filebeat.nix;
+    "services.filebrowser"                       = ./services/web-apps/filebrowser.nix;
+    "services.firebird"                          = ./services/databases/firebird.nix;
+    "services.firefly-iii"                       = ./services/web-apps/firefly-iii.nix;
+    "services.firefly-iii-data-importer"         = ./services/web-apps/firefly-iii-data-importer.nix;
+    "services.firefox-syncserver"                = ./services/networking/firefox-syncserver.nix;
+    "services.flannel"                           = ./services/networking/flannel.nix;
+    "services.flarum"                            = ./services/web-apps/flarum.nix;
+    "services.forgejo"                           = ./services/misc/forgejo.nix;
+    "services.foundationdb"                      = ./services/databases/foundationdb.nix;
+    "services.freeciv"                           = ./services/games/freeciv.nix;
+    "services.freshrss"                          = ./services/web-apps/freshrss.nix;
+    "services.frigate"                           = ./services/video/frigate.nix;
+    "services.froide-govplan"                    = ./services/web-apps/froide-govplan.nix;
+    "services.frr"                               = ./services/networking/frr.nix;
+    "services.galene"                            = ./services/web-apps/galene.nix;
+    "services.gammu-smsd"                        = ./services/misc/gammu-smsd.nix;
+    "services.gancio"                            = ./services/web-apps/gancio.nix;
+    "services.garage"                            = ./services/web-servers/garage.nix;
+    "services.geoclue2"                          = ./services/desktops/geoclue2.nix;
+    "services.geoipupdate"                       = ./services/misc/geoipupdate.nix;
+    "services.gerrit"                            = ./services/web-apps/gerrit.nix;
+    "services.getty"                             = ./services/ttys/getty.nix;
+    "services.gitea"                             = ./services/misc/gitea.nix;
+    "services.gitea-actions-runner"              = ./services/continuous-integration/gitea-actions-runner.nix;
+    "services.gitlab"                            = ./services/misc/gitlab.nix;
+    "services.gitlab-runner"                     = ./services/continuous-integration/gitlab-runner/runner.nix;
+    "services.glance"                            = ./services/web-apps/glance.nix;
+    "services.glitchtip"                         = ./services/web-apps/glitchtip.nix;
+    "services.glusterfs"                         = ./services/network-filesystems/glusterfs.nix;
+    "services.gns3-server"                       = ./services/networking/gns3-server.nix;
+    "services.gnunet"                            = ./services/networking/gnunet.nix;
+    "services.gocd-agent"                        = ./services/continuous-integration/gocd-agent/default.nix;
+    "services.gocd-server"                       = ./services/continuous-integration/gocd-server/default.nix;
+    "services.gollum"                            = ./services/misc/gollum.nix;
+    "services.gotenberg"                         = ./services/misc/gotenberg.nix;
+    "services.gotosocial"                        = ./services/web-apps/gotosocial.nix;
+    "services.gpsd"                              = ./services/misc/gpsd.nix;
+    "services.grafana"                           = ./services/monitoring/grafana.nix;
+    "services.grafana-image-renderer"            = ./services/monitoring/grafana-image-renderer.nix;
+    "services.graphite"                          = ./services/monitoring/graphite.nix;
+    "services.grav"                              = ./services/web-apps/grav.nix;
+    "services.graylog"                           = ./services/logging/graylog.nix;
+    "services.grocy"                             = ./services/web-apps/grocy.nix;
+    "services.h2o"                               = ./services/web-servers/h2o/default.nix;
+    "services.hadoop"                            = ./services/cluster/hadoop/default.nix;
+    "services.hans"                              = ./services/networking/hans.nix;
+    "services.harmonia"                          = ./services/networking/harmonia.nix;
+    "services.headscale"                         = ./services/networking/headscale.nix;
+    "services.healthchecks"                      = ./services/web-apps/healthchecks.nix;
+    "services.hedgedoc"                          = ./services/web-apps/hedgedoc.nix;
+    "services.heisenbridge"                      = ./services/misc/heisenbridge.nix;
+    "services.hledger-web"                       = ./services/web-apps/hledger-web.nix;
+    "services.home-assistant"                    = ./services/home-automation/home-assistant.nix;
+    "services.homebox"                           = ./services/web-apps/homebox.nix;
+    "services.homebridge"                        = ./services/home-automation/homebridge.nix;
+    "services.homepage-dashboard"                = ./services/misc/homepage-dashboard.nix;
+    "services.homer"                             = ./services/web-apps/homer.nix;
+    "services.honk"                              = ./services/web-apps/honk.nix;
+    "services.hostapd"                           = ./services/networking/hostapd.nix;
+    "services.hqplayerd"                         = ./services/audio/hqplayerd.nix;
+    "services.httpd"                             = ./services/web-servers/apache-httpd/default.nix;
+    "services.https-dns-proxy"                   = ./services/networking/https-dns-proxy.nix;
+    "services.hydra"                             = ./services/continuous-integration/hydra/default.nix;
+    "services.i2pd"                              = ./services/networking/i2pd.nix;
+    "services.immich"                            = ./services/web-apps/immich.nix;
+    "services.inadyn"                            = ./services/networking/inadyn.nix;
+    "services.infinoted"                         = ./services/editors/infinoted.nix;
+    "services.influxdb2"                         = ./services/databases/influxdb2.nix;
+    "services.invidious"                         = ./services/web-apps/invidious.nix;
+    "services.invoiceplane"                      = ./services/web-apps/invoiceplane.nix;
+    "services.iodine"                            = ./services/networking/iodine.nix;
+    "services.ircdHybrid"                        = ./services/networking/ircd-hybrid/default.nix;
+    "services.jellyfin"                          = ./services/misc/jellyfin.nix;
+    "services.jibri"                             = ./services/networking/jibri/default.nix;
+    "services.jicofo"                            = ./services/networking/jicofo.nix;
+    "services.jigasi"                            = ./services/networking/jigasi.nix;
+    "services.jirafeau"                          = ./services/web-apps/jirafeau.nix;
+    "services.jitsi-meet"                        = ./services/web-apps/jitsi-meet.nix;
+    "services.jitsi-videobridge"                 = ./services/networking/jitsi-videobridge.nix;
+    "services.journalwatch"                      = ./services/logging/journalwatch.nix;
+    "services.jupyter"                           = ./services/development/jupyter/default.nix;
+    "services.jupyterhub"                        = ./services/development/jupyterhub/default.nix;
+    "services.kanata"                            = ./services/hardware/kanata.nix;
+    "services.kanboard"                          = ./services/web-apps/kanboard.nix;
+    "services.kapacitor"                         = ./services/monitoring/kapacitor.nix;
+    "services.karakeep"                          = ./services/web-apps/karakeep.nix;
+    "services.kasmweb"                           = ./services/web-apps/kasmweb/default.nix;
+    "services.kea"                               = ./services/networking/kea.nix;
+    "services.keepalived"                        = ./services/networking/keepalived/default.nix;
+    "services.keycloak"                          = ./services/web-apps/keycloak.nix;
+    "services.keyd"                              = ./services/hardware/keyd.nix;
+    "services.kimai"                             = ./services/web-apps/kimai.nix;
+    "services.kismet"                            = ./services/networking/kismet.nix;
+    "services.kiwix-serve"                       = ./services/misc/kiwix-serve.nix;
+    "services.kmonad"                            = ./services/hardware/kmonad.nix;
+    "services.kmscon"                            = ./services/ttys/kmscon.nix;
+    "services.knot"                              = ./services/networking/knot.nix;
+    "services.knot-resolver"                     = ./services/networking/knot-resolver.nix;
+    "services.komga"                             = ./services/web-apps/komga.nix;
+    "services.komodo-periphery"                  = ./services/admin/komodo-periphery.nix;
+    "services.kresd"                             = ./services/networking/kresd.nix;
+    "services.kthxbye"                           = ./services/monitoring/kthxbye.nix;
+    "services.kubo"                              = ./services/network-filesystems/kubo.nix;
+    "services.lasuite-docs"                      = ./services/web-apps/lasuite-docs.nix;
+    "services.lasuite-meet"                      = ./services/web-apps/lasuite-meet.nix;
+    "services.lavalink"                          = ./services/audio/lavalink.nix;
+    "services.legit"                             = ./services/networking/legit.nix;
+    "services.lemmy"                             = ./services/web-apps/lemmy.nix;
+    "services.libinput"                          = ./services/hardware/libinput.nix;
+    "services.librechat"                         = ./services/web-apps/librechat.nix;
+    "services.librenms"                          = ./services/monitoring/librenms.nix;
+    "services.librespeed"                        = ./services/web-apps/librespeed.nix;
+    "services.libreswan"                         = ./services/networking/libreswan.nix;
+    "services.libretranslate"                    = ./services/web-apps/libretranslate.nix;
+    "services.lifecycled"                        = ./services/misc/lifecycled.nix;
+    "services.lighthouse"                        = ./services/blockchain/ethereum/lighthouse.nix;
+    "services.limesurvey"                        = ./services/web-apps/limesurvey.nix;
+    "services.linkding"                          = ./services/web-apps/linkding.nix;
+    "services.linkwarden"                        = ./services/web-apps/linkwarden.nix;
+    "services.listmonk"                          = ./services/mail/listmonk.nix;
+    "services.litellm"                           = ./services/misc/litellm.nix;
+    "services.llama-cpp"                         = ./services/misc/llama-cpp.nix;
+    "services.llama-swap"                        = ./services/networking/llama-swap.nix;
+    "services.lldap"                             = ./services/databases/lldap.nix;
+    "services.logcheck"                          = ./services/logging/logcheck.nix;
+    "services.logrotate"                         = ./services/logging/logrotate.nix;
+    "services.logstash"                          = ./services/logging/logstash.nix;
+    "services.loki"                              = ./services/monitoring/loki.nix;
+    "services.lokinet"                           = ./services/networking/lokinet.nix;
+    "services.longview"                          = ./services/monitoring/longview.nix;
+    "services.maddy"                             = ./services/mail/maddy.nix;
+    "services.magnetico"                         = ./services/torrent/magnetico.nix;
+    "services.mailman"                           = ./services/mail/mailman.nix;
+    "services.marytts"                           = ./services/audio/marytts.nix;
+    "services.mastodon"                          = ./services/web-apps/mastodon.nix;
+    "services.matomo"                            = ./services/web-apps/matomo.nix;
+    "services.matrix-appservice-discord"         = ./services/matrix/appservice-discord.nix;
+    "services.matrix-appservice-irc"             = ./services/matrix/appservice-irc.nix;
+    "services.matrix-continuwuity"               = ./services/matrix/continuwuity.nix;
+    "services.matrix-synapse"                    = ./services/matrix/synapse.nix;
+    "services.matrix-tuwunel"                    = ./services/matrix/tuwunel.nix;
+    "services.mattermost"                        = ./services/web-apps/mattermost.nix;
+    "services.matter-server"                     = ./services/home-automation/matter-server.nix;
+    "services.maubot"                            = ./services/matrix/maubot.nix;
+    "services.mautrix-discord"                   = ./services/matrix/mautrix-discord.nix;
+    "services.mautrix-meta"                      = ./services/matrix/mautrix-meta.nix;
+    "services.mautrix-signal"                    = ./services/matrix/mautrix-signal.nix;
+    "services.mautrix-telegram"                  = ./services/matrix/mautrix-telegram.nix;
+    "services.mautrix-whatsapp"                  = ./services/matrix/mautrix-whatsapp.nix;
+    "services.mchprs"                            = ./services/games/mchprs.nix;
+    "services.mediagoblin"                       = ./services/web-apps/mediagoblin.nix;
+    "services.mediatomb"                         = ./services/misc/mediatomb.nix;
+    "services.mediawiki"                         = ./services/web-apps/mediawiki.nix;
+    "services.memos"                             = ./services/misc/memos.nix;
+    "services.metricbeat"                        = ./services/monitoring/metricbeat.nix;
+    "services.microsocks"                        = ./services/networking/microsocks.nix;
+    "services.minecraft-server"                  = ./services/games/minecraft-server.nix;
+    "services.minetest-server"                   = ./services/games/minetest-server.nix;
+    "services.miniflux"                          = ./services/web-apps/miniflux.nix;
+    "services.minio"                             = ./services/web-servers/minio.nix;
+    "services.mirakurun"                         = ./services/video/mirakurun.nix;
+    "services.misskey"                           = ./services/web-apps/misskey.nix;
+    "services.mjolnir"                           = ./services/matrix/mjolnir.nix;
+    "services.mlmmj"                             = ./services/mail/mlmmj.nix;
+    "services.mobilizon"                         = ./services/web-apps/mobilizon.nix;
+    "services.monero"                            = ./services/networking/monero.nix;
+    "services.monica"                            = ./services/web-apps/monica.nix;
+    "services.moodle"                            = ./services/web-apps/moodle.nix;
+    "services.moosefs"                           = ./services/network-filesystems/moosefs.nix;
+    "services.mosquitto"                         = ./services/networking/mosquitto.nix;
+    "services.movim"                             = ./services/web-apps/movim.nix;
+    "services.mpd"                               = ./services/audio/mpd.nix;
+    "services.mpdscribble"                       = ./services/audio/mpdscribble.nix;
+    "services.mqtt2influxdb"                     = ./services/misc/mqtt2influxdb.nix;
+    "services.mtr-exporter"                      = ./services/networking/mtr-exporter.nix;
+    "services.munin-node"                        = ./services/monitoring/munin.nix;
+    "services.murmur"                            = ./services/networking/murmur.nix;
+    "services.music-assistant"                   = ./services/audio/music-assistant.nix;
+    "services.mycelium"                          = ./services/networking/mycelium.nix;
+    "services.mysql"                             = ./services/databases/mysql.nix;
+    "services.mysqlBackup"                       = ./services/backup/mysql-backup.nix;
+    "services.n8n"                               = ./services/misc/n8n.nix;
+    "services.nagios"                            = ./services/monitoring/nagios.nix;
+    "services.namecoind"                         = ./services/networking/namecoind.nix;
+    "services.nats"                              = ./services/networking/nats.nix;
+    "services.navidrome"                         = ./services/audio/navidrome.nix;
+    "services.nbd"                               = ./services/networking/nbd.nix;
+    "services.ncdns"                             = ./services/networking/ncdns.nix;
+    "services.ncps"                              = ./services/networking/ncps.nix;
+    "services.ndppd"                             = ./services/networking/ndppd.nix;
+    "services.neo4j"                             = ./services/databases/neo4j.nix;
+    "services.netbird"                           = ./services/networking/netbird.nix;
+    "services.netbox"                            = ./services/web-apps/netbox.nix;
+    "services.netdata"                           = ./services/monitoring/netdata.nix;
+    "services.newt"                              = ./services/networking/newt.nix;
+    "services.nextcloud"                         = ./services/web-apps/nextcloud.nix;
+    "services.nextcloud-spreed-signaling"        = ./services/networking/nextcloud-spreed-signaling.nix;
+    "services.nexus"                             = ./services/web-apps/nexus.nix;
+    "services.nezha-agent"                       = ./services/monitoring/nezha-agent.nix;
+    "services.nginx"                             = ./services/web-servers/nginx/default.nix;
+    "services.nifi"                              = ./services/web-apps/nifi.nix;
+    "services.nipap"                             = ./services/web-apps/nipap.nix;
+    "services.nitter"                            = ./services/misc/nitter.nix;
+    "services.nntp-proxy"                        = ./services/networking/nntp-proxy.nix;
+    "services.nomad"                             = ./services/networking/nomad.nix;
+    "services.nominatim"                         = ./services/search/nominatim.nix;
+    "services.nsd"                               = ./services/networking/nsd.nix;
+    "services.ntopng"                            = ./services/networking/ntopng.nix;
+    "services.ntpd-rs"                           = ./services/networking/ntp/ntpd-rs.nix;
+    "services.nullmailer"                        = ./services/mail/nullmailer.nix;
+    "services.nvme-rs"                           = ./services/system/nvme-rs.nix;
+    "services.oauth2-proxy"                      = ./services/security/oauth2-proxy.nix;
+    "services.ocis"                              = ./services/web-apps/ocis.nix;
+    "services.odoo"                              = ./services/finance/odoo.nix;
+    "services.ollama"                            = ./services/misc/ollama.nix;
+    "services.omnom"                             = ./services/misc/omnom.nix;
+    "services.oncall"                            = ./services/web-apps/oncall.nix;
+    "services.onlyoffice"                        = ./services/web-apps/onlyoffice.nix;
+    "services.openbao"                           = ./services/security/openbao.nix;
+    "services.opencloud"                         = ./services/web-apps/opencloud.nix;
+    "services.opendkim"                          = ./services/mail/opendkim.nix;
+    "services.openldap"                          = ./services/databases/openldap.nix;
+    "services.opensearch"                        = ./services/search/opensearch.nix;
+    "services.opensmtpd"                         = ./services/mail/opensmtpd.nix;
+    "services.opensnitch"                        = ./services/security/opensnitch.nix;
+    "services.openthread-border-router"          = ./services/home-automation/openthread-border-router.nix;
+    "services.openvscode-server"                 = ./services/web-apps/openvscode-server.nix;
+    "services.open-web-calendar"                 = ./services/web-apps/open-web-calendar.nix;
+    "services.open-webui"                        = ./services/misc/open-webui.nix;
+    "services.opkssh"                            = ./services/networking/opkssh/opkssh.nix;
+    "services.outline"                           = ./services/web-apps/outline.nix;
+    "services.oxidized"                          = ./services/admin/oxidized.nix;
+    "services.pairdrop"                          = ./services/web-apps/pairdrop.nix;
+    "services.pangolin"                          = ./services/networking/pangolin.nix;
+    "services.paperless"                         = ./services/misc/paperless.nix;
+    "services.parsedmarc"                        = ./services/monitoring/parsedmarc.nix;
+    "services.part-db"                           = ./services/web-apps/part-db.nix;
+    "services.patroni"                           = ./services/cluster/patroni/default.nix;
+    "services.pdfding"                           = ./services/web-apps/pdfding.nix;
+    "services.pdns-recursor"                     = ./services/networking/pdns-recursor.nix;
+    "services.peering-manager"                   = ./services/web-apps/peering-manager.nix;
+    "services.peertube"                          = ./services/web-apps/peertube.nix;
+    "services.peertube-runner"                   = ./services/web-apps/peertube-runner.nix;
+    "services.pgadmin"                           = ./services/admin/pgadmin.nix;
+    "services.pgbackrest"                        = ./services/backup/pgbackrest.nix;
+    "services.pgbouncer"                         = ./services/databases/pgbouncer.nix;
+    "services.pghero"                            = ./services/misc/pghero.nix;
+    "services.pgmanage"                          = ./services/databases/pgmanage.nix;
+    "services.photoprism"                        = ./services/web-apps/photoprism.nix;
+    "services.photoview"                         = ./services/web-apps/photoview.nix;
+    "services.physlock"                          = ./services/security/physlock.nix;
+    "services.picom"                             = ./services/x11/picom.nix;
+    "services.pihole-ftl"                        = ./services/networking/pihole-ftl.nix;
+    "services.pinchflat"                         = ./services/misc/pinchflat.nix;
+    "services.pixelfed"                          = ./services/web-apps/pixelfed.nix;
+    "services.pixiecore"                         = ./services/networking/pixiecore.nix;
+    "services.plantuml-server"                   = ./services/web-apps/plantuml-server.nix;
+    "services.plausible"                         = ./services/web-apps/plausible.nix;
+    "services.plex"                              = ./services/misc/plex.nix;
+    "services.pocket-id"                         = ./services/security/pocket-id.nix;
+    "services.polaris"                           = ./services/misc/polaris.nix;
+    "services.pomerium"                          = ./services/web-servers/pomerium.nix;
+    "services.portunus"                          = ./services/misc/portunus.nix;
+    "services.porxie"                            = ./services/networking/porxie.nix;
+    "services.postfix-tlspol"                    = ./services/mail/postfix-tlspol.nix;
+    "services.postgresql"                        = ./services/databases/postgresql.nix;
+    "services.postgresqlBackup"                  = ./services/backup/postgresql-backup.nix;
+    "services.postgresqlWalReceiver"             = ./services/backup/postgresql-wal-receiver.nix;
+    "services.postgrest"                         = ./services/databases/postgrest.nix;
+    "services.postgres-websockets"               = ./services/databases/postgres-websockets.nix;
+    "services.postsrsd"                          = ./services/mail/postsrsd.nix;
+    "services.powerdns-admin"                    = ./services/web-apps/powerdns-admin.nix;
+    "services.pppd"                              = ./services/networking/pppd.nix;
+    "services.prefect"                           = ./services/scheduling/prefect.nix;
+    "services.pretalx"                           = ./services/web-apps/pretalx.nix;
+    "services.pretix"                            = ./services/web-apps/pretix.nix;
+    "services.privatebin"                        = ./services/web-apps/privatebin.nix;
+    "services.privoxy"                           = ./services/networking/privoxy.nix;
+    "services.prometheus"                        = ./services/monitoring/prometheus/default.nix;
+    "services.prosody"                           = ./services/networking/prosody.nix;
+    "services.public-inbox"                      = ./services/mail/public-inbox.nix;
+    "services.pufferpanel"                       = ./services/misc/pufferpanel.nix;
+    "services.qbittorrent"                       = ./services/torrent/qbittorrent.nix;
+    "services.qui"                               = ./services/torrent/qui.nix;
+    "services.quicktun"                          = ./services/networking/quicktun.nix;
+    "services.quickwit"                          = ./services/search/quickwit.nix;
+    "services.rabbitmq"                          = ./services/amqp/rabbitmq.nix;
+    "services.radicale"                          = ./services/networking/radicale.nix;
+    "services.radicle"                           = ./services/misc/radicle.nix;
+    "services.rathole"                           = ./services/networking/rathole.nix;
+    "services.rauc"                              = ./services/hardware/rauc.nix;
+    "services.reaction"                          = ./services/security/reaction.nix;
+    "services.recyclarr"                         = ./services/misc/recyclarr.nix;
+    "services.redis"                             = ./services/databases/redis.nix;
+    "services.redlib"                            = ./services/misc/redlib.nix;
+    "services.redmine"                           = ./services/misc/redmine.nix;
+    "services.redsocks"                          = ./services/networking/redsocks.nix;
+    "services.renovate"                          = ./services/misc/renovate.nix;
+    "services.reposilite"                        = ./services/web-apps/reposilite.nix;
+    "services.resilio"                           = ./services/networking/resilio.nix;
+    "services.restic"                            = ./services/backup/restic.nix;
+    "services.rkvm"                              = ./services/misc/rkvm.nix;
+    "services.rosenpass"                         = ./services/networking/rosenpass.nix;
+    "services.roundcube"                         = ./services/mail/roundcube.nix;
+    "services.routinator"                        = ./services/networking/routinator.nix;
+    "services.rqbit"                             = ./services/torrent/rqbit.nix;
+    "services.rspamd"                            = ./services/mail/rspamd.nix;
+    "services.rss2email"                         = ./services/mail/rss2email.nix;
+    "services.rss-bridge"                        = ./services/web-apps/rss-bridge.nix;
+    "services.rsync"                             = ./services/misc/rsync.nix;
+    "services.rtorrent"                          = ./services/torrent/rtorrent.nix;
+    "services.rustdesk-server"                   = ./services/monitoring/rustdesk-server.nix;
+    "services.rustus"                            = ./services/web-servers/rustus.nix;
+    "services.rutorrent"                         = ./services/web-apps/rutorrent.nix;
+    "services.sanoid"                            = ./services/backup/sanoid.nix;
+    "services.saunafs"                           = ./services/network-filesystems/saunafs.nix;
+    "services.scanservjs"                        = ./services/hardware/scanservjs.nix;
+    "services.schleuder"                         = ./services/mail/schleuder.nix;
+    "services.scrutiny"                          = ./services/monitoring/scrutiny.nix;
+    "services.searx"                             = ./services/networking/searx.nix;
+    "services.self-deploy"                       = ./services/system/self-deploy.nix;
+    "services.selfoss"                           = ./services/web-apps/selfoss.nix;
+    "services.send"                              = ./services/web-servers/send.nix;
+    "services.sftpgo"                            = ./services/web-apps/sftpgo.nix;
+    "services.shadowsocks"                       = ./services/networking/shadowsocks.nix;
+    "services.shairport-sync"                    = ./services/networking/shairport-sync.nix;
+    "services.sharkey"                           = ./services/web-apps/sharkey.nix;
+    "services.shiori"                            = ./services/web-apps/shiori.nix;
+    "services.sillytavern"                       = ./services/web-apps/sillytavern.nix;
+    "services.slskd"                             = ./services/web-apps/slskd.nix;
+    "services.slurm"                             = ./services/computing/slurm/slurm.nix;
+    "services.smartd"                            = ./services/monitoring/smartd.nix;
+    "services.smokeping"                         = ./services/networking/smokeping.nix;
+    "services.snapper"                           = ./services/misc/snapper.nix;
+    "services.snapraid"                          = ./services/backup/snapraid.nix;
+    "services.snapserver"                        = ./services/audio/snapserver.nix;
+    "services.snipe-it"                          = ./services/web-apps/snipe-it.nix;
+    "services.snips-sh"                          = ./services/web-apps/snips-sh.nix;
+    "services.softether"                         = ./services/networking/softether.nix;
+    "services.sogo"                              = ./services/web-apps/sogo.nix;
+    "services.soju"                              = ./services/networking/soju.nix;
+    "services.spacecookie"                       = ./services/networking/spacecookie.nix;
+    "services.spark"                             = ./services/cluster/spark/default.nix;
+    "services.speedtest-tracker"                 = ./services/web-apps/speedtest-tracker.nix;
+    "services.spiped"                            = ./services/networking/spiped.nix;
+    "services.squid"                             = ./services/networking/squid.nix;
+    "services.sshguard"                          = ./services/security/sshguard.nix;
+    "services.sslh"                              = ./services/networking/sslh.nix;
+    "services.stalwart"                          = ./services/mail/stalwart.nix;
+    "services.stargazer"                         = ./services/web-servers/stargazer.nix;
+    "services.stash"                             = ./services/web-apps/stash.nix;
+    "services.strfry"                            = ./services/web-apps/strfry.nix;
+    "services.strichliste"                       = ./services/web-apps/strichliste.nix;
+    "services.stunnel"                           = ./services/networking/stunnel.nix;
+    "services.subsonic"                          = ./services/misc/subsonic.nix;
+    "services.sunshine"                          = ./services/networking/sunshine.nix;
+    "services.supybot"                           = ./services/networking/supybot.nix;
+    "services.suricata"                          = ./services/networking/suricata/default.nix;
+    "services.suwayomi-server"                   = ./services/web-apps/suwayomi-server.nix;
+    "services.sympa"                             = ./services/mail/sympa.nix;
+    "services.synapse-auto-compressor"           = ./services/matrix/synapse-auto-compressor.nix;
+    "services.syncoid"                           = ./services/backup/syncoid.nix;
+    "services.syncplay"                          = ./services/networking/syncplay.nix;
+    "services.syncthing"                         = ./services/networking/syncthing.nix;
+    "services.synergy"                           = ./services/misc/synergy.nix;
+    "services.system76-scheduler"                = ./services/desktops/system76-scheduler.nix;
+    "services.szurubooru"                        = ./services/web-apps/szurubooru.nix;
+    "services.tabby"                             = ./services/misc/tabby.nix;
+    "services.tabbyapi"                          = ./services/web-apps/tabbyapi.nix;
+    "services.tahoe"                             = ./services/network-filesystems/tahoe.nix;
+    "services.tandoor-recipes"                   = ./services/misc/tandoor-recipes.nix;
+    "services.tarsnap"                           = ./services/backup/tarsnap.nix;
+    "services.tayga"                             = ./services/networking/tayga.nix;
+    "services.tcsd"                              = ./services/hardware/tcsd.nix;
+    "services.teamspeak3"                        = ./services/networking/teamspeak3.nix;
+    "services.teeworlds"                         = ./services/games/teeworlds.nix;
+    "services.terraria"                          = ./services/games/terraria.nix;
+    "services.thanos"                            = ./services/monitoring/thanos.nix;
+    "services.thinkfan"                          = ./services/hardware/thinkfan.nix;
+    "services.tinc"                              = ./services/networking/tinc.nix;
+    "services.tinyauth"                          = ./services/security/tinyauth.nix;
+    "services.tlsrpt"                            = ./services/mail/tlsrpt.nix;
+    "services.tomcat"                            = ./services/web-servers/tomcat.nix;
+    "services.tor"                               = ./services/security/tor.nix;
+    "services.trafficserver"                     = ./services/web-servers/trafficserver/default.nix;
+    "services.transmission"                      = ./services/torrent/transmission.nix;
+    "services.trilium-server"                    = ./services/web-apps/trilium.nix;
+    "services.tsidp"                             = ./services/security/tsidp.nix;
+    "services.tt-rss"                            = ./services/web-apps/tt-rss.nix;
+    "services.tts"                               = ./services/audio/tts.nix;
+    "services.ttyd"                              = ./services/web-servers/ttyd.nix;
+    "services.tuliprox"                          = ./services/web-apps/tuliprox.nix;
+    "services.tusd"                              = ./services/web-servers/tusd.nix;
+    "services.udp-over-tcp"                      = ./services/networking/udp-over-tcp.nix;
+    "services.umami"                             = ./services/web-apps/umami.nix;
+    "services.umurmur"                           = ./services/networking/umurmur.nix;
+    "services.undervolt"                         = ./services/hardware/undervolt.nix;
+    "services.unifi"                             = ./services/networking/unifi.nix;
+    "services.unit"                              = ./services/web-servers/unit/default.nix;
+    "services.usbguard"                          = ./services/security/usbguard.nix;
+    "services.v4l2-relayd"                       = ./services/video/v4l2-relayd.nix;
+    "services.vault"                             = ./services/security/vault.nix;
+    "services.vaultwarden"                       = ./services/security/vaultwarden/default.nix;
+    "services.vdirsyncer"                        = ./services/networking/vdirsyncer.nix;
+    "services.veilid"                            = ./services/networking/veilid.nix;
+    "services.victorialogs"                      = ./services/databases/victorialogs.nix;
+    "services.victoriametrics"                   = ./services/databases/victoriametrics.nix;
+    "services.victoriatraces"                    = ./services/databases/victoriatraces.nix;
+    "services.vmagent"                           = ./services/monitoring/vmagent.nix;
+    "services.vmalert"                           = ./services/monitoring/vmalert.nix;
+    "services.vsftpd"                            = ./services/networking/vsftpd.nix;
+    "services.wakapi"                            = ./services/web-apps/wakapi.nix;
+    "services.warpgate"                          = ./services/security/warpgate.nix;
+    "services.wasabibackend"                     = ./services/networking/wasabibackend.nix;
+    "services.wastebin"                          = ./services/misc/wastebin.nix;
+    "services.webdav-server-rs"                  = ./services/network-filesystems/webdav-server-rs.nix;
+    "services.webhook"                           = ./services/networking/webhook.nix;
+    "services.weblate"                           = ./services/web-apps/weblate.nix;
+    "services.wgautomesh"                        = ./services/networking/wgautomesh.nix;
+    "services.wiki-js"                           = ./services/web-apps/wiki-js.nix;
+    "services.windmill"                          = ./services/web-apps/windmill.nix;
+    "services.wivrn"                             = ./services/video/wivrn.nix;
+    "services.woodpecker-agents"                 = ./services/continuous-integration/woodpecker/agents.nix;
+    "services.wordpress"                         = ./services/web-apps/wordpress.nix;
+    "services.writefreely"                       = ./services/web-apps/writefreely.nix;
+    "services.wstunnel"                          = ./services/networking/wstunnel.nix;
+    "services.x2goserver"                        = ./services/networking/x2goserver.nix;
+    "services.xonotic"                           = ./services/games/xonotic.nix;
+    "services.xrdp"                              = ./services/networking/xrdp.nix;
+    "services.xtreemfs"                          = ./services/network-filesystems/xtreemfs.nix;
+    "services.yggdrasil"                         = ./services/networking/yggdrasil.nix;
+    "services.yggdrasil-jumper"                  = ./services/networking/yggdrasil-jumper.nix;
+    "services.your_spotify"                      = ./services/web-apps/your_spotify.nix;
+    "services.youtrack"                          = ./services/web-apps/youtrack.nix;
+    "services.ytdl-sub"                          = ./services/misc/ytdl-sub.nix;
+    "services.zabbixAgent"                       = ./services/monitoring/zabbix-agent.nix;
+    "services.zabbixProxy"                       = ./services/monitoring/zabbix-proxy.nix;
+    "services.zabbixServer"                      = ./services/monitoring/zabbix-server.nix;
+    "services.zabbixWeb"                         = ./services/web-apps/zabbix.nix;
+    "services.zammad"                            = ./services/development/zammad.nix;
+    "services.zapret"                            = ./services/networking/zapret.nix;
+    "services.zitadel"                           = ./services/web-apps/zitadel.nix;
+    "services.znapzend"                          = ./services/backup/znapzend.nix;
+    "services.znc"                               = ./services/networking/znc/default.nix;
+    "services.zoneminder"                        = ./services/misc/zoneminder.nix;
+    "services.zookeeper"                         = ./services/misc/zookeeper.nix;
   };
   core = [
   # keep-sorted start case=no numeric=yes
@@ -315,8 +774,6 @@ let
   ./programs/appgate-sdp.nix
   ./programs/appimage.nix
   ./programs/arp-scan.nix
-  ./programs/atop.nix
-  ./programs/atuin.nix
   ./programs/ausweisapp.nix
   ./programs/autoenv.nix
   ./programs/autojump.nix
@@ -333,11 +790,9 @@ let
   ./programs/benchexec.nix
   ./programs/browserpass.nix
   ./programs/calls.nix
-  ./programs/captive-browser.nix
   ./programs/ccache.nix
   ./programs/cdemu.nix
   ./programs/cfs-zen-tweaks.nix
-  ./programs/chromium.nix
   ./programs/chrysalis.nix
   ./programs/clash-verge.nix
   ./programs/cnping.nix
@@ -346,9 +801,7 @@ let
   ./programs/corefreq.nix
   ./programs/cpu-energy-meter.nix
   ./programs/criu.nix
-  ./programs/dconf.nix
   ./programs/digitalbitbox/default.nix
-  ./programs/direnv.nix
   ./programs/dmrconfig.nix
   ./programs/droidcam.nix
   ./programs/dsearch.nix
@@ -360,7 +813,6 @@ let
   ./programs/extra-container.nix
   ./programs/fcast-receiver.nix
   ./programs/feedbackd.nix
-  ./programs/firefox.nix
   ./programs/firejail.nix
   ./programs/fish.nix
   ./programs/flashprog.nix
@@ -421,13 +873,11 @@ let
   ./programs/nano.nix
   ./programs/nautilus-open-any-terminal.nix
   ./programs/nbd.nix
-  ./programs/neovim.nix
   ./programs/nethoscope.nix
   ./programs/nexttrace.nix
   ./programs/nh.nix
   ./programs/nix-index.nix
   ./programs/nix-ld.nix
-  ./programs/nix-required-mounts.nix
   ./programs/nixbit.nix
   ./programs/nm-applet.nix
   ./programs/nncp.nix
@@ -437,24 +887,19 @@ let
   ./programs/oblogout.nix
   ./programs/obs-studio.nix
   ./programs/oddjobd.nix
-  ./programs/opengamepadui.nix
   ./programs/openvpn3.nix
   ./programs/partition-manager.nix
-  ./programs/pay-respects.nix
   ./programs/plotinus.nix
   ./programs/pmount.nix
   ./programs/pqos-wrapper.nix
   ./programs/projecteur.nix
-  ./programs/proxychains.nix
   ./programs/pulseview.nix
   ./programs/qdmr.nix
   ./programs/qgroundcontrol.nix
   ./programs/qt5ct.nix
   ./programs/quark-goldleaf.nix
-  ./programs/regreet.nix
   ./programs/rog-control-center.nix
   ./programs/rush.nix
-  ./programs/rust-motd.nix
   ./programs/ryzen-monitor-ng.nix
   ./programs/schroot.nix
   ./programs/screen.nix
@@ -468,8 +913,6 @@ let
   ./programs/sniffnet.nix
   ./programs/soundmodem.nix
   ./programs/ssh.nix
-  ./programs/starship.nix
-  ./programs/steam.nix
   ./programs/streamcontroller.nix
   ./programs/streamdeck-ui.nix
   ./programs/sysdig.nix
@@ -480,7 +923,6 @@ let
   ./programs/throne.nix
   ./programs/thunar.nix
   ./programs/thunderbird.nix
-  ./programs/tmux.nix
   ./programs/traceroute.nix
   ./programs/trippy.nix
   ./programs/tsm-client.nix
@@ -502,8 +944,6 @@ let
   ./programs/wayland/miracle-wm.nix
   ./programs/wayland/niri.nix
   ./programs/wayland/river.nix
-  ./programs/wayland/sway.nix
-  ./programs/wayland/uwsm.nix
   ./programs/wayland/waybar.nix
   ./programs/wayland/wayfire.nix
   ./programs/wayland/wayvnc.nix
@@ -567,65 +1007,40 @@ let
   ./services/accessibility/orca.nix
   ./services/accessibility/speechd.nix
   ./services/admin/docuum.nix
-  ./services/admin/komodo-periphery.nix
   ./services/admin/meshcentral.nix
-  ./services/admin/oxidized.nix
-  ./services/admin/pgadmin.nix
   ./services/admin/salt/master.nix
   ./services/admin/salt/minion.nix
   ./services/amqp/activemq/default.nix
-  ./services/amqp/rabbitmq.nix
   ./services/audio/alsa.nix
   ./services/audio/botamusique.nix
   ./services/audio/gmediarender.nix
   ./services/audio/gonic.nix
   ./services/audio/goxlr-utility.nix
-  ./services/audio/hqplayerd.nix
   ./services/audio/icecast.nix
   ./services/audio/jack.nix
   ./services/audio/jmusicbot.nix
-  ./services/audio/lavalink.nix
   ./services/audio/liquidsoap.nix
-  ./services/audio/marytts.nix
   ./services/audio/mopidy.nix
-  ./services/audio/mpdscribble.nix
-  ./services/audio/music-assistant.nix
   ./services/audio/mympd.nix
-  ./services/audio/navidrome.nix
   ./services/audio/networkaudiod.nix
   ./services/audio/pulseaudio.nix
   ./services/audio/roon-bridge.nix
   ./services/audio/roon-server.nix
   ./services/audio/slimserver.nix
-  ./services/audio/snapserver.nix
   ./services/audio/spotifyd.nix
   ./services/audio/squeezelite.nix
-  ./services/audio/tts.nix
   ./services/audio/ympd.nix
   ./services/autotierfs.nix
-  ./services/backup/automysqlbackup.nix
-  ./services/backup/bacula.nix
-  ./services/backup/borgmatic.nix
-  ./services/backup/btrbk.nix
   ./services/backup/duplicati.nix
-  ./services/backup/duplicity.nix
   ./services/backup/libvirtd-autosnapshot.nix
-  ./services/backup/mysql-backup.nix
-  ./services/backup/postgresql-backup.nix
-  ./services/backup/postgresql-wal-receiver.nix
   ./services/backup/restic-rest-server.nix
   ./services/backup/rsnapshot.nix
-  ./services/backup/sanoid.nix
-  ./services/backup/snapraid.nix
   ./services/backup/tsm.nix
   ./services/backup/zfs-replication.nix
   ./services/backup/zrepl.nix
   ./services/blockchain/ethereum/erigon.nix
   ./services/blockchain/ethereum/geth.nix
-  ./services/blockchain/ethereum/lighthouse.nix
   ./services/cluster/corosync/default.nix
-  ./services/cluster/druid/default.nix
-  ./services/cluster/hadoop/default.nix
   ./services/cluster/kubernetes/addon-manager.nix
   ./services/cluster/kubernetes/addons/dns.nix
   ./services/cluster/kubernetes/apiserver.nix
@@ -637,56 +1052,33 @@ let
   ./services/cluster/kubernetes/proxy.nix
   ./services/cluster/kubernetes/scheduler.nix
   ./services/cluster/pacemaker/default.nix
-  ./services/cluster/patroni/default.nix
   ./services/cluster/rancher/default.nix
-  ./services/cluster/spark/default.nix
   ./services/cluster/temporal/default.nix
   ./services/computing/boinc/client.nix
   ./services/computing/foldingathome/client.nix
   ./services/computing/torque/mom.nix
   ./services/computing/torque/server.nix
-  ./services/continuous-integration/buildbot/master.nix
-  ./services/continuous-integration/buildbot/worker.nix
-  ./services/continuous-integration/buildkite-agents.nix
-  ./services/continuous-integration/gitea-actions-runner.nix
   ./services/continuous-integration/github-runners.nix
-  ./services/continuous-integration/gocd-agent/default.nix
-  ./services/continuous-integration/gocd-server/default.nix
   ./services/continuous-integration/hercules-ci-agent/default.nix
   ./services/continuous-integration/jenkins/default.nix
   ./services/continuous-integration/jenkins/job-builder.nix
   ./services/continuous-integration/jenkins/slave.nix
   ./services/continuous-integration/radicle/adapters/native.nix
   ./services/continuous-integration/radicle/ci-broker.nix
-  ./services/continuous-integration/woodpecker/agents.nix
   ./services/continuous-integration/woodpecker/server.nix
   ./services/databases/aerospike.nix
   ./services/databases/chromadb.nix
-  ./services/databases/clickhouse.nix
-  ./services/databases/cockroachdb.nix
-  ./services/databases/couchdb.nix
-  ./services/databases/dgraph.nix
-  ./services/databases/dragonflydb.nix
   ./services/databases/etcd.nix
   ./services/databases/ferretdb.nix
-  ./services/databases/firebird.nix
   ./services/databases/hbase-standalone.nix
   ./services/databases/influxdb.nix
-  ./services/databases/lldap.nix
   ./services/databases/memcached.nix
   ./services/databases/monetdb.nix
   ./services/databases/mongodb.nix
-  ./services/databases/openldap.nix
   ./services/databases/opentsdb.nix
-  ./services/databases/pgmanage.nix
-  ./services/databases/postgres-websockets.nix
-  ./services/databases/postgrest.nix
   ./services/databases/rethinkdb.nix
   ./services/databases/surrealdb.nix
   ./services/databases/tigerbeetle.nix
-  ./services/databases/victorialogs.nix
-  ./services/databases/victoriametrics.nix
-  ./services/databases/victoriatraces.nix
   ./services/desktops/accountsservice.nix
   ./services/desktops/ayatana-indicators.nix
   ./services/desktops/bamf.nix
@@ -698,7 +1090,6 @@ let
   ./services/desktops/dunst.nix
   ./services/desktops/espanso.nix
   ./services/desktops/flatpak.nix
-  ./services/desktops/geoclue2.nix
   ./services/desktops/gnome/at-spi2-core.nix
   ./services/desktops/gnome/evolution-data-server.nix
   ./services/desktops/gnome/gcr-ssh-agent.nix
@@ -725,7 +1116,6 @@ let
   ./services/desktops/playerctld.nix
   ./services/desktops/profile-sync-daemon.nix
   ./services/desktops/seatd.nix
-  ./services/desktops/system76-scheduler.nix
   ./services/desktops/system-config-printer.nix
   ./services/desktops/telepathy.nix
   ./services/desktops/tumbler.nix
@@ -734,11 +1124,8 @@ let
   ./services/development/blackfire.nix
   ./services/development/bloop.nix
   ./services/development/corteza.nix
-  ./services/development/distccd.nix
   ./services/development/gemstash.nix
   ./services/development/hoogle.nix
-  ./services/development/jupyter/default.nix
-  ./services/development/jupyterhub/default.nix
   ./services/development/labgrid/coordinator.nix
   ./services/development/livebook.nix
   ./services/development/lorri.nix
@@ -758,27 +1145,14 @@ let
   ./services/display-managers/sddm.nix
   ./services/editors/emacs.nix
   ./services/editors/haste.nix
-  ./services/editors/infinoted.nix
   ./services/finance/libeufin/bank.nix
   ./services/finance/libeufin/module.nix
   ./services/finance/libeufin/nexus.nix
-  ./services/finance/odoo.nix
   ./services/finance/taler/exchange.nix
   ./services/finance/taler/merchant.nix
   ./services/finance/taler/module.nix
-  ./services/games/archisteamfarm.nix
-  ./services/games/armagetronad.nix
-  ./services/games/crossfire-server.nix
-  ./services/games/factorio.nix
-  ./services/games/freeciv.nix
-  ./services/games/mchprs.nix
-  ./services/games/minecraft-server.nix
-  ./services/games/minetest-server.nix
   ./services/games/openarena.nix
   ./services/games/quake3-server.nix
-  ./services/games/terraria.nix
-  ./services/games/xonotic.nix
-  ./services/hardware/acpid.nix
   ./services/hardware/actkbd.nix
   ./services/hardware/amdgpu.nix
   ./services/hardware/argonone.nix
@@ -807,9 +1181,6 @@ let
   ./services/hardware/iptsd.nix
   ./services/hardware/irqbalance.nix
   ./services/hardware/joycond.nix
-  ./services/hardware/kanata.nix
-  ./services/hardware/keyd.nix
-  ./services/hardware/kmonad.nix
   ./services/hardware/lact.nix
   ./services/hardware/lcd.nix
   ./services/hardware/lirc.nix
@@ -824,17 +1195,13 @@ let
   ./services/hardware/powerstation.nix
   ./services/hardware/rasdaemon.nix
   ./services/hardware/ratbagd.nix
-  ./services/hardware/rauc.nix
   ./services/hardware/sane.nix
   ./services/hardware/sane_extra_backends/brscan4.nix
   ./services/hardware/sane_extra_backends/brscan5.nix
   ./services/hardware/sane_extra_backends/dsseries.nix
-  ./services/hardware/scanservjs.nix
   ./services/hardware/spacenavd.nix
   ./services/hardware/supergfxd.nix
-  ./services/hardware/tcsd.nix
   ./services/hardware/thermald.nix
-  ./services/hardware/thinkfan.nix
   ./services/hardware/throttled.nix
   ./services/hardware/tlp.nix
   ./services/hardware/trezord.nix
@@ -843,18 +1210,13 @@ let
   ./services/hardware/tuxedo-rs.nix
   ./services/hardware/udev.nix
   ./services/hardware/udisks2.nix
-  ./services/hardware/undervolt.nix
   ./services/hardware/upower.nix
   ./services/hardware/usbmuxd.nix
   ./services/hardware/usbrelayd.nix
   ./services/hardware/vdr.nix
   ./services/home-automation/deye-dummycloud.nix
-  ./services/home-automation/ebusd.nix
-  ./services/home-automation/esphome.nix
   ./services/home-automation/evcc.nix
   ./services/home-automation/govee2mqtt.nix
-  ./services/home-automation/matter-server.nix
-  ./services/home-automation/openthread-border-router.nix
   ./services/home-automation/wyoming/faster-whisper.nix
   ./services/home-automation/wyoming/openwakeword.nix
   ./services/home-automation/wyoming/piper.nix
@@ -862,18 +1224,11 @@ let
   ./services/home-automation/zigbee2mqtt.nix
   ./services/home-automation/zwave-js-ui.nix
   ./services/home-automation/zwave-js.nix
-  ./services/logging/awstats.nix
-  ./services/logging/filebeat.nix
   ./services/logging/fluentd.nix
-  ./services/logging/graylog.nix
   ./services/logging/heartbeat.nix
   ./services/logging/journalbeat.nix
   ./services/logging/journaldriver.nix
-  ./services/logging/journalwatch.nix
   ./services/logging/klogd.nix
-  ./services/logging/logcheck.nix
-  ./services/logging/logrotate.nix
-  ./services/logging/logstash.nix
   ./services/logging/rsyslogd.nix
   ./services/logging/syslog-ng.nix
   ./services/logging/syslogd.nix
@@ -881,80 +1236,46 @@ let
   ./services/logging/ulogd.nix
   ./services/logging/vector.nix
   ./services/mail/automx2.nix
-  ./services/mail/cyrus-imap.nix
   ./services/mail/davmail.nix
   ./services/mail/dkimproxy-out.nix
-  ./services/mail/dspam.nix
   ./services/mail/exim.nix
   ./services/mail/goeland.nix
-  ./services/mail/listmonk.nix
   ./services/mail/mail.nix
   ./services/mail/mailcatcher.nix
   ./services/mail/mailhog.nix
   ./services/mail/mailpit.nix
-  ./services/mail/mlmmj.nix
-  ./services/mail/nullmailer.nix
   ./services/mail/offlineimap.nix
-  ./services/mail/opendkim.nix
-  ./services/mail/opensmtpd.nix
   ./services/mail/pfix-srsd.nix
-  ./services/mail/postfix-tlspol.nix
   ./services/mail/postfix.nix
   ./services/mail/postgrey.nix
-  ./services/mail/postsrsd.nix
   ./services/mail/protonmail-bridge.nix
-  ./services/mail/roundcube.nix
   ./services/mail/rspamd-trainer.nix
-  ./services/mail/rss2email.nix
-  ./services/mail/schleuder.nix
   ./services/mail/spamassassin.nix
-  ./services/mail/stalwart.nix
-  ./services/mail/tlsrpt.nix
   ./services/mail/zeyple.nix
-  ./services/matrix/appservice-discord.nix
-  ./services/matrix/appservice-irc.nix
   ./services/matrix/conduit.nix
-  ./services/matrix/continuwuity.nix
   ./services/matrix/dendrite.nix
-  ./services/matrix/draupnir.nix
   ./services/matrix/hebbot.nix
   ./services/matrix/hookshot.nix
   ./services/matrix/lk-jwt-service.nix
   ./services/matrix/matrix-alertmanager.nix
-  ./services/matrix/mautrix-signal.nix
-  ./services/matrix/mautrix-telegram.nix
-  ./services/matrix/mautrix-whatsapp.nix
-  ./services/matrix/mjolnir.nix
   ./services/matrix/pantalaimon.nix
-  ./services/matrix/synapse-auto-compressor.nix
-  ./services/matrix/tuwunel.nix
-  ./services/misc/airsonic.nix
   ./services/misc/amazon-ssm-agent.nix
-  ./services/misc/ananicy.nix
-  ./services/misc/angrr.nix
   ./services/misc/anki-sync-server.nix
   ./services/misc/apache-kafka.nix
-  ./services/misc/atuin.nix
   ./services/misc/autobrr.nix
   ./services/misc/autofs.nix
-  ./services/misc/autorandr.nix
   ./services/misc/autosuspend.nix
   ./services/misc/bazarr.nix
-  ./services/misc/bcg.nix
   ./services/misc/beanstalkd.nix
   ./services/misc/bees.nix
-  ./services/misc/bepasty.nix
   ./services/misc/blenderfarm.nix
-  ./services/misc/calibre-server.nix
   ./services/misc/canto-daemon.nix
   ./services/misc/cfdyndns.nix
-  ./services/misc/cgminer.nix
   ./services/misc/clipcat.nix
   ./services/misc/clipmenu.nix
   ./services/misc/confd.nix
   ./services/misc/conman.nix
   ./services/misc/cpuminer-cryptonight.nix
-  ./services/misc/db-rest.nix
   ./services/misc/devmon.nix
   ./services/misc/devpi-server.nix
   ./services/misc/dictd.nix
@@ -970,27 +1291,18 @@ let
   ./services/misc/elephant.nix
   ./services/misc/errbot.nix
   ./services/misc/ersatztv.nix
-  ./services/misc/etebase-server.nix
   ./services/misc/etesync-dav.nix
   ./services/misc/evdevremapkeys.nix
-  ./services/misc/evremap.nix
   ./services/misc/felix.nix
   ./services/misc/flaresolverr.nix
   ./services/misc/freeswitch.nix
   ./services/misc/fstrim.nix
-  ./services/misc/gammu-smsd.nix
-  ./services/misc/geoipupdate.nix
   ./services/misc/gitolite.nix
   ./services/misc/gitweb.nix
-  ./services/misc/gollum.nix
-  ./services/misc/gotenberg.nix
-  ./services/misc/gpsd.nix
   ./services/misc/graphical-desktop.nix
   ./services/misc/greenclip.nix
   ./services/misc/guix
   ./services/misc/headphones.nix
-  ./services/misc/heisenbridge.nix
-  ./services/misc/homepage-dashboard.nix
   ./services/misc/hyprwhspr-rs.nix
   ./services/misc/ihaskell.nix
   ./services/misc/iio-niri.nix
@@ -998,23 +1310,17 @@ let
   ./services/misc/invidious-router.nix
   ./services/misc/irkerd.nix
   ./services/misc/jackett.nix
-  ./services/misc/kiwix-serve.nix
   ./services/misc/klipper.nix
   ./services/misc/languagetool.nix
   ./services/misc/leaps.nix
-  ./services/misc/lifecycled.nix
   ./services/misc/linux-enable-ir-emitter.nix
-  ./services/misc/litellm.nix
-  ./services/misc/llama-cpp.nix
   ./services/misc/local-content-share.nix
   ./services/misc/logkeys.nix
   ./services/misc/mame.nix
   ./services/misc/mbpfan.nix
-  ./services/misc/memos.nix
   ./services/misc/metabase.nix
   ./services/misc/mollysocket.nix
   ./services/misc/moonraker.nix
-  ./services/misc/mqtt2influxdb.nix
   ./services/misc/nix-gc.nix
   ./services/misc/nix-optimise.nix
   ./services/misc/nix-ssh-serve.nix
@@ -1023,10 +1329,7 @@ let
   ./services/misc/nzbget.nix
   ./services/misc/nzbhydra2.nix
   ./services/misc/octoprint.nix
-  ./services/misc/ollama.nix
   ./services/misc/ombi.nix
-  ./services/misc/omnom.nix
-  ./services/misc/open-webui.nix
   ./services/misc/orthanc.nix
   ./services/misc/osrm.nix
   ./services/misc/overseerr.nix
@@ -1034,26 +1337,15 @@ let
   ./services/misc/packagekit.nix
   ./services/misc/paisa.nix
   ./services/misc/persistent-evdev.nix
-  ./services/misc/pghero.nix
-  ./services/misc/pinchflat.nix
   ./services/misc/pinnwand.nix
-  ./services/misc/plex.nix
   ./services/misc/plikd.nix
   ./services/misc/podgrab.nix
-  ./services/misc/polaris.nix
-  ./services/misc/portunus.nix
-  ./services/misc/pufferpanel.nix
   ./services/misc/pykms.nix
   ./services/misc/realmd.nix
   ./services/misc/rebuilderd.nix
-  ./services/misc/recyclarr.nix
-  ./services/misc/redlib.nix
-  ./services/misc/renovate.nix
   ./services/misc/ringboard.nix
-  ./services/misc/rkvm.nix
   ./services/misc/rmfakecloud.nix
   ./services/misc/rshim.nix
-  ./services/misc/rsync.nix
   ./services/misc/rumno.nix
   ./services/misc/safeeyes.nix
   ./services/misc/sdrplay.nix
@@ -1068,20 +1360,15 @@ let
   ./services/misc/shelfmark.nix
   ./services/misc/shoko.nix
   ./services/misc/sickbeard.nix
-  ./services/misc/snapper.nix
   ./services/misc/soft-serve.nix
   ./services/misc/spice-autorandr.nix
   ./services/misc/spice-vdagentd.nix
   ./services/misc/spice-webdavd.nix
   ./services/misc/spoolman.nix
   ./services/misc/sssd.nix
-  ./services/misc/subsonic.nix
   ./services/misc/sundtek.nix
   ./services/misc/svnserve.nix
-  ./services/misc/synergy.nix
   ./services/misc/sysprof.nix
-  ./services/misc/tabby.nix
-  ./services/misc/tandoor-recipes.nix
   ./services/misc/taskchampion-sync-server.nix
   ./services/misc/taskserver
   ./services/misc/tautulli.nix
@@ -1094,28 +1381,19 @@ let
   ./services/misc/tuxclocker.nix
   ./services/misc/tzupdate.nix
   ./services/misc/uhub.nix
-  ./services/misc/wastebin.nix
   ./services/misc/weechat.nix
   ./services/misc/workout-tracker.nix
   ./services/misc/xmrig.nix
   ./services/misc/yarr.nix
-  ./services/misc/ytdl-sub.nix
-  ./services/misc/zookeeper.nix
   ./services/monitoring/alerta.nix
   ./services/monitoring/alloy.nix
-  ./services/monitoring/amazon-cloudwatch-agent.nix
-  ./services/monitoring/apcupsd.nix
   ./services/monitoring/arbtt.nix
   ./services/monitoring/below.nix
   ./services/monitoring/beszel-agent.nix
   ./services/monitoring/beszel-hub.nix
-  ./services/monitoring/bosun.nix
   ./services/monitoring/cadvisor.nix
-  ./services/monitoring/certspotter.nix
-  ./services/monitoring/cockpit.nix
   ./services/monitoring/collectd.nix
   ./services/monitoring/das_watchdog.nix
-  ./services/monitoring/datadog-agent.nix
   ./services/monitoring/do-agent.nix
   ./services/monitoring/fluent-bit.nix
   ./services/monitoring/fusion-inventory.nix
@@ -1125,24 +1403,15 @@ let
   ./services/monitoring/glpi-agent.nix
   ./services/monitoring/go-csp-collector.nix
   ./services/monitoring/goss.nix
-  ./services/monitoring/grafana-image-renderer.nix
   ./services/monitoring/grafana-reporter.nix
   ./services/monitoring/grafana-to-ntfy.nix
   ./services/monitoring/hdaps.nix
   ./services/monitoring/heapster.nix
   ./services/monitoring/incron.nix
-  ./services/monitoring/kapacitor.nix
   ./services/monitoring/karma.nix
-  ./services/monitoring/kthxbye.nix
-  ./services/monitoring/loki.nix
-  ./services/monitoring/longview.nix
   ./services/monitoring/mackerel-agent.nix
-  ./services/monitoring/metricbeat.nix
   ./services/monitoring/mimir.nix
   ./services/monitoring/monit.nix
-  ./services/monitoring/munin.nix
-  ./services/monitoring/nagios.nix
-  ./services/monitoring/nezha-agent.nix
   ./services/monitoring/ocsinventory-agent.nix
   ./services/monitoring/opentelemetry-collector.nix
   ./services/monitoring/osquery.nix
@@ -1161,10 +1430,7 @@ let
   ./services/monitoring/riemann-dash.nix
   ./services/monitoring/riemann-tools.nix
   ./services/monitoring/riemann.nix
-  ./services/monitoring/rustdesk-server.nix
   ./services/monitoring/scollector.nix
-  ./services/monitoring/scrutiny.nix
-  ./services/monitoring/smartd.nix
   ./services/monitoring/snmpd.nix
   ./services/monitoring/sysstat.nix
   ./services/monitoring/teamviewer.nix
@@ -1177,24 +1443,15 @@ let
   ./services/monitoring/ups.nix
   ./services/monitoring/uptime-kuma.nix
   ./services/monitoring/vlagent.nix
-  ./services/monitoring/vmagent.nix
-  ./services/monitoring/vmalert.nix
   ./services/monitoring/vnstat.nix
   ./services/monitoring/watchdogd.nix
-  ./services/monitoring/zabbix-agent.nix
-  ./services/monitoring/zabbix-proxy.nix
-  ./services/monitoring/zabbix-server.nix
   ./services/network-filesystems/a2boot.nix
   ./services/network-filesystems/cachefilesd.nix
   ./services/network-filesystems/ceph.nix
-  ./services/network-filesystems/davfs2.nix
-  ./services/network-filesystems/diod.nix
   ./services/network-filesystems/drbd.nix
-  ./services/network-filesystems/glusterfs.nix
   ./services/network-filesystems/ipfs-cluster.nix
   ./services/network-filesystems/kbfs.nix
   ./services/network-filesystems/litestream/default.nix
-  ./services/network-filesystems/moosefs.nix
   ./services/network-filesystems/netatalk.nix
   ./services/network-filesystems/nfsd.nix
   ./services/network-filesystems/openafs/client.nix
@@ -1204,34 +1461,20 @@ let
   ./services/network-filesystems/rsyncd.nix
   ./services/network-filesystems/samba-wsdd.nix
   ./services/network-filesystems/samba.nix
-  ./services/network-filesystems/saunafs.nix
-  ./services/network-filesystems/tahoe.nix
   ./services/network-filesystems/u9fs.nix
-  ./services/network-filesystems/webdav-server-rs.nix
   ./services/network-filesystems/webdav.nix
   ./services/network-filesystems/yandex-disk.nix
-  ./services/networking/acme-dns.nix
-  ./services/networking/adguardhome.nix
   ./services/networking/alice-lg.nix
-  ./services/networking/amuled.nix
-  ./services/networking/aria2.nix
-  ./services/networking/asterisk.nix
   ./services/networking/atalkd.nix
   ./services/networking/atftpd.nix
-  ./services/networking/atticd.nix
   ./services/networking/autossh-ng.nix
   ./services/networking/autossh.nix
   ./services/networking/avahi-daemon.nix
   ./services/networking/ax25/axlisten.nix
   ./services/networking/ax25/axports.nix
-  ./services/networking/babeld.nix
   ./services/networking/bee.nix
-  ./services/networking/biboumi.nix
-  ./services/networking/bird-lg.nix
   ./services/networking/bird.nix
   ./services/networking/birdwatcher.nix
-  ./services/networking/bitcoind.nix
-  ./services/networking/bitlbee.nix
   ./services/networking/blockbook-frontend.nix
   ./services/networking/blocky.nix
   ./services/networking/byedpi.nix
@@ -1239,18 +1482,13 @@ let
   ./services/networking/centrifugo.nix
   ./services/networking/cgit.nix
   ./services/networking/chisel-server.nix
-  ./services/networking/cjdns.nix
   ./services/networking/clatd.nix
-  ./services/networking/cloudflare-ddns.nix
   ./services/networking/cloudflare-dyndns.nix
   ./services/networking/cloudflare-warp.nix
-  ./services/networking/cloudflared.nix
   ./services/networking/cntlm.nix
   ./services/networking/connman.nix
-  ./services/networking/consul.nix
   ./services/networking/coredns.nix
   ./services/networking/corerad.nix
-  ./services/networking/crab-hole.nix
   ./services/networking/create_ap.nix
   ./services/networking/croc.nix
   ./services/networking/dae.nix
@@ -1261,25 +1499,16 @@ let
   ./services/networking/dhcpcd.nix
   ./services/networking/dnscache.nix
   ./services/networking/dnscrypt-proxy.nix
-  ./services/networking/dnsdist.nix
   ./services/networking/dnsmasq.nix
   ./services/networking/dnsproxy.nix
   ./services/networking/doh-proxy-rust.nix
-  ./services/networking/doh-server.nix
-  ./services/networking/dsnet.nix
-  ./services/networking/easytier.nix
   ./services/networking/ejabberd.nix
   ./services/networking/envoy.nix
   ./services/networking/epmd.nix
-  ./services/networking/ergo.nix
-  ./services/networking/ergochat.nix
   ./services/networking/eternal-terminal.nix
   ./services/networking/expressvpn.nix
   ./services/networking/fakeroute.nix
-  ./services/networking/fastnetmon-advanced.nix
-  ./services/networking/fedimintd.nix
   ./services/networking/ferm.nix
-  ./services/networking/firefox-syncserver.nix
   ./services/networking/fireqos.nix
   ./services/networking/firewall-firewalld.nix
   ./services/networking/firewall-iptables.nix
@@ -1291,19 +1520,15 @@ let
   ./services/networking/firezone/headless-client.nix
   ./services/networking/firezone/relay.nix
   ./services/networking/firezone/server.nix
-  ./services/networking/flannel.nix
   ./services/networking/freenet.nix
   ./services/networking/freeradius.nix
   ./services/networking/frp.nix
-  ./services/networking/frr.nix
   ./services/networking/g3proxy.nix
   ./services/networking/gdomap.nix
   ./services/networking/geph.nix
   ./services/networking/ghostunnel.nix
   ./services/networking/git-daemon.nix
   ./services/networking/globalprotect-vpn.nix
-  ./services/networking/gns3-server.nix
-  ./services/networking/gnunet.nix
   ./services/networking/go-autoconfig.nix
   ./services/networking/go-camo.nix
   ./services/networking/go-neb.nix
@@ -1312,51 +1537,34 @@ let
   ./services/networking/godns.nix
   ./services/networking/gokapi.nix
   ./services/networking/gvpe.nix
-  ./services/networking/hans.nix
   ./services/networking/haproxy.nix
-  ./services/networking/harmonia.nix
   ./services/networking/hickory-dns.nix
   ./services/networking/htpdate.nix
-  ./services/networking/https-dns-proxy.nix
   ./services/networking/hylafax/default.nix
   ./services/networking/i2p.nix
   ./services/networking/icecream/daemon.nix
   ./services/networking/icecream/scheduler.nix
   ./services/networking/ifstate.nix
   ./services/networking/imaginary.nix
-  ./services/networking/inadyn.nix
   ./services/networking/inspircd.nix
-  ./services/networking/iodine.nix
   ./services/networking/iperf3.nix
-  ./services/networking/ircd-hybrid/default.nix
   ./services/networking/iscsi/initiator.nix
   ./services/networking/iscsi/root-initiator.nix
   ./services/networking/iscsi/target.nix
   ./services/networking/ivpn.nix
   ./services/networking/iwd.nix
-  ./services/networking/jicofo.nix
-  ./services/networking/jigasi.nix
-  ./services/networking/jitsi-videobridge.nix
   ./services/networking/jool.nix
   ./services/networking/jotta-cli.nix
-  ./services/networking/keepalived/default.nix
   ./services/networking/keybase.nix
-  ./services/networking/knot-resolver.nix
-  ./services/networking/kresd.nix
   ./services/networking/lambdabot.nix
-  ./services/networking/legit.nix
-  ./services/networking/libreswan.nix
   ./services/networking/livekit-ingress.nix
   ./services/networking/livekit.nix
-  ./services/networking/llama-swap.nix
   ./services/networking/lldpd.nix
   ./services/networking/logmein-hamachi.nix
-  ./services/networking/lokinet.nix
   ./services/networking/lxd-image-server.nix
   ./services/networking/magic-wormhole-mailbox-server.nix
   ./services/networking/matterbridge.nix
   ./services/networking/meshtasticd.nix
-  ./services/networking/microsocks.nix
   ./services/networking/mihomo.nix
   ./services/networking/minidlna.nix
   ./services/networking/miniupnpd.nix
@@ -1364,31 +1572,22 @@ let
   ./services/networking/mjpg-streamer.nix
   ./services/networking/mmsd.nix
   ./services/networking/modemmanager.nix
-  ./services/networking/monero.nix
   ./services/networking/mozillavpn.nix
   ./services/networking/mptcpd.nix
   ./services/networking/mstpd.nix
   ./services/networking/mtprotoproxy.nix
-  ./services/networking/mtr-exporter.nix
   ./services/networking/mullvad-vpn.nix
   ./services/networking/multipath.nix
-  ./services/networking/mycelium.nix
-  ./services/networking/namecoind.nix
   ./services/networking/nar-serve.nix
   ./services/networking/nat-iptables.nix
   ./services/networking/nat-nftables.nix
   ./services/networking/nat.nix
-  ./services/networking/nats.nix
-  ./services/networking/nbd.nix
-  ./services/networking/ncdns.nix
-  ./services/networking/ndppd.nix
   ./services/networking/nebula-lighthouse-service.nix
   ./services/networking/nebula.nix
   ./services/networking/netbird/server.nix
   ./services/networking/netclient.nix
   ./services/networking/networkd-dispatcher.nix
   ./services/networking/networkmanager.nix
-  ./services/networking/newt.nix
   ./services/networking/nextdns.nix
   ./services/networking/nftables.nix
   ./services/networking/nghttpx/default.nix
@@ -1398,11 +1597,6 @@ let
   ./services/networking/nixops-dns.nix
   ./services/networking/nm-file-secret-agent.nix
   ./services/networking/nncp.nix
-  ./services/networking/nntp-proxy.nix
-  ./services/networking/nomad.nix
-  ./services/networking/ntopng.nix
-  ./services/networking/ntp/chrony.nix
-  ./services/networking/ntp/ntpd-rs.nix
   ./services/networking/ntp/ntpd.nix
   ./services/networking/ntp/openntpd.nix
   ./services/networking/nullidentdmod.nix
@@ -1414,33 +1608,20 @@ let
   ./services/networking/onedrive.nix
   ./services/networking/openconnect.nix
   ./services/networking/openvpn.nix
-  ./services/networking/opkssh/opkssh.nix
   ./services/networking/ostinato.nix
   ./services/networking/owamp.nix
-  ./services/networking/pdns-recursor.nix
   ./services/networking/pdnsd.nix
   ./services/networking/picosnitch.nix
-  ./services/networking/pixiecore.nix
   ./services/networking/pleroma.nix
-  ./services/networking/porxie.nix
   ./services/networking/powerdns.nix
-  ./services/networking/pppd.nix
   ./services/networking/pptpd.nix
-  ./services/networking/privoxy.nix
   ./services/networking/quassel.nix
-  ./services/networking/quicktun.nix
   ./services/networking/r53-ddns.nix
-  ./services/networking/radicale.nix
   ./services/networking/radvd.nix
-  ./services/networking/rathole.nix
   ./services/networking/rdnssd.nix
   ./services/networking/realm.nix
-  ./services/networking/redsocks.nix
-  ./services/networking/resilio.nix
   ./services/networking/robustirc-bridge.nix
-  ./services/networking/rosenpass.nix
   ./services/networking/routedns.nix
-  ./services/networking/routinator.nix
   ./services/networking/rpcbind.nix
   ./services/networking/rxe.nix
   ./services/networking/sabnzbd
@@ -1450,8 +1631,6 @@ let
   ./services/networking/scion/scion-ip-gateway.nix
   ./services/networking/scion/scion-router.nix
   ./services/networking/scion/scion.nix
-  ./services/networking/shadowsocks.nix
-  ./services/networking/shairport-sync.nix
   ./services/networking/shellhub-agent.nix
   ./services/networking/shorewall6.nix
   ./services/networking/shorewall.nix
@@ -1459,35 +1638,21 @@ let
   ./services/networking/sitespeed-io.nix
   ./services/networking/skydns.nix
   ./services/networking/smartdns.nix
-  ./services/networking/smokeping.nix
   ./services/networking/sniproxy.nix
   ./services/networking/snowflake-proxy.nix
-  ./services/networking/softether.nix
-  ./services/networking/soju.nix
   ./services/networking/solanum.nix
-  ./services/networking/spacecookie.nix
   ./services/networking/speedify.nix
-  ./services/networking/spiped.nix
-  ./services/networking/squid.nix
   ./services/networking/ssh/sshd.nix
-  ./services/networking/sslh.nix
   ./services/networking/strongswan-swanctl/module.nix
   ./services/networking/strongswan.nix
   ./services/networking/stubby.nix
-  ./services/networking/stunnel.nix
-  ./services/networking/sunshine.nix
   ./services/networking/supplicant.nix
-  ./services/networking/supybot.nix
-  ./services/networking/suricata/default.nix
-  ./services/networking/syncplay.nix
   ./services/networking/syncthing-relay.nix
   ./services/networking/tailscale-auth.nix
   ./services/networking/tailscale-derper.nix
   ./services/networking/tailscale-serve.nix
   ./services/networking/tailscale.nix
-  ./services/networking/tayga.nix
   ./services/networking/tcpcrypt.nix
-  ./services/networking/teamspeak3.nix
   ./services/networking/technitium-dns-server.nix
   ./services/networking/teleport.nix
   ./services/networking/tetrd.nix
@@ -1502,72 +1667,46 @@ let
   ./services/networking/trickster.nix
   ./services/networking/twingate.nix
   ./services/networking/ucarp.nix
-  ./services/networking/udp-over-tcp.nix
-  ./services/networking/umurmur.nix
   ./services/networking/unbound.nix
-  ./services/networking/unifi.nix
   ./services/networking/uptermd.nix
   ./services/networking/v2ray.nix
   ./services/networking/v2raya.nix
-  ./services/networking/vdirsyncer.nix
-  ./services/networking/veilid.nix
-  ./services/networking/vsftpd.nix
   ./services/networking/vwifi.nix
-  ./services/networking/wasabibackend.nix
-  ./services/networking/webhook.nix
   ./services/networking/websockify.nix
   ./services/networking/wg-access-server.nix
   ./services/networking/wg-netmanager.nix
   ./services/networking/wg-quick.nix
-  ./services/networking/wgautomesh.nix
   ./services/networking/whoogle-search.nix
   ./services/networking/wireguard-networkd.nix
   ./services/networking/wireguard.nix
   ./services/networking/wpa_supplicant.nix
   ./services/networking/wvdial.nix
-  ./services/networking/x2goserver.nix
   ./services/networking/xandikos.nix
   ./services/networking/xinetd.nix
   ./services/networking/xl2tpd.nix
   ./services/networking/xray.nix
-  ./services/networking/xrdp.nix
-  ./services/networking/yggdrasil-jumper.nix
-  ./services/networking/yggdrasil.nix
-  ./services/networking/zapret.nix
   ./services/networking/zenohd.nix
   ./services/networking/zerobin.nix
   ./services/networking/zeronet.nix
   ./services/networking/zeronsd.nix
   ./services/networking/zerotierone.nix
-  ./services/networking/znc/default.nix
   ./services/printing/cups-pdf.nix
   ./services/printing/cupsd.nix
   ./services/printing/ipp-usb.nix
   ./services/scheduling/atd.nix
   ./services/scheduling/cron.nix
-  ./services/scheduling/fcron.nix
-  ./services/scheduling/prefect.nix
   ./services/scheduling/scx.nix
   ./services/search/elasticsearch-curator.nix
   ./services/search/elasticsearch.nix
   ./services/search/hound.nix
   ./services/search/manticore.nix
   ./services/search/meilisearch.nix
-  ./services/search/nominatim.nix
-  ./services/search/opensearch.nix
   ./services/search/qdrant.nix
-  ./services/search/quickwit.nix
   ./services/search/sonic-server.nix
   ./services/search/tika.nix
   ./services/search/typesense.nix
-  ./services/security/aesmd.nix
-  ./services/security/bitwarden-directory-connector-cli.nix
-  ./services/security/canaille.nix
-  ./services/security/certmgr.nix
   ./services/security/cfssl.nix
-  ./services/security/crowdsec-firewall-bouncer.nix
   ./services/security/e-imzo.nix
-  ./services/security/endlessh-go.nix
   ./services/security/endlessh.nix
   ./services/security/esdm.nix
   ./services/security/fprintd.nix
@@ -1583,31 +1722,20 @@ let
   ./services/security/munge.nix
   ./services/security/nginx-sso.nix
   ./services/security/oauth2-proxy-nginx.nix
-  ./services/security/openbao.nix
-  ./services/security/opensnitch.nix
   ./services/security/paretosecurity.nix
   ./services/security/pass-secret-service.nix
-  ./services/security/physlock.nix
-  ./services/security/pocket-id.nix
-  ./services/security/reaction.nix
   ./services/security/shibboleth-sp.nix
   ./services/security/sks.nix
   ./services/security/spire/agent.nix
   ./services/security/spire/server.nix
   ./services/security/ssh-agent-switcher.nix
-  ./services/security/sshguard.nix
   ./services/security/sslmate-agent.nix
   ./services/security/step-ca.nix
   ./services/security/tang.nix
   ./services/security/timekpr.nix
-  ./services/security/tinyauth.nix
   ./services/security/torify.nix
   ./services/security/torsocks.nix
-  ./services/security/tsidp.nix
-  ./services/security/usbguard.nix
   ./services/security/vault-agent.nix
-  ./services/security/vault.nix
-  ./services/security/vaultwarden/default.nix
   ./services/security/yubikey-agent.nix
   ./services/system/automatic-timezoned.nix
   ./services/system/bpftune.nix
@@ -1615,111 +1743,52 @@ let
   ./services/system/cachix-watch-store.nix
   ./services/system/cloud-init.nix
   ./services/system/dbus.nix
-  ./services/system/earlyoom.nix
   ./services/system/kerberos/default.nix
   ./services/system/localtimed.nix
   ./services/system/nix-daemon-firewall.nix
   ./services/system/nix-daemon.nix
   ./services/system/nohang.nix
   ./services/system/nscd.nix
-  ./services/system/nvme-rs.nix
   ./services/system/saslauthd.nix
-  ./services/system/self-deploy.nix
   ./services/system/swapspace.nix
   ./services/system/systembus-notify.nix
   ./services/system/systemd-lock-handler.nix
   ./services/system/uptimed.nix
   ./services/system/userborn.nix
   ./services/system/zram-generator.nix
-  ./services/torrent/bitmagnet.nix
-  ./services/torrent/cross-seed.nix
-  ./services/torrent/deluge.nix
   ./services/torrent/flexget.nix
   ./services/torrent/flood.nix
-  ./services/torrent/magnetico.nix
   ./services/torrent/opentracker.nix
   ./services/torrent/peerflix.nix
-  ./services/torrent/qbittorrent.nix
-  ./services/torrent/qui.nix
-  ./services/torrent/rqbit.nix
-  ./services/torrent/rtorrent.nix
   ./services/torrent/torrentstream.nix
   ./services/tracing/tempo.nix
-  ./services/ttys/getty.nix
   ./services/ttys/gpm.nix
-  ./services/ttys/kmscon.nix
-  ./services/video/broadcast-box.nix
-  ./services/video/epgstation/default.nix
   ./services/video/go2rtc/default.nix
   ./services/video/mediamtx.nix
-  ./services/video/mirakurun.nix
   ./services/video/motioneye.nix
   ./services/video/photonvision.nix
   ./services/video/ustreamer.nix
-  ./services/video/v4l2-relayd.nix
-  ./services/video/wivrn.nix
-  ./services/wayland/cage.nix
   ./services/wayland/hypridle.nix
-  ./services/web-apps/actual.nix
-  ./services/web-apps/alps.nix
-  ./services/web-apps/anuko-time-tracker.nix
   ./services/web-apps/artalk.nix
   ./services/web-apps/audiobookshelf.nix
   ./services/web-apps/baikal.nix
   ./services/web-apps/bentopdf.nix
-  ./services/web-apps/bluemap.nix
-  ./services/web-apps/bluesky-pds.nix
-  ./services/web-apps/c2fmzq-server.nix
-  ./services/web-apps/calibre-web.nix
   ./services/web-apps/castopod.nix
-  ./services/web-apps/changedetection-io.nix
-  ./services/web-apps/chhoto-url.nix
-  ./services/web-apps/cocoon.nix
-  ./services/web-apps/code-server.nix
-  ./services/web-apps/coder.nix
-  ./services/web-apps/collabora-online.nix
   ./services/web-apps/commafeed.nix
   ./services/web-apps/convos.nix
   ./services/web-apps/cook-cli.nix
-  ./services/web-apps/cryptpad.nix
-  ./services/web-apps/dashy.nix
-  ./services/web-apps/dex.nix
-  ./services/web-apps/documize.nix
-  ./services/web-apps/docuseal.nix
-  ./services/web-apps/drasl.nix
   ./services/web-apps/echoip.nix
-  ./services/web-apps/engelsystem.nix
-  ./services/web-apps/ente.nix
   ./services/web-apps/fediwall.nix
   ./services/web-apps/fider.nix
-  ./services/web-apps/filebrowser.nix
-  ./services/web-apps/firefly-iii-data-importer.nix
-  ./services/web-apps/flarum.nix
   ./services/web-apps/fluidd.nix
-  ./services/web-apps/freshrss.nix
-  ./services/web-apps/froide-govplan.nix
-  ./services/web-apps/galene.nix
-  ./services/web-apps/gancio.nix
-  ./services/web-apps/gerrit.nix
-  ./services/web-apps/glance.nix
-  ./services/web-apps/glitchtip.nix
   ./services/web-apps/go-httpbin.nix
   ./services/web-apps/goatcounter.nix
   ./services/web-apps/gotify-server.nix
-  ./services/web-apps/gotosocial.nix
   ./services/web-apps/goupile.nix
-  ./services/web-apps/grav.nix
-  ./services/web-apps/grocy.nix
   ./services/web-apps/guacamole-client.nix
   ./services/web-apps/guacamole-server.nix
   ./services/web-apps/hatsu.nix
   ./services/web-apps/haven.nix
-  ./services/web-apps/healthchecks.nix
-  ./services/web-apps/hedgedoc.nix
-  ./services/web-apps/hledger-web.nix
-  ./services/web-apps/homebox.nix
-  ./services/web-apps/homer.nix
-  ./services/web-apps/honk.nix
   ./services/web-apps/icingaweb2/icingaweb2.nix
   ./services/web-apps/icingaweb2/module-monitoring.nix
   ./services/web-apps/ifm.nix
@@ -1727,101 +1796,43 @@ let
   ./services/web-apps/immich-public-proxy.nix
   ./services/web-apps/immichframe.nix
   ./services/web-apps/isso.nix
-  ./services/web-apps/jirafeau.nix
-  ./services/web-apps/kanboard.nix
-  ./services/web-apps/karakeep.nix
-  ./services/web-apps/kasmweb/default.nix
   ./services/web-apps/kavita.nix
-  ./services/web-apps/komga.nix
   ./services/web-apps/lanraragi.nix
   ./services/web-apps/lauti.nix
-  ./services/web-apps/lemmy.nix
-  ./services/web-apps/librechat.nix
-  ./services/web-apps/libretranslate.nix
-  ./services/web-apps/linkding.nix
-  ./services/web-apps/linkwarden.nix
   ./services/web-apps/lubelogger.nix
   ./services/web-apps/mainsail.nix
-  ./services/web-apps/matomo.nix
   ./services/web-apps/mealie.nix
-  ./services/web-apps/mediagoblin.nix
   ./services/web-apps/meme-bingo-web.nix
   ./services/web-apps/microbin.nix
-  ./services/web-apps/miniflux.nix
-  ./services/web-apps/moodle.nix
   ./services/web-apps/nextcloud-notify_push.nix
   ./services/web-apps/nextcloud-whiteboard-server.nix
   ./services/web-apps/nextjs-ollama-llm-ui.nix
-  ./services/web-apps/nexus.nix
-  ./services/web-apps/nifi.nix
-  ./services/web-apps/nipap.nix
   ./services/web-apps/node-red.nix
   ./services/web-apps/nostr-rs-relay.nix
-  ./services/web-apps/ocis.nix
   ./services/web-apps/olivetin.nix
-  ./services/web-apps/oncall.nix
-  ./services/web-apps/onlyoffice.nix
-  ./services/web-apps/open-web-calendar.nix
-  ./services/web-apps/opencloud.nix
-  ./services/web-apps/openvscode-server.nix
   ./services/web-apps/openwebrx.nix
-  ./services/web-apps/pairdrop.nix
   ./services/web-apps/papra.nix
-  ./services/web-apps/part-db.nix
-  ./services/web-apps/peertube-runner.nix
   ./services/web-apps/pgpkeyserver-lite.nix
-  ./services/web-apps/photoprism.nix
-  ./services/web-apps/photoview.nix
   ./services/web-apps/phylactery.nix
   ./services/web-apps/pict-rs.nix
   ./services/web-apps/pihole-web.nix
-  ./services/web-apps/plantuml-server.nix
-  ./services/web-apps/plausible.nix
   ./services/web-apps/porn-vault/default.nix
-  ./services/web-apps/powerdns-admin.nix
-  ./services/web-apps/privatebin.nix
   ./services/web-apps/prosody-filer.nix
   ./services/web-apps/readeck.nix
   ./services/web-apps/remark42.nix
   ./services/web-apps/rimgo.nix
-  ./services/web-apps/rss-bridge.nix
   ./services/web-apps/rsshub.nix
-  ./services/web-apps/rutorrent.nix
   ./services/web-apps/screego.nix
-  ./services/web-apps/selfoss.nix
-  ./services/web-apps/sftpgo.nix
-  ./services/web-apps/sharkey.nix
-  ./services/web-apps/shiori.nix
-  ./services/web-apps/sillytavern.nix
   ./services/web-apps/silverbullet.nix
-  ./services/web-apps/slskd.nix
-  ./services/web-apps/snips-sh.nix
-  ./services/web-apps/sogo.nix
   ./services/web-apps/sshwifty.nix
   ./services/web-apps/stirling-pdf.nix
-  ./services/web-apps/strfry.nix
-  ./services/web-apps/suwayomi-server.nix
-  ./services/web-apps/szurubooru.nix
-  ./services/web-apps/tabbyapi.nix
-  ./services/web-apps/trilium.nix
-  ./services/web-apps/tuliprox.nix
-  ./services/web-apps/umami.nix
   ./services/web-apps/vikunja.nix
-  ./services/web-apps/wakapi.nix
   ./services/web-apps/websurfx.nix
   ./services/web-apps/whitebophir.nix
   ./services/web-apps/whoami.nix
-  ./services/web-apps/wiki-js.nix
-  ./services/web-apps/windmill.nix
-  ./services/web-apps/your_spotify.nix
-  ./services/web-apps/youtrack.nix
-  ./services/web-apps/zabbix.nix
   ./services/web-apps/zipline.nix
-  ./services/web-apps/zitadel.nix
-  ./services/web-servers/agate.nix
   ./services/web-servers/darkhttpd.nix
   ./services/web-servers/fcgiwrap.nix
-  ./services/web-servers/garage.nix
   ./services/web-servers/hitch/default.nix
   ./services/web-servers/jboss/default.nix
   ./services/web-servers/keter
@@ -1831,24 +1842,14 @@ let
   ./services/web-servers/lighttpd/gitweb.nix
   ./services/web-servers/merecat.nix
   ./services/web-servers/mighttpd2.nix
-  ./services/web-servers/minio.nix
   ./services/web-servers/molly-brown.nix
   ./services/web-servers/nginx/gitweb.nix
   ./services/web-servers/nginx/tailscale-auth.nix
   ./services/web-servers/phpfpm/default.nix
-  ./services/web-servers/pomerium.nix
-  ./services/web-servers/rustus.nix
-  ./services/web-servers/send.nix
-  ./services/web-servers/stargazer.nix
   ./services/web-servers/static-web-server.nix
   ./services/web-servers/traefik.nix
-  ./services/web-servers/trafficserver/default.nix
-  ./services/web-servers/ttyd.nix
-  ./services/web-servers/tusd.nix
-  ./services/web-servers/unit/default.nix
   ./services/web-servers/uwsgi.nix
   ./services/web-servers/varnish/default.nix
-  ./services/x11/clight.nix
   ./services/x11/colord.nix
   ./services/x11/desktop-managers/default.nix
   ./services/x11/display-managers/default.nix
@@ -1864,7 +1865,6 @@ let
   ./services/x11/hardware/synaptics.nix
   ./services/x11/hardware/wacom.nix
   ./services/x11/imwheel.nix
-  ./services/x11/picom.nix
   ./services/x11/redshift.nix
   ./services/x11/touchegg.nix
   ./services/x11/unclutter-xfixes.nix
