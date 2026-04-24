@@ -34,8 +34,6 @@ let
     isString
     mapAttrs
     mapNullable
-    optionalString
-    optionals
     pipe
     remove
     splitString
@@ -218,17 +216,15 @@ let
   #
   # TODO(@Ericson2314): Make [ "build" "host" ] always the default / resolve #87909
   useDefaultConfigurePlatforms = hostPlatform != buildPlatform || config.configurePlatformsByDefault;
-  defaultConfigurePlatforms = optionals useDefaultConfigurePlatforms [
-    "build"
-    "host"
-  ];
+  defaultConfigurePlatforms = if useDefaultConfigurePlatforms then [ "build" "host" ] else [ ];
   buildPlatformConfigureFlag = "--build=${buildPlatform.config}";
   hostPlatformConfigureFlag = "--host=${hostPlatform.config}";
   targetPlatformConfigureFlag = "--target=${targetPlatform.config}";
-  defaultConfigurePlatformsFlags = optionals useDefaultConfigurePlatforms [
-    buildPlatformConfigureFlag
-    hostPlatformConfigureFlag
-  ];
+  defaultConfigurePlatformsFlags =
+    if useDefaultConfigurePlatforms then
+      [ buildPlatformConfigureFlag hostPlatformConfigureFlag ]
+    else
+      [ ];
 
   # TODO(@Ericson2314): Make always true and remove / resolve #178468
   defaultStrictDeps = if config.strictDepsByDefault then true else hostPlatform != buildPlatform;
@@ -236,8 +232,8 @@ let
   canExecuteHostOnBuild = buildPlatform.canExecute hostPlatform;
   defaultHardeningFlags =
     (if stdenvHasCC then stdenv.cc else { }).defaultHardeningFlags or knownHardeningFlags;
-  stdenvHostSuffix = optionalString (hostPlatform != buildPlatform) "-${hostPlatform.config}";
-  stdenvStaticMarker = optionalString isStatic "-static";
+  stdenvHostSuffix = if hostPlatform != buildPlatform then "-${hostPlatform.config}" else "";
+  stdenvStaticMarker = if isStatic then "-static" else "";
   userHook = config.stdenv.userHook or null;
 
   requiredSystemFeaturesShouldBeSet =
@@ -726,10 +722,7 @@ let
 
           # -- Windows/Cygwin-specific attrs --
           ${if isWindows || isCygwin then "allowedImpureDLLs" else null} =
-            allowedImpureDLLs
-            ++ lib.optionals isCygwin [
-              "KERNEL32.dll"
-            ];
+            allowedImpureDLLs ++ (if isCygwin then [ "KERNEL32.dll" ] else [ ]);
 
           # -- Output reference checks --
           ${if !__structuredAttrs && attrs ? disallowedReferences then "disallowedReferences" else null} =
@@ -920,7 +913,7 @@ let
           removeAttrs derivationArg (fixedOutputRelatedAttrs ++ outputCheckAttrs)
           // {
             # Add a name in case the original drv didn't have one
-            name = "inputDerivation" + lib.optionalString (derivationArg ? name) "-${derivationArg.name}";
+            name = "inputDerivation" + (if derivationArg ? name then "-${derivationArg.name}" else "");
             # This always only has one output
             outputs = [ "out" ];
             # This doesn’t require any system features even if the original

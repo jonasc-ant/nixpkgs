@@ -11,7 +11,6 @@ let
     mirrorFunctionArgs
     isAttrs
     setFunctionArgs
-    optionalAttrs
     attrNames
     filter
     elemAt
@@ -107,9 +106,12 @@ rec {
         passthru = if drv ? passthru then drv.passthru else { };
       }
       // (drv.passthru or { })
-      // optionalAttrs (drv ? __spliced) {
-        __spliced = { } // (mapAttrs (_: sDrv: overrideDerivation sDrv f) drv.__spliced);
-      }
+      // (
+        if drv ? __spliced then
+          { __spliced = { } // (mapAttrs (_: sDrv: overrideDerivation sDrv f) drv.__spliced); }
+        else
+          { }
+      )
     );
 
   /**
@@ -166,9 +168,12 @@ rec {
           f
           // fDecorated
           # Decorate f.override if presented
-          // lib.optionalAttrs (f ? override) {
-            override = fdrv: makeOverridable (f.override fdrv);
-          }
+          // (
+            if f ? override then
+              { override = fdrv: makeOverridable (f.override fdrv); }
+            else
+              { }
+          )
         else
           id;
       decorate = f': recoverMetadata (mirrorArgs f');
@@ -461,10 +466,15 @@ rec {
             # TODO: give the derivation control over the outputs.
             #       `overrideAttrs` may not be the only attribute that needs
             #       updating when switching outputs.
-            optionalAttrs (passthru ? overrideAttrs) {
-              # TODO: also add overrideAttrs when overrideAttrs is not custom, e.g. when not splicing.
-              overrideAttrs = f: (passthru.overrideAttrs f).${outputName};
-            };
+            (
+              if passthru ? overrideAttrs then
+                {
+                  # TODO: also add overrideAttrs when overrideAttrs is not custom, e.g. when not splicing.
+                  overrideAttrs = f: (passthru.overrideAttrs f).${outputName};
+                }
+              else
+                { }
+            );
       };
 
       outputsList = map outputToAttrListElement outputs;
@@ -506,10 +516,15 @@ rec {
         inherit (drv) name system meta;
         inherit outputs;
       }
-      // optionalAttrs (drv._hydraAggregate or false) {
-        _hydraAggregate = true;
-        constituents = map hydraJob (flatten drv.constituents);
-      }
+      // (
+        if drv._hydraAggregate or false then
+          {
+            _hydraAggregate = true;
+            constituents = map hydraJob (flatten drv.constituents);
+          }
+        else
+          { }
+      )
       // (listToAttrs outputsList);
 
       makeOutput =
@@ -916,7 +931,7 @@ rec {
       (
         removeAttrs (
           # Inherit the __functionArgs from the base build helper
-          optionalAttrs inheritFunctionArgs (removeAttrs (functionArgs constructDrv) excludeDrvArgNames)
+          (if inheritFunctionArgs then removeAttrs (functionArgs constructDrv) excludeDrvArgNames else { })
           # Recover the __functionArgs from the derived build helper
           // functionArgs (extendDrvArgs { })
         ) excludeFunctionArgNames

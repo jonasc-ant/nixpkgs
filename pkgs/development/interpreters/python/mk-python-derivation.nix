@@ -43,10 +43,6 @@ let
     head
     isBool
     max
-    optional
-    optionalAttrs
-    optionals
-    optionalString
     removePrefix
     splitString
     stringLength
@@ -207,9 +203,7 @@ lib.extendMkDerivation {
           ''
             ${finalAttrs.name}: passthru.${attrName} missing after overrideAttrs overriding.
           ''
-          + optionalString (pos != null) ''
-            Last overridden at ${pos.file}:${toString pos.line}
-          ''
+          + (if pos != null then "Last overridden at ${pos.file}:${toString pos.line}\n" else "")
         ));
 
       format' =
@@ -234,7 +228,7 @@ lib.extendMkDerivation {
                 let
                   pos = unsafeGetAttrPos (if attrs ? "pname" then "pname" else "name") attrs;
                 in
-                optionalString (pos != null) " at ${pos.file}:${toString pos.line}:${toString pos.column}";
+                if pos != null then " at ${pos.file}:${toString pos.line}:${toString pos.column}" else "";
             in
             throw ''
               Python version mismatch in ${myName}:
@@ -298,73 +292,66 @@ lib.extendMkDerivation {
         ensureNewerSourcesForZipFilesHook # move to wheel installer (pip) or builder (setuptools, flit, ...)?
         pythonRemoveTestsDirHook
       ]
-      ++ optionals (finalAttrs.catchConflicts && !isBootstrapPackage && !isSetuptoolsDependency) [
-        #
-        # 1. When building a package that is also part of the bootstrap chain, we
-        #    must ignore conflicts after installation, because there will be one with
-        #    the package in the bootstrap.
-        #
-        # 2. When a package is a dependency of setuptools, we must ignore conflicts
-        #    because the hook that checks for conflicts uses setuptools.
-        #
-        pythonCatchConflictsHook
-      ]
-      ++
-        optionals (finalAttrs.pythonRelaxDeps or [ ] != [ ] || finalAttrs.pythonRemoveDeps or [ ] != [ ])
+      # 1. When building a package that is also part of the bootstrap chain, we
+      #    must ignore conflicts after installation, because there will be one with
+      #    the package in the bootstrap.
+      #
+      # 2. When a package is a dependency of setuptools, we must ignore conflicts
+      #    because the hook that checks for conflicts uses setuptools.
+      ++ (
+        if finalAttrs.catchConflicts && !isBootstrapPackage && !isSetuptoolsDependency then
+          [ pythonCatchConflictsHook ]
+        else
+          [ ]
+      )
+      ++ (
+        if finalAttrs.pythonRelaxDeps or [ ] != [ ] || finalAttrs.pythonRemoveDeps or [ ] != [ ] then
+          [ pythonRelaxDepsHook ]
+        else
+          [ ]
+      )
+      ++ (if removeBinBytecode then [ pythonRemoveBinBytecodeHook ] else [ ])
+      ++ (if hasSuffix "zip" (finalAttrs.src.name or "") then [ unzip ] else [ ])
+      ++ (if format' == "setuptools" then [ setuptoolsBuildHook ] else [ ])
+      ++ (
+        if format' == "pyproject" then
           [
-            pythonRelaxDepsHook
+            (
+              if isBootstrapPackage then
+                pypaBuildHook.override {
+                  inherit (python.pythonOnBuildForHost.pkgs.bootstrap) build;
+                  wheel = null;
+                }
+              else
+                pypaBuildHook
+            )
+            runtimeDepsCheckHook
           ]
-      ++ optionals removeBinBytecode [
-        pythonRemoveBinBytecodeHook
-      ]
-      ++ optionals (hasSuffix "zip" (finalAttrs.src.name or "")) [
-        unzip
-      ]
-      ++ optionals (format' == "setuptools") [
-        setuptoolsBuildHook
-      ]
-      ++ optionals (format' == "pyproject") [
-        (
-          if isBootstrapPackage then
-            pypaBuildHook.override {
-              inherit (python.pythonOnBuildForHost.pkgs.bootstrap) build;
-              wheel = null;
-            }
-          else
-            pypaBuildHook
-        )
-        runtimeDepsCheckHook
-      ]
-      ++ optionals (format' == "wheel") [
-        wheelUnpackHook
-        runtimeDepsCheckHook
-      ]
-      ++ optionals (format' == "egg") [
-        eggUnpackHook
-        eggBuildHook
-        eggInstallHook
-      ]
-      ++ optionals (format' != "other") [
-        (
-          if isBootstrapInstallPackage then
-            pypaInstallHook.override {
-              inherit (python.pythonOnBuildForHost.pkgs.bootstrap) installer;
-            }
-          else
-            pypaInstallHook
-        )
-      ]
-      ++ optionals (stdenv.buildPlatform == stdenv.hostPlatform) [
-        # This is a test, however, it should be ran independent of the checkPhase and checkInputs
-        pythonImportsCheckHook
-      ]
-      ++ optionals (python.pythonAtLeast "3.3") [
-        # Optionally enforce PEP420 for python3
-        pythonNamespacesHook
-      ]
-      ++ optionals withDistOutput [
-        pythonOutputDistHook
-      ]
+        else
+          [ ]
+      )
+      ++ (if format' == "wheel" then [ wheelUnpackHook runtimeDepsCheckHook ] else [ ])
+      ++ (if format' == "egg" then [ eggUnpackHook eggBuildHook eggInstallHook ] else [ ])
+      ++ (
+        if format' != "other" then
+          [
+            (
+              if isBootstrapInstallPackage then
+                pypaInstallHook.override {
+                  inherit (python.pythonOnBuildForHost.pkgs.bootstrap) installer;
+                }
+              else
+                pypaInstallHook
+            )
+          ]
+        else
+          [ ]
+      )
+      # This is a test, however, it should be ran independent of the checkPhase and checkInputs
+      ++ (if stdenv.buildPlatform == stdenv.hostPlatform then [ pythonImportsCheckHook ] else [ ])
+      # Optionally enforce PEP420 for python3
+      ++ (if python.pythonAtLeast "3.3" then [ pythonNamespacesHook ] else [ ])
+      ++ (if withDistOutput then [ pythonOutputDistHook ] else [ ])
       ++ nativeBuildInputs
       ++ getFinalPassthru "build-system";
 
@@ -397,17 +384,17 @@ lib.extendMkDerivation {
       inherit dontWrapPythonPrograms;
 
       postFixup =
-        optionalString (!finalAttrs.dontWrapPythonPrograms) ''
-          wrapPythonPrograms
-        ''
+        (if !finalAttrs.dontWrapPythonPrograms then "wrapPythonPrograms\n" else "")
         + attrs.postFixup or "";
 
       # Python packages built through cross-compilation are always for the host platform.
-      disallowedReferences = optionals (python.stdenv.hostPlatform != python.stdenv.buildPlatform) [
-        python.pythonOnBuildForHost
-      ];
+      disallowedReferences =
+        if python.stdenv.hostPlatform != python.stdenv.buildPlatform then
+          [ python.pythonOnBuildForHost ]
+        else
+          [ ];
 
-      outputs = outputs ++ optional withDistOutput "dist";
+      outputs = outputs ++ (if withDistOutput then [ "dist" ] else [ ]);
 
       passthru = {
         inherit
@@ -429,11 +416,16 @@ lib.extendMkDerivation {
       }
       // meta;
     }
-    // optionalAttrs (attrs ? checkPhase) {
-      # If given use the specified checkPhase, otherwise use the setup hook.
-      # Longer-term we should get rid of `checkPhase` and use `installCheckPhase`.
-      installCheckPhase = attrs.checkPhase;
-    }
+    // (
+      if attrs ? checkPhase then
+        {
+          # If given use the specified checkPhase, otherwise use the setup hook.
+          # Longer-term we should get rid of `checkPhase` and use `installCheckPhase`.
+          installCheckPhase = attrs.checkPhase;
+        }
+      else
+        { }
+    )
     //
       lib.mapAttrs
         (
