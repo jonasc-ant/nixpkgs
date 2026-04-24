@@ -370,7 +370,7 @@ rec {
 
     :::
   */
-  concatMapAttrs = f: v: foldl' mergeAttrs { } (attrValues (mapAttrs f v));
+  concatMapAttrs = f: v: builtins.foldl' mergeAttrs { } (attrValues (mapAttrs f v));
 
   /**
     Update or set specific paths of an attribute set.
@@ -909,7 +909,7 @@ rec {
   */
   cartesianProduct =
     attrsOfLists:
-    foldl' (
+    builtins.foldl' (
       listOfAttrs: attrName:
       concatMap (
         attrs: map (listValue: attrs // { ${attrName} = listValue; }) attrsOfLists.${attrName}

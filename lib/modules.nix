@@ -13,7 +13,6 @@ let
     concatStringsSep
     elem
     filter
-    foldl'
     functionArgs
     getAttrFromPath
     genericClosure
@@ -1008,7 +1007,7 @@ let
   */
   mergeOptionDecls =
     loc: opts:
-    foldl'
+    builtins.foldl'
       (
         res: opt:
         let
@@ -1455,7 +1454,7 @@ let
       let
         getPrio =
           def: if def.value._type or "" == "override" then def.value.priority else defaultOverridePriority;
-        highestPrio = foldl' (prio: def: min (getPrio def) prio) 9999 defs;
+        highestPrio = builtins.foldl' (prio: def: min (getPrio def) prio) 9999 defs;
         strip =
           def: if def.value._type or "" == "override" then def // { value = def.value.content; } else def;
       in
@@ -1820,7 +1819,7 @@ let
     from: to: mergeFn:
     { config, options, ... }:
     {
-      options = foldl' recursiveUpdate { } (
+      options = builtins.foldl' recursiveUpdate { } (
         map (
           path:
           setAttrByPath path (mkOption {
