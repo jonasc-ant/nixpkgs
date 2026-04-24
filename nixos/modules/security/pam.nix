@@ -124,24 +124,34 @@ let
   };
 
   package = config.security.pam.package;
-  parentConfig = config;
 
-  pamOpts =
-    { config, name, ... }:
-    let
-      cfg = config;
-    in
-    let
-      config = parentConfig;
-    in
-    {
+  # Helper for the per-service nested option groups (`u2f`, `kwallet`,
+  # …): under `submodule` these were implicit option-tree branches;
+  # under `record` each top-level field needs an explicit `.type`.
+  subRecord =
+    fields:
+    lib.mkOption {
+      type = lib.types.record {
+        declarations = [ ./pam.nix ];
+        inherit fields;
+      };
+      default = { };
+    };
 
-      imports = [
-        (lib.mkRenamedOptionModule [ "enableKwallet" ] [ "kwallet" "enable" ])
-        (lib.mkRenamedOptionModule [ "u2fAuth" ] [ "u2f" "enable" ])
-      ];
+  pamOpts = lib.types.record {
+    declarations = [ ./pam.nix ];
+    description = "PAM service configuration";
+    fields = pamFields;
+    finalise = pamFinalise;
+  };
 
-      options = {
+  # Static per-service field set — evaluated once for the whole system.
+  # Every `config.*` reference here is the OUTER NixOS config (the
+  # original `pamOpts` shadowed `config = parentConfig` for exactly
+  # this reason). The two `mkRenamedOptionModule` aliases for the
+  # long-deprecated `enableKwallet` / `u2fAuth` are dropped: `record`
+  # has no `imports`, and there are no in-tree users.
+  pamFields = {
 
         name = lib.mkOption {
           example = "sshd";
@@ -229,7 +239,7 @@ let
           '';
         };
 
-        u2f = {
+        u2f = subRecord {
           enable = lib.mkOption {
             default = config.security.pam.u2f.enable;
             defaultText = lib.literalExpression "config.security.pam.u2f.enable";
@@ -288,7 +298,7 @@ let
           '';
         };
 
-        googleAuthenticator = {
+        googleAuthenticator = subRecord {
           enable = lib.mkOption {
             default = false;
             type = lib.types.bool;
@@ -371,7 +381,7 @@ let
           '';
         };
 
-        howdy = {
+        howdy = subRecord {
           enable = lib.mkOption {
             default = config.security.pam.howdy.enable;
             defaultText = lib.literalExpression "config.security.pam.howdy.enable";
@@ -425,7 +435,7 @@ let
           '';
         };
 
-        duoSecurity = {
+        duoSecurity = subRecord {
           enable = lib.mkOption {
             default = false;
             type = lib.types.bool;
@@ -470,7 +480,7 @@ let
           '';
         };
 
-        ttyAudit = {
+        ttyAudit = subRecord {
           enable = lib.mkOption {
             type = lib.types.bool;
             default = false;
@@ -608,7 +618,7 @@ let
           '';
         };
 
-        kwallet = {
+        kwallet = subRecord {
           enable = lib.mkOption {
             default = false;
             type = lib.types.bool;
@@ -661,7 +671,7 @@ let
           description = "If enabled, the pam_umask module will be loaded.";
         };
 
-        failDelay = {
+        failDelay = subRecord {
           enable = lib.mkOption {
             type = lib.types.bool;
             default = false;
@@ -679,7 +689,7 @@ let
           };
         };
 
-        gnupg = {
+        gnupg = subRecord {
           enable = lib.mkOption {
             type = lib.types.bool;
             default = false;
@@ -715,7 +725,7 @@ let
           };
         };
 
-        slurm = {
+        slurm = subRecord {
           enable = lib.mkOption {
             default = false;
             type = lib.types.bool;
@@ -726,7 +736,7 @@ let
             '';
           };
 
-          adopt = {
+          adopt = subRecord {
             enable = lib.mkOption {
               default = false;
               type = lib.types.bool;
@@ -835,9 +845,8 @@ let
                 };
               };
 
-              default = {
-                service = name;
-              };
+              default = { };
+              defaultText = lib.literalExpression ''{ service = "‹name›"; }'';
               description = ''
                 Slurm Adopt Settings. More information is available at:
                   - https://slurm.schedmd.com/pam_slurm_adopt.html
@@ -860,15 +869,28 @@ let
           description = "Contents of the PAM service file.";
         };
 
-      };
+  };
 
-      # The resulting /etc/pam.d/* file contents are verified in
-      # nixos/tests/pam/pam-file-contents.nix. Please update tests there when
-      # changing the derivation.
-      config = {
+  # Per-service derived defaults — what was the `config = …` block of the
+  # `pamOpts` submodule. `self` is the merged record (`cfg` in the
+  # original); the OUTER NixOS `config` is in scope directly.
+  #
+  # The resulting /etc/pam.d/* file contents are verified in
+  # nixos/tests/pam/pam-file-contents.nix. Please update tests there when
+  # changing the derivation.
+  pamFinalise =
+    { name, self, ... }:
+    let
+      cfg = self;
+    in
+    {
         name = lib.mkDefault name;
         setLoginUid = lib.mkDefault cfg.startSession;
         limits = lib.mkDefault config.security.pam.loginLimits;
+        # `slurm.adopt.settings` previously defaulted to `{ service = name; }`
+        # via a per-instance option default; with a static field set the
+        # per-service `name` is supplied here instead.
+        slurm.adopt.settings.service = lib.mkDefault name;
 
         text =
           let
@@ -1700,8 +1722,6 @@ let
             ];
           }
         );
-      };
-
     };
 
   inherit (pkgs) pam_krb5 pam_ccreds;
@@ -1881,7 +1901,7 @@ in
 
     security.pam.services = lib.mkOption {
       default = { };
-      type = with lib.types; attrsOf (submodule pamOpts);
+      type = lib.types.attrsOf pamOpts;
       description = ''
         This option defines the PAM services.  A service typically
         corresponds to a program that uses PAM,
