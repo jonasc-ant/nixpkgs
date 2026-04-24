@@ -118,26 +118,29 @@ let
                 version = args.version or "<unknown version>";
                 pos = builtins.unsafeGetAttrPos "version" thisOverlay;
               in
-              lib.warnIf warnForBadVersionOverride ''
-                ${
-                  args.name or "${pname}-${version}"
-                } was overridden with `version` but not `src` at ${pos.file or "<unknown file>"}:${
-                  toString pos.line or "<unknown line>"
-                }:${toString pos.column or "<unknown column>"}.
+              if warnForBadVersionOverride then
+                lib.warn ''
+                  ${
+                    args.name or "${pname}-${version}"
+                  } was overridden with `version` but not `src` at ${pos.file or "<unknown file>"}:${
+                    toString pos.line or "<unknown line>"
+                  }:${toString pos.column or "<unknown column>"}.
 
-                This is most likely not what you want. In order to properly change the version of a package, override
-                both the `version` and `src` attributes:
+                  This is most likely not what you want. In order to properly change the version of a package, override
+                  both the `version` and `src` attributes:
 
-                hello.overrideAttrs (oldAttrs: rec {
-                  version = "1.0.0";
-                  src = pkgs.fetchurl {
-                    url = "mirror://gnu/hello/hello-''${version}.tar.gz";
-                    hash = "...";
-                  };
-                })
+                  hello.overrideAttrs (oldAttrs: rec {
+                    version = "1.0.0";
+                    src = pkgs.fetchurl {
+                      url = "mirror://gnu/hello/hello-''${version}.tar.gz";
+                      hash = "...";
+                    };
+                  })
 
-                (To silence this warning, set `__intentionallyOverridingVersion = true` in your `overrideAttrs` call.)
-              '' (prev // (removeAttrs thisOverlay [ "__intentionallyOverridingVersion" ]))
+                  (To silence this warning, set `__intentionallyOverridingVersion = true` in your `overrideAttrs` call.)
+                '' (prev // (removeAttrs thisOverlay [ "__intentionallyOverridingVersion" ]))
+              else
+                prev // (removeAttrs thisOverlay [ "__intentionallyOverridingVersion" ])
             );
         in
         makeDerivationExtensible (extends' (lib.toExtension f0) rattrs);
@@ -645,9 +648,12 @@ let
             else
               null
           } =
-            lib.warnIf ((builtins.elem "pie" hardeningEnable) || (builtins.elem "pie" hardeningDisable))
-              "The 'pie' hardening flag has been removed in favor of enabling PIE by default in compilers and should no longer be used. PIE can be disabled with the -no-pie compiler flag, but this is usually not necessary as most build systems pass this if needed. Usage of the 'pie' hardening flag will become an error in future."
-              (builtins.concatStringsSep " " enabledHardeningOptions);
+            if (builtins.elem "pie" hardeningEnable) || (builtins.elem "pie" hardeningDisable) then
+              lib.warn
+                "The 'pie' hardening flag has been removed in favor of enabling PIE by default in compilers and should no longer be used. PIE can be disabled with the -no-pie compiler flag, but this is usually not necessary as most build systems pass this if needed. Usage of the 'pie' hardening flag will become an error in future."
+                (builtins.concatStringsSep " " enabledHardeningOptions)
+            else
+              builtins.concatStringsSep " " enabledHardeningOptions;
 
           # TODO: remove platform condition
           # Enabling this check could be a breaking change as it requires to edit nix.conf

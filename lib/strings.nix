@@ -6,7 +6,7 @@ let
 
   inherit (builtins) length;
 
-  inherit (lib.trivial) warnIf;
+  inherit (lib.trivial) warn warnIf;
 
   asciiTable = import ./ascii-table.nix;
 
@@ -799,14 +799,16 @@ rec {
     pref: str:
     # Before 23.05, paths would be copied to the store before converting them
     # to strings and comparing. This was surprising and confusing.
-    warnIf (isPath pref)
-      ''
+    if isPath pref then
+      warn ''
         lib.strings.hasPrefix: The first argument (${toString pref}) is a path value, but only strings are supported.
             There is almost certainly a bug in the calling code, since this function always returns `false` in such a case.
             This function also copies the path to the Nix store, which may not be what you want.
             This behavior is deprecated and will throw an error in the future.
             You might want to use `lib.path.hasPrefix` instead, which correctly supports paths.''
-      (substring 0 (stringLength pref) str == pref);
+        (substring 0 (stringLength pref) str == pref)
+    else
+      substring 0 (stringLength pref) str == pref;
 
   /**
     Determine whether a string has given suffix.
@@ -846,13 +848,15 @@ rec {
     in
     # Before 23.05, paths would be copied to the store before converting them
     # to strings and comparing. This was surprising and confusing.
-    warnIf (isPath suffix)
-      ''
+    if isPath suffix then
+      warn ''
         lib.strings.hasSuffix: The first argument (${toString suffix}) is a path value, but only strings are supported.
             There is almost certainly a bug in the calling code, since this function always returns `false` in such a case.
             This function also copies the path to the Nix store, which may not be what you want.
             This behavior is deprecated and will throw an error in the future.''
-      (lenContent >= lenSuffix && substring (lenContent - lenSuffix) lenContent content == suffix);
+        (lenContent >= lenSuffix && substring (lenContent - lenSuffix) lenContent content == suffix)
+    else
+      lenContent >= lenSuffix && substring (lenContent - lenSuffix) lenContent content == suffix;
 
   /**
     Determine whether a string contains the given infix
@@ -892,13 +896,15 @@ rec {
     infix: content:
     # Before 23.05, paths would be copied to the store before converting them
     # to strings and comparing. This was surprising and confusing.
-    warnIf (isPath infix)
-      ''
+    if isPath infix then
+      warn ''
         lib.strings.hasInfix: The first argument (${toString infix}) is a path value, but only strings are supported.
             There is almost certainly a bug in the calling code, since this function always returns `false` in such a case.
             This function also copies the path to the Nix store, which may not be what you want.
             This behavior is deprecated and will throw an error in the future.''
-      (builtins.match ".*${escapeRegex infix}.*" "${content}" != null);
+        (builtins.match ".*${escapeRegex infix}.*" "${content}" != null)
+    else
+      builtins.match ".*${escapeRegex infix}.*" "${content}" != null;
 
   /**
     Convert a string `s` to a list of characters (i.e. singleton strings).
