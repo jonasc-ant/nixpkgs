@@ -1206,13 +1206,22 @@ rec {
             })
           ) finalises;
 
+          # Precompute the finalise-contributed defs once per record-merge
+          # rather than scanning `extras` per field — O(extras) vs
+          # O(fields × extras). zipAttrsWith preserves input-list order
+          # within each key, so mergeDefinitions sees identical input.
+          extrasByField = zipAttrsWith (
+            _: vs:
+            map (v: {
+              file = "finalise of record `${showOption loc}'";
+              value = v;
+            }) vs
+          ) extras;
+
           fieldDefs =
             n: field:
             (byField.${n} or [ ])
-            ++ map (e: {
-              file = "finalise of record `${showOption loc}'";
-              value = e.${n};
-            }) (builtins.filter (e: e ? ${n}) extras)
+            ++ (extrasByField.${n} or [ ])
             ++ lib.optional (field ? default) {
               file = "default of record field `${showOption (loc ++ [ n ])}'";
               value = lib.mkOptionDefault field.default;
