@@ -1437,17 +1437,29 @@ let
 
   filterOverrides' =
     defs:
-    let
-      getPrio =
-        def: if def.value._type or "" == "override" then def.value.priority else defaultOverridePriority;
-      highestPrio = foldl' (prio: def: min (getPrio def) prio) 9999 defs;
-      strip =
-        def: if def.value._type or "" == "override" then def // { value = def.value.content; } else def;
-    in
-    {
-      values = map strip (filter (def: getPrio def == highestPrio) defs);
-      inherit highestPrio;
-    };
+    if length defs == 1 then
+      # Fast path: with a single def the fold/filter/map pipeline below
+      # is an algebraic identity. Compute the result directly.
+      let
+        d = head defs;
+        ov = d.value._type or "" == "override";
+      in
+      {
+        values = [ (if ov then d // { value = d.value.content; } else d) ];
+        highestPrio = if ov then d.value.priority else defaultOverridePriority;
+      }
+    else
+      let
+        getPrio =
+          def: if def.value._type or "" == "override" then def.value.priority else defaultOverridePriority;
+        highestPrio = foldl' (prio: def: min (getPrio def) prio) 9999 defs;
+        strip =
+          def: if def.value._type or "" == "override" then def // { value = def.value.content; } else def;
+      in
+      {
+        values = map strip (filter (def: getPrio def == highestPrio) defs);
+        inherit highestPrio;
+      };
 
   /**
     Sort a list of properties.  The sort priority of a property is
