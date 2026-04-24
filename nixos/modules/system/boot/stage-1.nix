@@ -708,20 +708,19 @@ in
     };
 
     fileSystems = mkOption {
-      type =
-        with lib.types;
-        attrsOf (submodule {
-          options.neededForBoot = mkOption {
-            default = false;
-            type = types.bool;
-            description = ''
-              If set, this file system will be mounted in the initial ramdisk.
-              Note that the file system will always be mounted in the initial
-              ramdisk if its mount point is one of the following:
-              ${concatStringsSep ", " (forEach utils.pathsNeededForBoot (i: "{file}`${i}`"))}.
-            '';
-          };
-        });
+      type = lib.types.attrsOf (lib.types.record {
+        declarations = [ ./stage-1.nix ];
+        fields.neededForBoot = mkOption {
+          default = false;
+          type = types.bool;
+          description = ''
+            If set, this file system will be mounted in the initial ramdisk.
+            Note that the file system will always be mounted in the initial
+            ramdisk if its mount point is one of the following:
+            ${concatStringsSep ", " (forEach utils.pathsNeededForBoot (i: "{file}`${i}`"))}.
+          '';
+        };
+      });
     };
 
   };

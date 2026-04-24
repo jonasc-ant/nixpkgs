@@ -25,9 +25,11 @@ let
 
   anyEncrypted = foldr (j: v: v || j.encrypted.enable) false encDevs;
 
-  encryptedFSOptions = {
-
-    options.encrypted = {
+  encryptedField = mkOption {
+    default = { };
+    type = types.record {
+      declarations = [ ./encrypted-devices.nix ];
+      fields = {
       enable = mkOption {
         default = false;
         type = types.bool;
@@ -64,6 +66,7 @@ let
           its requisite mounts are done.
         '';
       };
+      };
     };
   };
 in
@@ -72,10 +75,12 @@ in
 
   options = {
     fileSystems = mkOption {
-      type = with lib.types; attrsOf (submodule encryptedFSOptions);
+      type = lib.types.attrsOf (lib.types.record {
+        fields.encrypted = encryptedField;
+      });
     };
     swapDevices = mkOption {
-      type = with lib.types; listOf (submodule encryptedFSOptions);
+      type = lib.types.listOf (lib.types.submodule { options.encrypted = encryptedField; });
     };
   };
 

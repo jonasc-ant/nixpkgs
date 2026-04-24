@@ -72,11 +72,9 @@ let
     s: isNonEmpty s && (builtins.match ".+/" s) == null
   );
 
-  coreFileSystemOpts =
-    { name, config, ... }:
-    {
+  fsDecl = [ ./filesystems.nix ];
 
-      options = {
+  coreFileSystemFields = {
         enable = mkEnableOption "the filesystem mount" // {
           default = true;
         };
@@ -84,7 +82,7 @@ let
         mountPoint = mkOption {
           example = "/mnt/usb";
           type = nonEmptyWithoutTrailingSlash;
-          default = name;
+          defaultText = literalExpression "‹name›";
           description = ''
             Location where the file system will be mounted.
 
@@ -92,15 +90,21 @@ let
           '';
         };
 
-        stratis.poolUuid = mkOption {
-          type = types.uniq (types.nullOr types.str);
-          description = ''
-            UUID of the stratis pool that the fs is located in
+        stratis = mkOption {
+          default = { };
+          type = types.record {
+            declarations = fsDecl;
+            fields.poolUuid = mkOption {
+              type = types.uniq (types.nullOr types.str);
+              description = ''
+                UUID of the stratis pool that the fs is located in
 
-            This is only relevant if you are using [stratis](https://stratis-storage.github.io/).
-          '';
-          example = "04c68063-90a5-4235-b9dd-6180098a20d9";
-          default = null;
+                This is only relevant if you are using [stratis](https://stratis-storage.github.io/).
+              '';
+              example = "04c68063-90a5-4235-b9dd-6180098a20d9";
+              default = null;
+            };
+          };
         };
 
         device = mkOption {
@@ -164,19 +168,16 @@ let
           '';
         };
 
-      };
+  };
 
-      config = {
-        device = mkIf (elem config.fsType specialFSTypes) (mkDefault config.fsType);
-      };
-
+  coreFileSystemFinalise =
+    { name, self, ... }:
+    {
+      mountPoint = mkDefault name;
+      device = mkIf (elem self.fsType specialFSTypes) (mkDefault self.fsType);
     };
 
-  fileSystemOpts =
-    { config, ... }:
-    {
-
-      options = {
+  fileSystemFields = {
 
         label = mkOption {
           default = null;
@@ -224,25 +225,25 @@ let
           description = "Disable running fsck on this filesystem.";
         };
 
-      };
+  };
 
-      config.device = mkIf (config.label != null) (mkDefault "/dev/disk/by-label/${escape config.label}");
-
-      config.options =
-        let
-          inInitrd = utils.fsNeededForBoot config;
-        in
-        mkMerge [
-          (mkIf config.autoResize [ "x-systemd.growfs" ])
-          (mkIf config.autoFormat [ "x-systemd.makefs" ])
-          (mkIf (utils.fsNeededForBoot config) [ "x-initrd.mount" ])
-          (mkIf
-            # With scripted stage 1, depends is implemented by sorting 'config.system.build.fileSystems'
-            (lib.length config.depends > 0 && (inInitrd -> moduleArgs.config.boot.initrd.systemd.enable))
-            (map (x: "x-systemd.requires-mounts-for=${optionalString inInitrd "/sysroot"}${x}") config.depends)
-          )
-        ];
-
+  fileSystemFinalise =
+    { self, ... }:
+    let
+      inInitrd = utils.fsNeededForBoot self;
+    in
+    {
+      device = mkIf (self.label != null) (mkDefault "/dev/disk/by-label/${escape self.label}");
+      options = mkMerge [
+        (mkIf self.autoResize [ "x-systemd.growfs" ])
+        (mkIf self.autoFormat [ "x-systemd.makefs" ])
+        (mkIf inInitrd [ "x-initrd.mount" ])
+        (mkIf
+          # With scripted stage 1, depends is implemented by sorting 'config.system.build.fileSystems'
+          (lib.length self.depends > 0 && (inInitrd -> moduleArgs.config.boot.initrd.systemd.enable))
+          (map (x: "x-systemd.requires-mounts-for=${optionalString inInitrd "/sysroot"}${x}") self.depends)
+        )
+      ];
     };
 
   # Makes sequence of `specialMount device mountPoint options fsType` commands.
@@ -344,12 +345,14 @@ in
           "/bigdisk".label = "bigdisk";
         }
       '';
-      type = types.attrsOf (
-        types.submodule [
-          coreFileSystemOpts
-          fileSystemOpts
-        ]
-      );
+      type = types.attrsOf (types.record {
+        declarations = fsDecl;
+        fields = coreFileSystemFields // fileSystemFields;
+        finalise = [
+          coreFileSystemFinalise
+          fileSystemFinalise
+        ];
+      });
       apply = lib.filterAttrs (_: fs: fs.enable);
       description = ''
         The file systems to be mounted.  It must include an entry for
@@ -393,7 +396,11 @@ in
 
     boot.specialFileSystems = mkOption {
       default = { };
-      type = types.attrsOf (types.submodule coreFileSystemOpts);
+      type = types.attrsOf (types.record {
+        declarations = fsDecl;
+        fields = coreFileSystemFields;
+        finalise = coreFileSystemFinalise;
+      });
       apply = lib.filterAttrs (_: fs: fs.enable);
       internal = true;
       description = ''

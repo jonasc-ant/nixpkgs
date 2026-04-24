@@ -48,13 +48,11 @@ let
       };
     };
 
-  overlayOpts =
-    {
-      config,
-      ...
-    }:
-    {
-      options.overlay = {
+  overlayField = lib.mkOption {
+    default = { };
+    type = lib.types.record {
+      declarations = [ ./overlayfs.nix ];
+      fields = {
         lowerdir = lib.mkOption {
           type = with lib.types; nullOr (nonEmptyListOf (either str pathInStore));
           default = null;
@@ -109,34 +107,37 @@ let
           '';
         };
       };
+    };
+  };
 
-      config = lib.mkIf (config.overlay.lowerdir != null) {
-        fsType = "overlay";
-        device = lib.mkDefault "overlay";
-        depends = map (x: "${x}") (
-          config.overlay.lowerdir
-          ++ lib.optionals (config.overlay.upperdir != null) [
-            config.overlay.upperdir
-            config.overlay.workdir
-          ]
-        );
+  overlayFinalise =
+    { self, ... }:
+    lib.mkIf (self.overlay.lowerdir != null) {
+      fsType = "overlay";
+      device = lib.mkDefault "overlay";
+      depends = map (x: "${x}") (
+        self.overlay.lowerdir
+        ++ lib.optionals (self.overlay.upperdir != null) [
+          self.overlay.upperdir
+          self.overlay.workdir
+        ]
+      );
 
-        options =
-          let
-            prefix = sysrootPrefix config;
+      options =
+        let
+          prefix = sysrootPrefix self;
 
-            lowerdir = map (s: prefix + s) config.overlay.lowerdir;
-            upperdir = prefix + config.overlay.upperdir;
-            workdir = prefix + config.overlay.workdir;
-          in
-          [
-            "lowerdir=${lib.concatStringsSep ":" lowerdir}"
-          ]
-          ++ lib.optionals (config.overlay.upperdir != null) [
-            "upperdir=${upperdir}"
-            "workdir=${workdir}"
-          ];
-      };
+          lowerdir = map (s: prefix + s) self.overlay.lowerdir;
+          upperdir = prefix + self.overlay.upperdir;
+          workdir = prefix + self.overlay.workdir;
+        in
+        [
+          "lowerdir=${lib.concatStringsSep ":" lowerdir}"
+        ]
+        ++ lib.optionals (self.overlay.upperdir != null) [
+          "upperdir=${upperdir}"
+          "workdir=${workdir}"
+        ];
     };
 in
 
@@ -146,7 +147,10 @@ in
 
     # Merge the overlay options into the fileSystems option.
     fileSystems = lib.mkOption {
-      type = lib.types.attrsOf (lib.types.submodule [ overlayOpts ]);
+      type = lib.types.attrsOf (lib.types.record {
+        fields.overlay = overlayField;
+        finalise = overlayFinalise;
+      });
     };
 
   };
