@@ -140,13 +140,27 @@ let
       # forcing a re-merge on those would double the merge cost and hide
       # the call-count delta this prototype exists to measure.
       byPrefix = specialArgs._byPrefix or { };
+      # Prefix-match a definition path against byPrefix keys. Keys may be
+      # 2-, 3- or 4-component dotted strings ("services.foo",
+      # "services.gnome.rygel", "services.xserver.windowManager.xmonad");
+      # a definition at any depth ≥ the key length is covered. Checks are
+      # ordered shortest-first so the common 2-comp hit short-circuits.
       coversDefn =
         if byPrefix == { } then
           _: false
         else
           def:
-          length def.prefix >= 2
-          && byPrefix ? ${head def.prefix + "." + builtins.elemAt def.prefix 1};
+          let
+            p = def.prefix;
+            n = length p;
+            k2 = head p + "." + builtins.elemAt p 1;
+            k3 = k2 + "." + builtins.elemAt p 2;
+          in
+          n >= 2
+          && (byPrefix ? ${k2}
+              || (n >= 3
+                  && (byPrefix ? ${k3}
+                      || (n >= 4 && byPrefix ? ${k3 + "." + builtins.elemAt p 3}))));
 
       # This internal module declare internal options under the `_module'
       # attribute.  These options are fragile, as they are used by the

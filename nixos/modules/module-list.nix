@@ -6,6 +6,10 @@ let
   # The end-state replaces this hand-written map with a readDir over
   # nixos/modules/by-prefix/ — see backlog/p2-h12.
   byPrefix = {
+    "boot.plymouth"                                = ./system/boot/plymouth.nix;
+    "boot.plymouth.tpm2-totp"                      = ./system/boot/plymouth-tpm2-totp.nix;
+    "documentation.man.man-db"                     = ./misc/man-db.nix;
+    "documentation.man.mandoc"                     = ./misc/mandoc.nix;
     "hardware.acpilight"                          = ./hardware/acpilight.nix;
     "hardware.apple"                              = ./hardware/apple-touchbar.nix;
     "hardware.bladeRF"                            = ./hardware/bladeRF.nix;
@@ -14,6 +18,7 @@ let
     "hardware.bumblebee"                          = ./hardware/video/bumblebee.nix;
     "hardware.ckb-next"                           = ./hardware/ckb-next.nix;
     "hardware.coral"                              = ./hardware/coral.nix;
+    "hardware.cpu.x86"                             = ./hardware/cpu/x86-msr.nix;
     "hardware.decklink"                           = ./hardware/decklink.nix;
     "hardware.digitalbitbox"                      = ./hardware/digitalbitbox.nix;
     "hardware.facetimehd"                         = ./hardware/video/webcam/facetimehd.nix;
@@ -29,6 +34,10 @@ let
     "hardware.inputmodule"                        = ./hardware/inputmodule.nix;
     "hardware.intel-gpu-tools"                    = ./hardware/video/intel-gpu-tools.nix;
     "hardware.ipu6"                               = ./hardware/video/webcam/ipu6.nix;
+    "hardware.keyboard.qmk"                        = ./hardware/keyboard/qmk.nix;
+    "hardware.keyboard.teck"                       = ./hardware/keyboard/teck.nix;
+    "hardware.keyboard.uhk"                        = ./hardware/keyboard/uhk.nix;
+    "hardware.keyboard.zsa"                        = ./hardware/keyboard/zsa.nix;
     "hardware.kryoflux"                           = ./hardware/kryoflux.nix;
     "hardware.ksm"                                = ./hardware/ksm.nix;
     "hardware.ledger"                             = ./hardware/ledger.nix;
@@ -47,7 +56,13 @@ let
     "hardware.pcmcia"                             = ./hardware/pcmcia.nix;
     "hardware.raid"                               = ./hardware/raid/hpsa.nix;
     "hardware.saleae-logic"                       = ./hardware/saleae-logic.nix;
+    "hardware.sane"                                = ./services/hardware/sane.nix;
+    "hardware.sane.brscan4"                        = ./services/hardware/sane_extra_backends/brscan4.nix;
+    "hardware.sane.brscan5"                        = ./services/hardware/sane_extra_backends/brscan5.nix;
+    "hardware.sane.dsseries"                       = ./services/hardware/sane_extra_backends/dsseries.nix;
     "hardware.sata"                               = ./hardware/sata.nix;
+    "hardware.sensor.hddtemp"                      = ./hardware/sensor/hddtemp.nix;
+    "hardware.sensor.iio"                          = ./hardware/sensor/iio.nix;
     "hardware.sheep_net"                          = ./hardware/sheep-net.nix;
     "hardware.steam-hardware"                     = ./hardware/steam-hardware.nix;
     "hardware.system76"                           = ./hardware/system-76.nix;
@@ -59,8 +74,14 @@ let
     "hardware.usbStorage"                         = ./hardware/usb-storage.nix;
     "hardware.wooting"                            = ./hardware/wooting.nix;
     "hardware.xone"                               = ./hardware/xone.nix;
-    "hardware.xpadneo"                            = ./hardware/xpadneo.nix;
     "hardware.xpad-noone"                         = ./hardware/xpad-noone.nix;
+    "hardware.xpadneo"                            = ./hardware/xpadneo.nix;
+    "i18n.inputMethod.fcitx5"                      = ./i18n/input-method/fcitx5.nix;
+    "i18n.inputMethod.ibus"                        = ./i18n/input-method/ibus.nix;
+    "i18n.inputMethod.kime"                        = ./i18n/input-method/kime.nix;
+    "i18n.inputMethod.uim"                         = ./i18n/input-method/uim.nix;
+    "networking.wireless.athUserRegulatoryDomain"  = ./hardware/network/ath-user-regd.nix;
+    "networking.wireless.iwd"                      = ./services/networking/iwd.nix;
     "programs._1password"                        = ./programs/_1password.nix;
     "programs._1password-gui"                    = ./programs/_1password-gui.nix;
     "programs.alvr"                              = ./programs/alvr.nix;
@@ -209,12 +230,18 @@ let
     "programs.xfs_quota"                         = ./programs/xfs_quota.nix;
     "programs.xonsh"                             = ./programs/xonsh.nix;
     "programs.xppen"                             = ./programs/xppen.nix;
+    "programs.xscreensaver"                        = ./programs/xscreensaver/xscreensaver.nix;
+    "programs.xscreensaver.sonar"                  = ./programs/xscreensaver/sonar.nix;
     "programs.xss-lock"                          = ./programs/xss-lock.nix;
     "programs.yazi"                              = ./programs/yazi.nix;
     "programs.yubikey-manager"                   = ./programs/yubikey-manager.nix;
     "programs.zmap"                              = ./programs/zmap.nix;
     "programs.zoom-us"                           = ./programs/zoom-us.nix;
-    "services.SystemdJournal2Gelf"               = ./services/logging/SystemdJournal2Gelf.nix;
+    "programs.zsh"                                 = ./programs/zsh/zsh.nix;
+    "programs.zsh.autosuggestions"                 = ./programs/zsh/zsh-autosuggestions.nix;
+    "programs.zsh.ohMyZsh"                         = ./programs/zsh/oh-my-zsh.nix;
+    "programs.zsh.syntaxHighlighting"              = ./programs/zsh/zsh-syntax-highlighting.nix;
+    "programs.zsh.zsh-autoenv"                     = ./programs/zsh/zsh-autoenv.nix;
     "services._3proxy"                           = ./services/networking/3proxy.nix;
     "services.a2boot"                            = ./services/network-filesystems/a2boot.nix;
     "services.acme-dns"                          = ./services/networking/acme-dns.nix;
@@ -266,6 +293,8 @@ let
     "services.autosuspend"                       = ./services/misc/autosuspend.nix;
     "services.autotierfs"                        = ./services/autotierfs.nix;
     "services.awstats"                           = ./services/logging/awstats.nix;
+    "services.ax25.axlisten"                       = ./services/networking/ax25/axlisten.nix;
+    "services.ax25.axports"                        = ./services/networking/ax25/axports.nix;
     "services.ayatana-indicators"                = ./services/desktops/ayatana-indicators.nix;
     "services.babeld"                            = ./services/networking/babeld.nix;
     "services.bacula-fd"                         = ./services/backup/bacula.nix;
@@ -279,6 +308,8 @@ let
     "services.below"                             = ./services/monitoring/below.nix;
     "services.bentopdf"                          = ./services/web-apps/bentopdf.nix;
     "services.bepasty"                           = ./services/misc/bepasty.nix;
+    "services.beszel.agent"                        = ./services/monitoring/beszel-agent.nix;
+    "services.beszel.hub"                          = ./services/monitoring/beszel-hub.nix;
     "services.biboumi"                           = ./services/networking/biboumi.nix;
     "services.bind"                              = ./services/networking/bind.nix;
     "services.bird"                              = ./services/networking/bird.nix;
@@ -396,6 +427,13 @@ let
     "services.dgraph"                            = ./services/databases/dgraph.nix;
     "services.diod"                              = ./services/network-filesystems/diod.nix;
     "services.discourse"                         = ./services/web-apps/discourse.nix;
+    "services.displayManager.cosmic-greeter"       = ./services/display-managers/cosmic-greeter.nix;
+    "services.displayManager.dms-greeter"          = ./services/display-managers/dms-greeter.nix;
+    "services.displayManager.gdm"                  = ./services/display-managers/gdm.nix;
+    "services.displayManager.lemurs"               = ./services/display-managers/lemurs.nix;
+    "services.displayManager.ly"                   = ./services/display-managers/ly.nix;
+    "services.displayManager.plasma-login-manager" = ./services/display-managers/plasma-login-manager.nix;
+    "services.displayManager.sddm"                 = ./services/display-managers/sddm.nix;
     "services.distccd"                           = ./services/development/distccd.nix;
     "services.dnscache"                          = ./services/networking/dnscache.nix;
     "services.dnscrypt-proxy"                    = ./services/networking/dnscrypt-proxy.nix;
@@ -476,6 +514,11 @@ let
     "services.firefly-iii-data-importer"         = ./services/web-apps/firefly-iii-data-importer.nix;
     "services.firefox-syncserver"                = ./services/networking/firefox-syncserver.nix;
     "services.fireqos"                           = ./services/networking/fireqos.nix;
+    "services.firezone.gateway"                    = ./services/networking/firezone/gateway.nix;
+    "services.firezone.gui-client"                 = ./services/networking/firezone/gui-client.nix;
+    "services.firezone.headless-client"            = ./services/networking/firezone/headless-client.nix;
+    "services.firezone.relay"                      = ./services/networking/firezone/relay.nix;
+    "services.firezone.server"                     = ./services/networking/firezone/server.nix;
     "services.flannel"                           = ./services/networking/flannel.nix;
     "services.flaresolverr"                      = ./services/misc/flaresolverr.nix;
     "services.flarum"                            = ./services/web-apps/flarum.nix;
@@ -524,6 +567,22 @@ let
     "services.glpiAgent"                         = ./services/monitoring/glpi-agent.nix;
     "services.glusterfs"                         = ./services/network-filesystems/glusterfs.nix;
     "services.gmediarender"                      = ./services/audio/gmediarender.nix;
+    "services.gnome.evolution-data-server"         = ./services/desktops/gnome/evolution-data-server.nix;
+    "services.gnome.gcr-ssh-agent"                 = ./services/desktops/gnome/gcr-ssh-agent.nix;
+    "services.gnome.glib-networking"               = ./services/desktops/gnome/glib-networking.nix;
+    "services.gnome.gnome-browser-connector"       = ./services/desktops/gnome/gnome-browser-connector.nix;
+    "services.gnome.gnome-initial-setup"           = ./services/desktops/gnome/gnome-initial-setup.nix;
+    "services.gnome.gnome-keyring"                 = ./services/desktops/gnome/gnome-keyring.nix;
+    "services.gnome.gnome-online-accounts"         = ./services/desktops/gnome/gnome-online-accounts.nix;
+    "services.gnome.gnome-online-miners"           = ./services/desktops/gnome/gnome-online-miners.nix;
+    "services.gnome.gnome-remote-desktop"          = ./services/desktops/gnome/gnome-remote-desktop.nix;
+    "services.gnome.gnome-settings-daemon"         = ./services/desktops/gnome/gnome-settings-daemon.nix;
+    "services.gnome.gnome-software"                = ./services/desktops/gnome/gnome-software.nix;
+    "services.gnome.gnome-user-share"              = ./services/desktops/gnome/gnome-user-share.nix;
+    "services.gnome.localsearch"                   = ./services/desktops/gnome/localsearch.nix;
+    "services.gnome.rygel"                         = ./services/desktops/gnome/rygel.nix;
+    "services.gnome.sushi"                         = ./services/desktops/gnome/sushi.nix;
+    "services.gnome.tinysparql"                    = ./services/desktops/gnome/tinysparql.nix;
     "services.gns3-server"                       = ./services/networking/gns3-server.nix;
     "services.gnunet"                            = ./services/networking/gnunet.nix;
     "services.go-autoconfig"                     = ./services/networking/go-autoconfig.nix;
@@ -565,6 +624,12 @@ let
     "services.handheld-daemon"                   = ./services/hardware/handheld-daemon.nix;
     "services.hans"                              = ./services/networking/hans.nix;
     "services.haproxy"                           = ./services/networking/haproxy.nix;
+    "services.hardware.argonone"                   = ./services/hardware/argonone.nix;
+    "services.hardware.bolt"                       = ./services/hardware/bolt.nix;
+    "services.hardware.deepcool-digital-linux"     = ./services/hardware/deepcool-digital-linux.nix;
+    "services.hardware.dell-bios-fan-control"      = ./services/hardware/dell-bios-fan-control.nix;
+    "services.hardware.openrgb"                    = ./services/hardware/openrgb.nix;
+    "services.hardware.pommed"                     = ./services/hardware/pommed.nix;
     "services.harmonia"                          = ./services/networking/harmonia.nix;
     "services.haste-server"                      = ./services/editors/haste.nix;
     "services.hatsu"                             = ./services/web-apps/hatsu.nix;
@@ -604,6 +669,10 @@ let
     "services.hyprwhspr-rs"                      = ./services/misc/hyprwhspr-rs.nix;
     "services.i2p"                               = ./services/networking/i2p.nix;
     "services.i2pd"                              = ./services/networking/i2pd.nix;
+    "services.icecream.daemon"                     = ./services/networking/icecream/daemon.nix;
+    "services.icecream.scheduler"                  = ./services/networking/icecream/scheduler.nix;
+    "services.icingaweb2"                          = ./services/web-apps/icingaweb2/icingaweb2.nix;
+    "services.icingaweb2.modules"                  = ./services/web-apps/icingaweb2/module-monitoring.nix;
     "services.ifm"                               = ./services/web-apps/ifm.nix;
     "services.ihaskell"                          = ./services/misc/ihaskell.nix;
     "services.iio-niri"                          = ./services/misc/iio-niri.nix;
@@ -638,6 +707,8 @@ let
     "services.jackett"                           = ./services/misc/jackett.nix;
     "services.jboss"                             = ./services/web-servers/jboss/default.nix;
     "services.jellyfin"                          = ./services/misc/jellyfin.nix;
+    "services.jenkins"                             = ./services/continuous-integration/jenkins/default.nix;
+    "services.jenkins.jobBuilder"                  = ./services/continuous-integration/jenkins/job-builder.nix;
     "services.jenkinsSlave"                      = ./services/continuous-integration/jenkins/slave.nix;
     "services.jibri"                             = ./services/networking/jibri/default.nix;
     "services.jicofo"                            = ./services/networking/jicofo.nix;
@@ -649,6 +720,9 @@ let
     "services.jmusicbot"                         = ./services/audio/jmusicbot.nix;
     "services.jotta-cli"                         = ./services/networking/jotta-cli.nix;
     "services.journalbeat"                       = ./services/logging/journalbeat.nix;
+    "services.journald.gateway"                    = ./system/boot/systemd/journald-gateway.nix;
+    "services.journald.remote"                     = ./system/boot/systemd/journald-remote.nix;
+    "services.journald.upload"                     = ./system/boot/systemd/journald-upload.nix;
     "services.journaldriver"                     = ./services/logging/journaldriver.nix;
     "services.journalwatch"                      = ./services/logging/journalwatch.nix;
     "services.joycond"                           = ./services/hardware/joycond.nix;
@@ -678,6 +752,16 @@ let
     "services.komodo-periphery"                  = ./services/admin/komodo-periphery.nix;
     "services.kresd"                             = ./services/networking/kresd.nix;
     "services.kthxbye"                           = ./services/monitoring/kthxbye.nix;
+    "services.kubernetes"                          = ./services/cluster/kubernetes/default.nix;
+    "services.kubernetes.addonManager"             = ./services/cluster/kubernetes/addon-manager.nix;
+    "services.kubernetes.addons"                   = ./services/cluster/kubernetes/addons/dns.nix;
+    "services.kubernetes.apiserver"                = ./services/cluster/kubernetes/apiserver.nix;
+    "services.kubernetes.controllerManager"        = ./services/cluster/kubernetes/controller-manager.nix;
+    "services.kubernetes.flannel"                  = ./services/cluster/kubernetes/flannel.nix;
+    "services.kubernetes.kubelet"                  = ./services/cluster/kubernetes/kubelet.nix;
+    "services.kubernetes.pki"                      = ./services/cluster/kubernetes/pki.nix;
+    "services.kubernetes.proxy"                    = ./services/cluster/kubernetes/proxy.nix;
+    "services.kubernetes.scheduler"                = ./services/cluster/kubernetes/scheduler.nix;
     "services.kubo"                              = ./services/network-filesystems/kubo.nix;
     "services.labgrid"                           = ./services/development/labgrid/coordinator.nix;
     "services.lact"                              = ./services/hardware/lact.nix;
@@ -691,6 +775,9 @@ let
     "services.leaps"                             = ./services/misc/leaps.nix;
     "services.legit"                             = ./services/networking/legit.nix;
     "services.lemmy"                             = ./services/web-apps/lemmy.nix;
+    "services.libeufin"                            = ./services/finance/libeufin/module.nix;
+    "services.libeufin.bank"                       = ./services/finance/libeufin/bank.nix;
+    "services.libeufin.nexus"                      = ./services/finance/libeufin/nexus.nix;
     "services.libinput"                          = ./services/hardware/libinput.nix;
     "services.librechat"                         = ./services/web-apps/librechat.nix;
     "services.librenms"                          = ./services/monitoring/librenms.nix;
@@ -701,6 +788,10 @@ let
     "services.lidarr"                            = ./services/misc/servarr/lidarr.nix;
     "services.lifecycled"                        = ./services/misc/lifecycled.nix;
     "services.lighthouse"                        = ./services/blockchain/ethereum/lighthouse.nix;
+    "services.lighttpd"                            = ./services/web-servers/lighttpd/default.nix;
+    "services.lighttpd.cgit"                       = ./services/web-servers/lighttpd/cgit.nix;
+    "services.lighttpd.collectd"                   = ./services/web-servers/lighttpd/collectd.nix;
+    "services.lighttpd.gitweb"                     = ./services/web-servers/lighttpd/gitweb.nix;
     "services.limesurvey"                        = ./services/web-apps/limesurvey.nix;
     "services.linkding"                          = ./services/web-apps/linkding.nix;
     "services.linkwarden"                        = ./services/web-apps/linkwarden.nix;
@@ -711,6 +802,8 @@ let
     "services.litellm"                           = ./services/misc/litellm.nix;
     "services.litestream"                        = ./services/network-filesystems/litestream/default.nix;
     "services.livebook"                          = ./services/development/livebook.nix;
+    "services.livekit"                             = ./services/networking/livekit.nix;
+    "services.livekit.ingress"                     = ./services/networking/livekit-ingress.nix;
     "services.lk-jwt-service"                    = ./services/matrix/lk-jwt-service.nix;
     "services.llama-cpp"                         = ./services/misc/llama-cpp.nix;
     "services.llama-swap"                        = ./services/networking/llama-swap.nix;
@@ -852,6 +945,9 @@ let
     "services.nexus"                             = ./services/web-apps/nexus.nix;
     "services.nezha-agent"                       = ./services/monitoring/nezha-agent.nix;
     "services.nginx"                             = ./services/web-servers/nginx/default.nix;
+    "services.nginx.gitweb"                        = ./services/web-servers/nginx/gitweb.nix;
+    "services.nginx.sso"                           = ./services/security/nginx-sso.nix;
+    "services.nginx.tailscaleAuth"                 = ./services/web-servers/nginx/tailscale-auth.nix;
     "services.ngircd"                            = ./services/networking/ngircd.nix;
     "services.nifi"                              = ./services/web-apps/nifi.nix;
     "services.nipap"                             = ./services/web-apps/nipap.nix;
@@ -908,6 +1004,8 @@ let
     "services.openvscode-server"                 = ./services/web-apps/openvscode-server.nix;
     "services.openwebrx"                         = ./services/web-apps/openwebrx.nix;
     "services.opkssh"                            = ./services/networking/opkssh/opkssh.nix;
+    "services.orangefs.client"                     = ./services/network-filesystems/orangefs/client.nix;
+    "services.orangefs.server"                     = ./services/network-filesystems/orangefs/server.nix;
     "services.orthanc"                           = ./services/misc/orthanc.nix;
     "services.osquery"                           = ./services/monitoring/osquery.nix;
     "services.osrm"                              = ./services/misc/osrm.nix;
@@ -988,6 +1086,15 @@ let
     "services.privatebin"                        = ./services/web-apps/privatebin.nix;
     "services.privoxy"                           = ./services/networking/privoxy.nix;
     "services.prometheus"                        = ./services/monitoring/prometheus/default.nix;
+    "services.prometheus.alertmanager"             = ./services/monitoring/prometheus/alertmanager.nix;
+    "services.prometheus.alertmanager-ntfy"        = ./services/monitoring/prometheus/alertmanager-ntfy.nix;
+    "services.prometheus.alertmanagerGotifyBridge" = ./services/monitoring/prometheus/alertmanager-gotify-bridge.nix;
+    "services.prometheus.alertmanagerIrcRelay"     = ./services/monitoring/prometheus/alertmanager-irc-relay.nix;
+    "services.prometheus.alertmanagerWebhookLogger"= ./services/monitoring/prometheus/alertmanager-webhook-logger.nix;
+    "services.prometheus.exporters"                = ./services/monitoring/prometheus/exporters.nix;
+    "services.prometheus.pushgateway"              = ./services/monitoring/prometheus/pushgateway.nix;
+    "services.prometheus.sachet"                   = ./services/monitoring/prometheus/sachet.nix;
+    "services.prometheus.xmpp-alerts"              = ./services/monitoring/prometheus/xmpp-alerts.nix;
     "services.prosody"                           = ./services/networking/prosody.nix;
     "services.prosody-filer"                     = ./services/web-apps/prosody-filer.nix;
     "services.protonmail-bridge"                 = ./services/mail/protonmail-bridge.nix;
@@ -1008,6 +1115,8 @@ let
     "services.radarr"                            = ./services/misc/servarr/radarr.nix;
     "services.radicale"                          = ./services/networking/radicale.nix;
     "services.radicle"                           = ./services/misc/radicle.nix;
+    "services.radicle.ci"                          = ./services/continuous-integration/radicle/ci-broker.nix;
+    "services.radicle.ci.adapters"                 = ./services/continuous-integration/radicle/adapters/native.nix;
     "services.radvd"                             = ./services/networking/radvd.nix;
     "services.ratbagd"                           = ./services/hardware/ratbagd.nix;
     "services.rathole"                           = ./services/networking/rathole.nix;
@@ -1060,12 +1169,20 @@ let
     "services.rustus"                            = ./services/web-servers/rustus.nix;
     "services.rutorrent"                         = ./services/web-apps/rutorrent.nix;
     "services.safeeyes"                          = ./services/misc/safeeyes.nix;
+    "services.salt.master"                         = ./services/admin/salt/master.nix;
+    "services.salt.minion"                         = ./services/admin/salt/minion.nix;
     "services.samba-wsdd"                        = ./services/network-filesystems/samba-wsdd.nix;
     "services.sanoid"                            = ./services/backup/sanoid.nix;
     "services.saslauthd"                         = ./services/system/saslauthd.nix;
     "services.saunafs"                           = ./services/network-filesystems/saunafs.nix;
     "services.scanservjs"                        = ./services/hardware/scanservjs.nix;
     "services.schleuder"                         = ./services/mail/schleuder.nix;
+    "services.scion"                               = ./services/networking/scion/scion.nix;
+    "services.scion.scion-control"                 = ./services/networking/scion/scion-control.nix;
+    "services.scion.scion-daemon"                  = ./services/networking/scion/scion-daemon.nix;
+    "services.scion.scion-dispatcher"              = ./services/networking/scion/scion-dispatcher.nix;
+    "services.scion.scion-ip-gateway"              = ./services/networking/scion/scion-ip-gateway.nix;
+    "services.scion.scion-router"                  = ./services/networking/scion/scion-router.nix;
     "services.scollector"                        = ./services/monitoring/scollector.nix;
     "services.scrutiny"                          = ./services/monitoring/scrutiny.nix;
     "services.scx"                               = ./services/scheduling/scx.nix;
@@ -1125,6 +1242,8 @@ let
     "services.spice-autorandr"                   = ./services/misc/spice-autorandr.nix;
     "services.spice-webdavd"                     = ./services/misc/spice-webdavd.nix;
     "services.spiped"                            = ./services/networking/spiped.nix;
+    "services.spire.agent"                         = ./services/security/spire/agent.nix;
+    "services.spire.server"                        = ./services/security/spire/server.nix;
     "services.spoolman"                          = ./services/misc/spoolman.nix;
     "services.spotifyd"                          = ./services/audio/spotifyd.nix;
     "services.squeezelite"                       = ./services/audio/squeezelite.nix;
@@ -1164,10 +1283,17 @@ let
     "services.system76-scheduler"                = ./services/desktops/system76-scheduler.nix;
     "services.systembus-notify"                  = ./services/system/systembus-notify.nix;
     "services.systemd-lock-handler"              = ./services/system/systemd-lock-handler.nix;
+    "services.SystemdJournal2Gelf"               = ./services/logging/SystemdJournal2Gelf.nix;
     "services.szurubooru"                        = ./services/web-apps/szurubooru.nix;
     "services.tabby"                             = ./services/misc/tabby.nix;
     "services.tabbyapi"                          = ./services/web-apps/tabbyapi.nix;
     "services.tahoe"                             = ./services/network-filesystems/tahoe.nix;
+    "services.tailscale"                           = ./services/networking/tailscale.nix;
+    "services.tailscale.derper"                    = ./services/networking/tailscale-derper.nix;
+    "services.tailscale.serve"                     = ./services/networking/tailscale-serve.nix;
+    "services.taler"                               = ./services/finance/taler/module.nix;
+    "services.taler.exchange"                      = ./services/finance/taler/exchange.nix;
+    "services.taler.merchant"                      = ./services/finance/taler/merchant.nix;
     "services.tandoor-recipes"                   = ./services/misc/tandoor-recipes.nix;
     "services.tang"                              = ./services/security/tang.nix;
     "services.target"                            = ./services/networking/iscsi/target.nix;
@@ -1205,6 +1331,10 @@ let
     "services.todesk"                            = ./services/monitoring/todesk.nix;
     "services.tomcat"                            = ./services/web-servers/tomcat.nix;
     "services.tor"                               = ./services/security/tor.nix;
+    "services.tor.torsocks"                        = ./services/security/torsocks.nix;
+    "services.tor.tsocks"                          = ./services/security/torify.nix;
+    "services.torque.mom"                          = ./services/computing/torque/mom.nix;
+    "services.torque.server"                       = ./services/computing/torque/server.nix;
     "services.torrentstream"                     = ./services/torrent/torrentstream.nix;
     "services.tox-node"                          = ./services/networking/tox-node.nix;
     "services.toxBootstrapd"                     = ./services/networking/tox-bootstrapd.nix;
@@ -1295,6 +1425,10 @@ let
     "services.workout-tracker"                   = ./services/misc/workout-tracker.nix;
     "services.writefreely"                       = ./services/web-apps/writefreely.nix;
     "services.wstunnel"                          = ./services/networking/wstunnel.nix;
+    "services.wyoming.faster-whisper"              = ./services/home-automation/wyoming/faster-whisper.nix;
+    "services.wyoming.openwakeword"                = ./services/home-automation/wyoming/openwakeword.nix;
+    "services.wyoming.piper"                       = ./services/home-automation/wyoming/piper.nix;
+    "services.wyoming.satellite"                   = ./services/home-automation/wyoming/satellite.nix;
     "services.x2goserver"                        = ./services/networking/x2goserver.nix;
     "services.xandikos"                          = ./services/networking/xandikos.nix;
     "services.xbanish"                           = ./services/x11/xbanish.nix;
@@ -1303,6 +1437,28 @@ let
     "services.xmrig"                             = ./services/misc/xmrig.nix;
     "services.xonotic"                           = ./services/games/xonotic.nix;
     "services.xrdp"                              = ./services/networking/xrdp.nix;
+    "services.xserver.cmt"                         = ./services/x11/hardware/cmt.nix;
+    "services.xserver.digimend"                    = ./services/x11/hardware/digimend.nix;
+    "services.xserver.displayManager.startx"       = ./services/x11/display-managers/startx.nix;
+    "services.xserver.displayManager.sx"           = ./services/x11/display-managers/sx.nix;
+    "services.xserver.displayManager.xpra"         = ./services/x11/display-managers/xpra.nix;
+    "services.xserver.imwheel"                     = ./services/x11/imwheel.nix;
+    "services.xserver.synaptics"                   = ./services/x11/hardware/synaptics.nix;
+    "services.xserver.wacom"                       = ./services/x11/hardware/wacom.nix;
+    "services.xserver.windowManager.awesome"       = ./services/x11/window-managers/awesome.nix;
+    "services.xserver.windowManager.bspwm"         = ./services/x11/window-managers/bspwm.nix;
+    "services.xserver.windowManager.clfswm"        = ./services/x11/window-managers/clfswm.nix;
+    "services.xserver.windowManager.fluxbox"       = ./services/x11/window-managers/fluxbox.nix;
+    "services.xserver.windowManager.icewm"         = ./services/x11/window-managers/icewm.nix;
+    "services.xserver.windowManager.katriawm"      = ./services/x11/window-managers/katriawm.nix;
+    "services.xserver.windowManager.metacity"      = ./services/x11/window-managers/metacity.nix;
+    "services.xserver.windowManager.nimdow"        = ./services/x11/window-managers/nimdow.nix;
+    "services.xserver.windowManager.oxwm"          = ./services/x11/window-managers/oxwm.nix;
+    "services.xserver.windowManager.twm"           = ./services/x11/window-managers/twm.nix;
+    "services.xserver.windowManager.windowlab"     = ./services/x11/window-managers/windowlab.nix;
+    "services.xserver.windowManager.wmii"          = ./services/x11/window-managers/wmii.nix;
+    "services.xserver.windowManager.xmonad"        = ./services/x11/window-managers/xmonad.nix;
+    "services.xserver.xautolock"                   = ./services/x11/xautolock.nix;
     "services.xtreemfs"                          = ./services/network-filesystems/xtreemfs.nix;
     "services.yandex-disk"                       = ./services/network-filesystems/yandex-disk.nix;
     "services.yarr"                              = ./services/misc/yarr.nix;
@@ -1337,13 +1493,24 @@ let
     "services.zwave-js-ui"                       = ./services/home-automation/zwave-js-ui.nix;
     "virtualisation.appvm"                        = ./virtualisation/appvm.nix;
     "virtualisation.cri-o"                        = ./virtualisation/cri-o.nix;
+    "virtualisation.docker.rootless"               = ./virtualisation/docker-rootless.nix;
     "virtualisation.hypervGuest"                  = ./virtualisation/hyperv-guest.nix;
+    "virtualisation.incus"                         = ./virtualisation/incus.nix;
+    "virtualisation.incus.agent"                   = ./virtualisation/incus-agent.nix;
     "virtualisation.kvmgt"                        = ./virtualisation/kvmgt.nix;
+    "virtualisation.lxc"                           = ./virtualisation/lxc.nix;
+    "virtualisation.lxc.lxcfs"                     = ./virtualisation/lxcfs.nix;
     "virtualisation.oci-containers"               = ./virtualisation/oci-containers.nix;
     "virtualisation.rosetta"                      = ./virtualisation/rosetta.nix;
     "virtualisation.spiceUSBRedirection"          = ./virtualisation/spice-usb-redirection.nix;
+    "virtualisation.virtualbox.guest"              = ./virtualisation/virtualbox-guest.nix;
+    "virtualisation.virtualbox.host"               = ./virtualisation/virtualbox-host.nix;
+    "virtualisation.vmware.guest"                  = ./virtualisation/vmware-guest.nix;
+    "virtualisation.vmware.host"                   = ./virtualisation/vmware-host.nix;
     "virtualisation.waydroid"                     = ./virtualisation/waydroid.nix;
     "virtualisation.xen"                          = ./virtualisation/xen-dom0.nix;
+    "xdg.portal.lxqt"                              = ./config/xdg/portals/lxqt.nix;
+    "xdg.portal.wlr"                               = ./config/xdg/portals/wlr.nix;
   };
   core = [
   # keep-sorted start case=no numeric=yes
@@ -1390,8 +1557,6 @@ let
   ./config/xdg/menus.nix
   ./config/xdg/mime.nix
   ./config/xdg/portal.nix
-  ./config/xdg/portals/lxqt.nix
-  ./config/xdg/portals/wlr.nix
   ./config/xdg/sounds.nix
   ./config/xdg/terminal-exec.nix
   ./config/zram.nix
@@ -1404,22 +1569,14 @@ let
   ./hardware/cpu/intel-microcode.nix
   ./hardware/cpu/intel-npu.nix
   ./hardware/cpu/intel-sgx.nix
-  ./hardware/cpu/x86-msr.nix
   ./hardware/device-tree.nix
   ./hardware/graphics.nix
   ./hardware/i2c.nix
-  ./hardware/keyboard/qmk.nix
-  ./hardware/keyboard/teck.nix
-  ./hardware/keyboard/uhk.nix
-  ./hardware/keyboard/zsa.nix
-  ./hardware/network/ath-user-regd.nix
   ./hardware/network/b43.nix
   ./hardware/network/eg25-manager.nix
   ./hardware/network/intel-2200bg.nix
   ./hardware/printers.nix
   ./hardware/rtl-sdr.nix
-  ./hardware/sensor/hddtemp.nix
-  ./hardware/sensor/iio.nix
   ./hardware/tuxedo-drivers.nix
   ./hardware/video/displaylink.nix
   ./hardware/video/nvidia.nix
@@ -1427,12 +1584,8 @@ let
   ./hardware/video/uvcvideo/default.nix
   ./hardware/video/virtualbox.nix
   ./i18n/input-method/default.nix
-  ./i18n/input-method/fcitx5.nix
   ./i18n/input-method/hime.nix
-  ./i18n/input-method/ibus.nix
-  ./i18n/input-method/kime.nix
   ./i18n/input-method/nabi.nix
-  ./i18n/input-method/uim.nix
   ./image/images.nix
   ./installer/tools/tools.nix
   ./misc/assertions.nix
@@ -1444,8 +1597,6 @@ let
   ./misc/label.nix
   ./misc/lib.nix
   ./misc/locate.nix
-  ./misc/man-db.nix
-  ./misc/mandoc.nix
   ./misc/meta.nix
   ./misc/nixops-autoluks.nix
   ./misc/nixpkgs-flake.nix
@@ -1514,17 +1665,10 @@ let
   ./programs/wayland/waybar.nix
   ./programs/wayland/wayfire.nix
   ./programs/xfconf.nix
-  ./programs/xscreensaver/sonar.nix
-  ./programs/xscreensaver/xscreensaver.nix
   ./programs/xwayland.nix
   ./programs/ydotool.nix
   ./programs/yubikey-touch-detector.nix
   ./programs/zoxide.nix
-  ./programs/zsh/oh-my-zsh.nix
-  ./programs/zsh/zsh-autoenv.nix
-  ./programs/zsh/zsh-autosuggestions.nix
-  ./programs/zsh/zsh-syntax-highlighting.nix
-  ./programs/zsh/zsh.nix
   ./rename.nix
   ./security/acme
   ./security/agnos.nix
@@ -1557,8 +1701,6 @@ let
   ./security/tpm2.nix
   ./security/wrappers/default.nix
   ./services/accessibility/orca.nix
-  ./services/admin/salt/master.nix
-  ./services/admin/salt/minion.nix
   ./services/audio/alsa.nix
   ./services/audio/goxlr-utility.nix
   ./services/audio/icecast.nix
@@ -1568,47 +1710,15 @@ let
   ./services/backup/restic-rest-server.nix
   ./services/backup/rsnapshot.nix
   ./services/backup/zfs-replication.nix
-  ./services/cluster/kubernetes/addon-manager.nix
-  ./services/cluster/kubernetes/addons/dns.nix
-  ./services/cluster/kubernetes/apiserver.nix
-  ./services/cluster/kubernetes/controller-manager.nix
-  ./services/cluster/kubernetes/default.nix
-  ./services/cluster/kubernetes/flannel.nix
-  ./services/cluster/kubernetes/kubelet.nix
-  ./services/cluster/kubernetes/pki.nix
-  ./services/cluster/kubernetes/proxy.nix
-  ./services/cluster/kubernetes/scheduler.nix
   ./services/cluster/rancher/default.nix
-  ./services/computing/torque/mom.nix
-  ./services/computing/torque/server.nix
   ./services/continuous-integration/github-runners.nix
   ./services/continuous-integration/hercules-ci-agent/default.nix
-  ./services/continuous-integration/jenkins/default.nix
-  ./services/continuous-integration/jenkins/job-builder.nix
-  ./services/continuous-integration/radicle/adapters/native.nix
-  ./services/continuous-integration/radicle/ci-broker.nix
   ./services/databases/etcd.nix
   ./services/desktops/accountsservice.nix
   ./services/desktops/blueman.nix
   ./services/desktops/dleyna.nix
   ./services/desktops/flatpak.nix
   ./services/desktops/gnome/at-spi2-core.nix
-  ./services/desktops/gnome/evolution-data-server.nix
-  ./services/desktops/gnome/gcr-ssh-agent.nix
-  ./services/desktops/gnome/glib-networking.nix
-  ./services/desktops/gnome/gnome-browser-connector.nix
-  ./services/desktops/gnome/gnome-initial-setup.nix
-  ./services/desktops/gnome/gnome-keyring.nix
-  ./services/desktops/gnome/gnome-online-accounts.nix
-  ./services/desktops/gnome/gnome-online-miners.nix
-  ./services/desktops/gnome/gnome-remote-desktop.nix
-  ./services/desktops/gnome/gnome-settings-daemon.nix
-  ./services/desktops/gnome/gnome-software.nix
-  ./services/desktops/gnome/gnome-user-share.nix
-  ./services/desktops/gnome/localsearch.nix
-  ./services/desktops/gnome/rygel.nix
-  ./services/desktops/gnome/sushi.nix
-  ./services/desktops/gnome/tinysparql.nix
   ./services/desktops/gvfs.nix
   ./services/desktops/malcontent.nix
   ./services/desktops/pipewire/pipewire.nix
@@ -1618,30 +1728,13 @@ let
   ./services/desktops/tumbler.nix
   ./services/desktops/zeitgeist.nix
   ./services/development/nixseparatedebuginfod2.nix
-  ./services/display-managers/cosmic-greeter.nix
   ./services/display-managers/default.nix
-  ./services/display-managers/dms-greeter.nix
-  ./services/display-managers/gdm.nix
   ./services/display-managers/generic.nix
   ./services/display-managers/greetd.nix
-  ./services/display-managers/lemurs.nix
-  ./services/display-managers/ly.nix
-  ./services/display-managers/plasma-login-manager.nix
-  ./services/display-managers/sddm.nix
-  ./services/finance/libeufin/bank.nix
-  ./services/finance/libeufin/module.nix
-  ./services/finance/libeufin/nexus.nix
-  ./services/finance/taler/exchange.nix
-  ./services/finance/taler/merchant.nix
-  ./services/finance/taler/module.nix
   ./services/games/quake3-server.nix
   ./services/hardware/actkbd.nix
   ./services/hardware/amdgpu.nix
-  ./services/hardware/argonone.nix
   ./services/hardware/bluetooth.nix
-  ./services/hardware/bolt.nix
-  ./services/hardware/deepcool-digital-linux.nix
-  ./services/hardware/dell-bios-fan-control.nix
   ./services/hardware/display.nix
   ./services/hardware/fancontrol.nix
   ./services/hardware/freefall.nix
@@ -1649,25 +1742,15 @@ let
   ./services/hardware/lcd.nix
   ./services/hardware/nvidia-container-toolkit
   ./services/hardware/nvidia-optimus.nix
-  ./services/hardware/openrgb.nix
   ./services/hardware/pcscd.nix
   ./services/hardware/pid-fan-controller.nix
-  ./services/hardware/pommed.nix
   ./services/hardware/power-profiles-daemon.nix
   ./services/hardware/rasdaemon.nix
-  ./services/hardware/sane.nix
-  ./services/hardware/sane_extra_backends/brscan4.nix
-  ./services/hardware/sane_extra_backends/brscan5.nix
-  ./services/hardware/sane_extra_backends/dsseries.nix
   ./services/hardware/spacenavd.nix
   ./services/hardware/tuxedo-rs.nix
   ./services/hardware/udev.nix
   ./services/hardware/udisks2.nix
   ./services/hardware/upower.nix
-  ./services/home-automation/wyoming/faster-whisper.nix
-  ./services/home-automation/wyoming/openwakeword.nix
-  ./services/home-automation/wyoming/piper.nix
-  ./services/home-automation/wyoming/satellite.nix
   ./services/logging/klogd.nix
   ./services/logging/rsyslogd.nix
   ./services/logging/syslog-ng.nix
@@ -1706,23 +1789,12 @@ let
   ./services/misc/tuxclocker.nix
   ./services/misc/uhub.nix
   ./services/monitoring/alloy.nix
-  ./services/monitoring/beszel-agent.nix
-  ./services/monitoring/beszel-hub.nix
   ./services/monitoring/cadvisor.nix
   ./services/monitoring/collectd.nix
   ./services/monitoring/das_watchdog.nix
   ./services/monitoring/do-agent.nix
   ./services/monitoring/fluent-bit.nix
   ./services/monitoring/ocsinventory-agent.nix
-  ./services/monitoring/prometheus/alertmanager-gotify-bridge.nix
-  ./services/monitoring/prometheus/alertmanager-irc-relay.nix
-  ./services/monitoring/prometheus/alertmanager-ntfy.nix
-  ./services/monitoring/prometheus/alertmanager-webhook-logger.nix
-  ./services/monitoring/prometheus/alertmanager.nix
-  ./services/monitoring/prometheus/exporters.nix
-  ./services/monitoring/prometheus/pushgateway.nix
-  ./services/monitoring/prometheus/sachet.nix
-  ./services/monitoring/prometheus/xmpp-alerts.nix
   ./services/monitoring/traccar.nix
   ./services/monitoring/tuptime.nix
   ./services/monitoring/unpoller.nix
@@ -1732,13 +1804,9 @@ let
   ./services/network-filesystems/nfsd.nix
   ./services/network-filesystems/openafs/client.nix
   ./services/network-filesystems/openafs/server.nix
-  ./services/network-filesystems/orangefs/client.nix
-  ./services/network-filesystems/orangefs/server.nix
   ./services/network-filesystems/samba.nix
   ./services/networking/atalkd.nix
   ./services/networking/avahi-daemon.nix
-  ./services/networking/ax25/axlisten.nix
-  ./services/networking/ax25/axports.nix
   ./services/networking/birdwatcher.nix
   ./services/networking/blocky.nix
   ./services/networking/cgit.nix
@@ -1752,23 +1820,13 @@ let
   ./services/networking/firewall-nftables.nix
   ./services/networking/firewall.nix
   ./services/networking/firewalld
-  ./services/networking/firezone/gateway.nix
-  ./services/networking/firezone/gui-client.nix
-  ./services/networking/firezone/headless-client.nix
-  ./services/networking/firezone/relay.nix
-  ./services/networking/firezone/server.nix
   ./services/networking/ghostunnel.nix
   ./services/networking/gokapi.nix
   ./services/networking/hylafax/default.nix
-  ./services/networking/icecream/daemon.nix
-  ./services/networking/icecream/scheduler.nix
   ./services/networking/ifstate.nix
   ./services/networking/iscsi/initiator.nix
   ./services/networking/iscsi/root-initiator.nix
-  ./services/networking/iwd.nix
   ./services/networking/jool.nix
-  ./services/networking/livekit-ingress.nix
-  ./services/networking/livekit.nix
   ./services/networking/lxd-image-server.nix
   ./services/networking/modemmanager.nix
   ./services/networking/mullvad-vpn.nix
@@ -1790,21 +1848,12 @@ let
   ./services/networking/rpcbind.nix
   ./services/networking/rxe.nix
   ./services/networking/sabnzbd
-  ./services/networking/scion/scion-control.nix
-  ./services/networking/scion/scion-daemon.nix
-  ./services/networking/scion/scion-dispatcher.nix
-  ./services/networking/scion/scion-ip-gateway.nix
-  ./services/networking/scion/scion-router.nix
-  ./services/networking/scion/scion.nix
   ./services/networking/ssh/sshd.nix
   ./services/networking/strongswan-swanctl/module.nix
   ./services/networking/strongswan.nix
   ./services/networking/supplicant.nix
   ./services/networking/syncthing-relay.nix
   ./services/networking/tailscale-auth.nix
-  ./services/networking/tailscale-derper.nix
-  ./services/networking/tailscale-serve.nix
-  ./services/networking/tailscale.nix
   ./services/networking/tcpcrypt.nix
   ./services/networking/tftpd.nix
   ./services/networking/ucarp.nix
@@ -1830,13 +1879,8 @@ let
   ./services/security/infnoise.nix
   ./services/security/intune.nix
   ./services/security/kanidm.nix
-  ./services/security/nginx-sso.nix
   ./services/security/oauth2-proxy-nginx.nix
   ./services/security/paretosecurity.nix
-  ./services/security/spire/agent.nix
-  ./services/security/spire/server.nix
-  ./services/security/torify.nix
-  ./services/security/torsocks.nix
   ./services/security/vault-agent.nix
   ./services/system/cachix-agent/default.nix
   ./services/system/cloud-init.nix
@@ -1851,21 +1895,13 @@ let
   ./services/web-apps/cook-cli.nix
   ./services/web-apps/fediwall.nix
   ./services/web-apps/goupile.nix
-  ./services/web-apps/icingaweb2/icingaweb2.nix
-  ./services/web-apps/icingaweb2/module-monitoring.nix
   ./services/web-apps/nextcloud-notify_push.nix
   ./services/web-apps/pgpkeyserver-lite.nix
   ./services/web-apps/porn-vault/default.nix
   ./services/web-apps/screego.nix
   ./services/web-servers/fcgiwrap.nix
   ./services/web-servers/keter
-  ./services/web-servers/lighttpd/cgit.nix
-  ./services/web-servers/lighttpd/collectd.nix
-  ./services/web-servers/lighttpd/default.nix
-  ./services/web-servers/lighttpd/gitweb.nix
   ./services/web-servers/molly-brown.nix
-  ./services/web-servers/nginx/gitweb.nix
-  ./services/web-servers/nginx/tailscale-auth.nix
   ./services/web-servers/phpfpm/default.nix
   ./services/web-servers/varnish/default.nix
   ./services/x11/colord.nix
@@ -1873,32 +1909,10 @@ let
   ./services/x11/display-managers/default.nix
   ./services/x11/display-managers/lightdm.nix
   ./services/x11/display-managers/slim.nix
-  ./services/x11/display-managers/startx.nix
-  ./services/x11/display-managers/sx.nix
-  ./services/x11/display-managers/xpra.nix
   ./services/x11/extra-layouts.nix
-  ./services/x11/hardware/cmt.nix
-  ./services/x11/hardware/digimend.nix
-  ./services/x11/hardware/synaptics.nix
-  ./services/x11/hardware/wacom.nix
-  ./services/x11/imwheel.nix
   ./services/x11/touchegg.nix
-  ./services/x11/window-managers/awesome.nix
-  ./services/x11/window-managers/bspwm.nix
-  ./services/x11/window-managers/clfswm.nix
   ./services/x11/window-managers/default.nix
-  ./services/x11/window-managers/fluxbox.nix
-  ./services/x11/window-managers/icewm.nix
-  ./services/x11/window-managers/katriawm.nix
-  ./services/x11/window-managers/metacity.nix
-  ./services/x11/window-managers/nimdow.nix
   ./services/x11/window-managers/none.nix
-  ./services/x11/window-managers/oxwm.nix
-  ./services/x11/window-managers/twm.nix
-  ./services/x11/window-managers/windowlab.nix
-  ./services/x11/window-managers/wmii.nix
-  ./services/x11/window-managers/xmonad.nix
-  ./services/x11/xautolock.nix
   ./services/x11/xscreensaver.nix
   ./services/x11/xserver.nix
   ./system/activation/activatable-system.nix
@@ -1934,8 +1948,6 @@ let
   ./system/boot/modprobe.nix
   ./system/boot/networkd.nix
   ./system/boot/nix-store-veritysetup.nix
-  ./system/boot/plymouth-tpm2-totp.nix
-  ./system/boot/plymouth.nix
   ./system/boot/resolved.nix
   ./system/boot/shutdown.nix
   ./system/boot/stage-1.nix
@@ -1948,9 +1960,6 @@ let
   ./system/boot/systemd/homed.nix
   ./system/boot/systemd/initrd-secrets.nix
   ./system/boot/systemd/initrd.nix
-  ./system/boot/systemd/journald-gateway.nix
-  ./system/boot/systemd/journald-remote.nix
-  ./system/boot/systemd/journald-upload.nix
   ./system/boot/systemd/journald.nix
   ./system/boot/systemd/logind.nix
   ./system/boot/systemd/nspawn.nix
@@ -2014,24 +2023,15 @@ let
   ./virtualisation/container-config.nix
   ./virtualisation/containerd.nix
   ./virtualisation/containers.nix
-  ./virtualisation/docker-rootless.nix
   ./virtualisation/docker.nix
   ./virtualisation/ecs-agent.nix
-  ./virtualisation/incus-agent.nix
-  ./virtualisation/incus.nix
   ./virtualisation/libvirtd.nix
-  ./virtualisation/lxc.nix
-  ./virtualisation/lxcfs.nix
   ./virtualisation/nixos-containers.nix
   ./virtualisation/oci-options.nix
   ./virtualisation/openstack-options.nix
   ./virtualisation/openvswitch.nix
   ./virtualisation/podman/default.nix
   ./virtualisation/qemu-guest-agent.nix
-  ./virtualisation/virtualbox-guest.nix
-  ./virtualisation/virtualbox-host.nix
-  ./virtualisation/vmware-guest.nix
-  ./virtualisation/vmware-host.nix
   ./virtualisation/waagent.nix
   ./virtualisation/xe-guest-utilities.nix
   # keep-sorted end
