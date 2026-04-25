@@ -29,13 +29,15 @@ rec {
           tests = lib.mapAttrs (_: f: f baseDrv) passthru.tests;
         };
     in
-    lib.extendDerivation validity.handled (
-      {
+    lib.customisation.extendDerivation' {
+      condition = validity.handled;
+      passthru = {
         inherit meta;
         passthru = passthru';
       }
-      // passthru'
-    ) baseDrv;
+      // passthru';
+      drv = baseDrv;
+    };
 
   writeTextFile =
     {

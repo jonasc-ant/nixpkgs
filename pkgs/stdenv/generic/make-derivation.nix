@@ -20,7 +20,6 @@ let
     concatStringsSep
     elem
     elemAt
-    extendDerivation
     filter
     filterAttrs
     head
@@ -40,6 +39,7 @@ let
     unique
     zipAttrsWith
     ;
+  inherit (lib.customisation) extendDerivation';
 
   inherit (import ../../build-support/lib/cmake.nix { inherit lib stdenv; }) makeCMakeFlags;
   inherit (import ../../build-support/lib/meson.nix { inherit lib stdenv; }) makeMesonFlags;
@@ -932,8 +932,10 @@ let
 
     in
 
-    extendDerivation validity.handled (
-      {
+    extendDerivation' {
+      condition = validity.handled;
+      drv = derivation (derivationArg // checkedEnv);
+      passthru = {
         # A derivation that always builds successfully and whose runtime
         # dependencies are the original derivations build time dependencies
         # This allows easy building and distributing of all derivations
@@ -987,8 +989,8 @@ let
         # Pass through extra attributes that are not inputs, but
         # should be made available to Nix expressions using the
         # derivation (e.g., in assertions).
-        passthru
-    ) (derivation (derivationArg // checkedEnv));
+        passthru;
+    };
 
 in
 {

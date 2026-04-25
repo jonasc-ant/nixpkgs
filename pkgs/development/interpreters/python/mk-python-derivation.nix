@@ -35,7 +35,6 @@ let
   inherit (builtins) unsafeGetAttrPos;
   inherit (lib)
     elem
-    extendDerivation
     fixedWidthString
     flip
     getName
@@ -47,6 +46,7 @@ let
     splitString
     stringLength
     ;
+  inherit (lib.customisation) extendDerivation';
 
   getOptionalAttrs =
     names: builtins.intersectAttrs (builtins.listToAttrs (map (n: { name = n; value = null; }) names));
@@ -451,10 +451,13 @@ lib.extendMkDerivation {
       # It doesn't cover `<pkg>.<output>.overrideAttrs`.
       disablePythonPackage =
         drv:
-        extendDerivation (
-          drv.disabled
-          -> throw "${removePrefix namePrefix drv.name} not supported for interpreter ${python.executable}"
-        ) { } drv
+        extendDerivation' {
+          condition =
+            drv.disabled
+            -> throw "${removePrefix namePrefix drv.name} not supported for interpreter ${python.executable}";
+          passthru = { };
+          inherit drv;
+        }
         // {
           overrideAttrs = fdrv: disablePythonPackage (drv.overrideAttrs fdrv);
         };

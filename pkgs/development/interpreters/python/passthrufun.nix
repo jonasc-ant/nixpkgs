@@ -41,10 +41,13 @@ let
           func =
             name: value:
             if lib.isDerivation value then
-              lib.extendDerivation (
-                valid value
-                || throw "${name} should use `buildPythonPackage` or `toPythonModule` if it is to be part of the Python packages set."
-              ) { } value
+              lib.customisation.extendDerivation' {
+                condition =
+                  valid value
+                  || throw "${name} should use `buildPythonPackage` or `toPythonModule` if it is to be part of the Python packages set.";
+                passthru = { };
+                drv = value;
+              }
             else
               value;
         in

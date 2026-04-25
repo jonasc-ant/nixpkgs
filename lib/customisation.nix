@@ -412,6 +412,18 @@ rec {
   */
   extendDerivation =
     condition: passthru: drv:
+    extendDerivation' { inherit condition passthru drv; };
+
+  /**
+    Single-attrset variant of [`extendDerivation`](#function-library-lib.customisation.extendDerivation).
+
+    Hot call sites pass all three arguments at once, so the curried
+    form just adds two intermediate lambda applications per
+    derivation.  This takes `{ condition ? true, passthru, drv }` in
+    one step; the body is identical.
+  */
+  extendDerivation' =
+    { condition ? true, passthru, drv }:
     let
       outputs = drv.outputs or [ "out" ];
 
