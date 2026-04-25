@@ -104,9 +104,14 @@ fi
 
 nixfmt pkgs/development/haskell-modules/hackage-packages.nix
 
+echo "Splitting hackage-packages.nix into per-prefix shards …"
+maintainers/scripts/haskell/split-hackage-packages.sh
+
 if [[ "$DO_COMMIT" -eq 1 ]]; then
 git add pkgs/development/haskell-modules/configuration-hackage2nix/transitive-broken.yaml
 git add pkgs/development/haskell-modules/hackage-packages.nix
+git add pkgs/development/haskell-modules/hackage-packages/
+git add pkgs/development/haskell-modules/hackage-names.nix
 git commit --edit -F - << EOF
 haskellPackages: regenerate package set based on current config
 
