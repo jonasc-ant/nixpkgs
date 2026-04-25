@@ -6,6 +6,7 @@
   utils,
   modules,
   baseModules,
+  extendModules,
   extraModules,
   modulesPath,
   specialArgs,
@@ -41,7 +42,21 @@ let
     ;
 
   cfg = config.documentation;
-  allOpts = options;
+
+  # Eager-docs modules below receive `specialArgs.options = allOpts` so they
+  # can read sibling option declarations (e.g. for `defaultText`).  When the
+  # outer eval is using lazy byPrefix loading (specialArgs._byPrefix), its
+  # `options` tree omits every byPrefix-covered module, so those reads fail
+  # (e.g. kubernetes/addons/dns.nix → options.services.kubernetes.apiserver).
+  # Re-extend the outer eval with the byPrefix module set to recover the
+  # complete declaration tree; this only fires when docs are enabled and
+  # byPrefix is in use, so the lazy-loading win on doc-less configs stands.
+  byPrefixModules = lib.flatten (builtins.attrValues (specialArgs._byPrefix or { }));
+  allOpts =
+    if byPrefixModules == [ ] then
+      options
+    else
+      (extendModules { modules = byPrefixModules; }).options;
 
   canCacheDocs =
     m:

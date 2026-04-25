@@ -752,16 +752,22 @@ let
     "services.komodo-periphery"                  = ./services/admin/komodo-periphery.nix;
     "services.kresd"                             = ./services/networking/kresd.nix;
     "services.kthxbye"                           = ./services/monitoring/kthxbye.nix;
-    "services.kubernetes"                          = ./services/cluster/kubernetes/default.nix;
-    "services.kubernetes.addonManager"             = ./services/cluster/kubernetes/addon-manager.nix;
-    "services.kubernetes.addons"                   = ./services/cluster/kubernetes/addons/dns.nix;
-    "services.kubernetes.apiserver"                = ./services/cluster/kubernetes/apiserver.nix;
-    "services.kubernetes.controllerManager"        = ./services/cluster/kubernetes/controller-manager.nix;
-    "services.kubernetes.flannel"                  = ./services/cluster/kubernetes/flannel.nix;
-    "services.kubernetes.kubelet"                  = ./services/cluster/kubernetes/kubelet.nix;
-    "services.kubernetes.pki"                      = ./services/cluster/kubernetes/pki.nix;
-    "services.kubernetes.proxy"                    = ./services/cluster/kubernetes/proxy.nix;
-    "services.kubernetes.scheduler"                = ./services/cluster/kubernetes/scheduler.nix;
+    # Multi-module family: members read each other's option declarations
+    # (e.g. addons/dns.nix → options.services.kubernetes.apiserver.…), so
+    # any future load-on-access must pull the whole set.  coversDefn only
+    # tests key presence, so a single 2-component key suffices.
+    "services.kubernetes"                          = [
+      ./services/cluster/kubernetes/default.nix
+      ./services/cluster/kubernetes/addon-manager.nix
+      ./services/cluster/kubernetes/addons/dns.nix
+      ./services/cluster/kubernetes/apiserver.nix
+      ./services/cluster/kubernetes/controller-manager.nix
+      ./services/cluster/kubernetes/flannel.nix
+      ./services/cluster/kubernetes/kubelet.nix
+      ./services/cluster/kubernetes/pki.nix
+      ./services/cluster/kubernetes/proxy.nix
+      ./services/cluster/kubernetes/scheduler.nix
+    ];
     "services.kubo"                              = ./services/network-filesystems/kubo.nix;
     "services.labgrid"                           = ./services/development/labgrid/coordinator.nix;
     "services.lact"                              = ./services/hardware/lact.nix;
@@ -2043,6 +2049,7 @@ let
   }
 ];
 in
-# Prototype exports the structured shape. Consumers that still want the
-# legacy flat list use `core ++ builtins.attrValues byPrefix`.
+# Prototype exports the structured shape. byPrefix values may be a single
+# path or a list (multi-module families). Consumers that still want the
+# legacy flat list use `core ++ lib.flatten (builtins.attrValues byPrefix)`.
 { inherit core byPrefix; }

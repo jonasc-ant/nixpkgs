@@ -42,7 +42,7 @@ let
     system = null; # use modularly defined system
     inherit (config.node) specialArgs;
     modules = [ config.defaults ];
-    baseModules = (let ml = import ../../modules/module-list.nix; in if lib.isList ml then ml else ml.core ++ builtins.attrValues ml.byPrefix) ++ [
+    baseModules = (let ml = import ../../modules/module-list.nix; in if lib.isList ml then ml else ml.core ++ lib.flatten (builtins.attrValues ml.byPrefix)) ++ [
       ./nixos-test-base.nix
       {
         key = "nodes";

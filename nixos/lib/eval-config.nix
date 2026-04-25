@@ -39,12 +39,15 @@ let
   # p2-h12 prototype: module-list.nix may be a flat list (legacy) or a
   # { core, byPrefix } split. Normalise so downstream sees a list plus
   # the byPrefix map carried via specialArgs._byPrefix into evalModules.
+  # byPrefix values may be a single module path or a list (multi-module
+  # families like services.kubernetes whose members read each other's
+  # option declarations and so must co-load).
   baseSpec =
     if lib.isList baseModules then
       { core = baseModules; byPrefix = { }; }
     else
       baseModules;
-  baseModulesFlat = baseSpec.core ++ builtins.attrValues baseSpec.byPrefix;
+  baseModulesFlat = baseSpec.core ++ lib.flatten (builtins.attrValues baseSpec.byPrefix);
 
   evalModulesMinimal =
     (import ./default.nix {
