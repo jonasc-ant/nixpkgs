@@ -122,7 +122,12 @@ let
 
   isMarkedBroken = attrs: attrs.meta.broken or false;
 
-  hasUnsupportedPlatform = pkg: !(availableOn hostPlatform pkg);
+  # `availableOn` is curried (`platform: pkg: …`); hoist the
+  # `hostPlatform` partial application to module scope so the per-drv
+  # fast path doesn't re-apply it for every derivation.
+  availableOnHost = availableOn hostPlatform;
+
+  hasUnsupportedPlatform = pkg: !(availableOnHost pkg);
 
   isMarkedInsecure = attrs: (attrs.meta.knownVulnerabilities or [ ]) != [ ];
 
@@ -418,14 +423,17 @@ let
     then
       attrs:
       if
-        hasUnfreeLicense attrs && !allowUnfree && !allowUnfreePredicate attrs && !(hasAllowlistedLicense attrs)
+        # `hasUnfreeLicense` body inlined — this is the only per-derivation
+        # caller; L154/L673 are cold (slow-variant / lazy meta passthru).
+        attrs ? meta.license && isUnfree attrs.meta.license
+        && !allowUnfree && !allowUnfreePredicate attrs && !(hasAllowlistedLicense attrs)
       then
         {
           reason = "unfree";
           msg = "has an unfree license (‘${showLicense attrs.meta.license}’)";
           remediation = remediate_allowlist "Unfree" (remediate_predicate "allowUnfreePredicate" attrs);
         }
-      else if !(availableOn hostPlatform attrs) && !allowUnsupportedSystem then
+      else if !(availableOnHost attrs) && !allowUnsupportedSystem then
         let
           toPretty' = toPretty {
             allowPrettyValues = true;

@@ -465,44 +465,81 @@ rec {
       automaticProblemsConfigCache = filter (
         problem: staticHandler problem.kindName != "ignore"
       ) (map (problem: problem // { condition = problem.condition config; }) automaticProblems);
+
+      # Slow path, factored out so the singleton/generic fast paths below
+      # can share it. Only here we actually figure out which problems need
+      # to be handled.
+      slowPath = attrs:
+        let
+          pname = getName attrs;
+          problems = attrs.meta.problems or { } // genAutomaticProblems config attrs;
+          problemsToHandle = filter (v: v.handler != "ignore") (
+            mapAttrsToList (name: problem: rec {
+              inherit name;
+              # Kind falls back to the name
+              kind = problem.kind or name;
+              handler = handlerForProblem pname name kind;
+              inherit problem;
+            }) problems
+          );
+        in
+        processProblems pname problemsToHandle;
+
+      # Generic per-derivation body — used when the singleton specialization
+      # below doesn't apply.
+      genericBody = attrs:
+        let
+          pname = getName attrs;
+          manualProblems = attrs.meta.problems or { };
+        in
+        if
+          # Fast path for when there's no problem that needs to be handled
+          # No automatic problems that needs handling
+          all (
+            problem:
+            problem.condition attrs -> handlerForProblem pname problem.kindName problem.kindName == "ignore"
+          ) automaticProblemsConfigCache
+          && (
+            # No manual problems
+            manualProblems == { }
+            # Or all manual problems are ignored
+            || all (name: handlerForProblem pname name (manualProblems.${name}.kind or name) == "ignore") (
+              attrNames manualProblems
+            )
+          )
+        then
+          null
+        else
+          slowPath attrs;
     in
-    attrs:
-    let
-      pname = getName attrs;
-      manualProblems = attrs.meta.problems or { };
-    in
+    # Config-static specialization: when exactly one automatic problem
+    # survives the `!= "ignore"` filter above AND its handler is the same
+    # for every package (`staticHandler` non-null), the fast-path
+    # `all`-predicate `cond -> handler=="ignore"` reduces exactly to
+    # `!cond` — drop the per-derivation lambda wrapper. Under default
+    # config only `broken` survives (`maintainerless` is statically
+    # `ignore`), so this is the common path.
     if
-      # Fast path for when there's no problem that needs to be handled
-      # No automatic problems that needs handling
-      all (
-        problem:
-        problem.condition attrs -> handlerForProblem pname problem.kindName problem.kindName == "ignore"
-      ) automaticProblemsConfigCache
-      && (
-        # No manual problems
-        manualProblems == { }
-        # Or all manual problems are ignored
-        || all (name: handlerForProblem pname name (manualProblems.${name}.kind or name) == "ignore") (
-          attrNames manualProblems
-        )
-      )
+      length automaticProblemsConfigCache == 1
+      && staticHandler (builtins.head automaticProblemsConfigCache).kindName != null
     then
-      null
+      let singletonCond = (builtins.head automaticProblemsConfigCache).condition;
+      in attrs:
+        let manualProblems = attrs.meta.problems or { }; in
+        if
+          !(singletonCond attrs)
+          && (
+            manualProblems == { }
+            || all (name: handlerForProblem (getName attrs) name (manualProblems.${name}.kind or name) == "ignore") (
+              attrNames manualProblems
+            )
+          )
+        then
+          null
+        else
+          slowPath attrs
     else
-      # Slow path, only here we actually figure out which problems we need to handle
-      let
-        problems = attrs.meta.problems or { } // genAutomaticProblems config attrs;
-        problemsToHandle = filter (v: v.handler != "ignore") (
-          mapAttrsToList (name: problem: rec {
-            inherit name;
-            # Kind falls back to the name
-            kind = problem.kind or name;
-            handler = handlerForProblem pname name kind;
-            inherit problem;
-          }) problems
-        );
-      in
-      processProblems pname problemsToHandle;
+      genericBody;
 
   processProblems =
     pname: problemsToHandle:
