@@ -1227,8 +1227,40 @@ rec {
               value = lib.mkOptionDefault field.default;
             };
 
+          # Per-field `mergeDefinitions` results (exposed to `finalise`
+          # via `fields = fieldMerges`). Fast path: a field with no user
+          # definition and no finalise contribution resolves to its own
+          # default. Skip the discharge/filterOverrides/sort/check
+          # pipeline and hand the default straight to `type.merge` (so
+          # nested record/submodule/coercedTo defaults still expand),
+          # returning a stub compatible with the few finalise callers
+          # that inspect `.isDefined` / `.defsFinal'.highestPrio`.
           fieldMerges = mapAttrs (
-            n: field: mergeDefinitions (loc ++ [ n ]) field.type (fieldDefs n field)
+            n: field:
+            if !(byField ? ${n}) && !(extrasByField ? ${n}) && (field ? default) then
+              let
+                ln = loc ++ [ n ];
+                defs = [
+                  {
+                    file = "default of record field `${showOption ln}'";
+                    value = field.default;
+                  }
+                ];
+              in
+              {
+                mergedValue =
+                  if field.type.merge ? v2 then
+                    (checkV2MergeCoherence ln field.type (field.type.merge.v2 {
+                      loc = ln;
+                      inherit defs;
+                    })).value
+                  else
+                    field.type.merge ln defs;
+                isDefined = true;
+                defsFinal'.highestPrio = 1500; # = lib.mkOptionDefault priority
+              }
+            else
+              mergeDefinitions (loc ++ [ n ]) field.type (fieldDefs n field)
           ) fields;
 
           final = mapAttrs (
