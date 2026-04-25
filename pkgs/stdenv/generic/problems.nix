@@ -523,21 +523,52 @@ rec {
       length automaticProblemsConfigCache == 1
       && staticHandler (builtins.head automaticProblemsConfigCache).kindName != null
     then
-      let singletonCond = (builtins.head automaticProblemsConfigCache).condition;
-      in attrs:
-        let manualProblems = attrs.meta.problems or { }; in
-        if
-          !(singletonCond attrs)
-          && (
-            manualProblems == { }
-            || all (name: handlerForProblem (getName attrs) name (manualProblems.${name}.kind or name) == "ignore") (
-              attrNames manualProblems
+      let
+        singleton = builtins.head automaticProblemsConfigCache;
+        singletonCond = singleton.condition;
+        # When the surviving singleton is `broken`, additionally inline its
+        # condition body so the per-derivation path is a bare attrset probe
+        # with no lambda hop at all. The allowBroken / allowBrokenPredicate
+        # captures mirror those in `automaticProblems` above.
+        allowBroken = config.allowBroken || builtins.getEnv "NIXPKGS_ALLOW_BROKEN" == "1";
+        allowBrokenPredicate =
+          if config ? allowBrokenPredicate then
+            lib.warnIf (lib.oldestSupportedReleaseIsAtLeast 2605)
+              "config.allowBrokenPredicate is deprecated, use config.problems.handlers.myPackage.broken = \"warn\" for individual packages instead."
+              config.allowBrokenPredicate
+          else
+            x: false;
+      in
+      if singleton.kindName == "broken" then
+        attrs:
+          let manualProblems = attrs.meta.problems or { }; in
+          if
+            !(attrs.meta.broken or false && !allowBroken && !allowBrokenPredicate attrs)
+            && (
+              manualProblems == { }
+              || all (name: handlerForProblem (getName attrs) name (manualProblems.${name}.kind or name) == "ignore") (
+                attrNames manualProblems
+              )
             )
-          )
-        then
-          null
-        else
-          slowPath attrs
+          then
+            null
+          else
+            slowPath attrs
+      else
+        attrs:
+          let manualProblems = attrs.meta.problems or { }; in
+          if
+            !(singletonCond attrs)
+            && (
+              manualProblems == { }
+              || all (name: handlerForProblem (getName attrs) name (manualProblems.${name}.kind or name) == "ignore") (
+                attrNames manualProblems
+              )
+            )
+          then
+            null
+          else
+            slowPath attrs
     else
       genericBody;
 

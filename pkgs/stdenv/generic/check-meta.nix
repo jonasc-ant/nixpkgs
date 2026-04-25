@@ -126,6 +126,11 @@ let
   # `hostPlatform` partial application to module scope so the per-drv
   # fast path doesn't re-apply it for every derivation.
   availableOnHost = availableOn hostPlatform;
+  # Pre-bound pieces of the `availableOn` body for the fast-path inline
+  # below — keeps the hot arm free of any per-derivation hop through
+  # lib/meta.
+  hostSystem = hostPlatform.system or null;
+  matchesHost = lib.meta.platformMatch hostPlatform;
 
   hasUnsupportedPlatform = pkg: !(availableOnHost pkg);
 
@@ -433,7 +438,19 @@ let
           msg = "has an unfree license (‘${showLicense attrs.meta.license}’)";
           remediation = remediate_allowlist "Unfree" (remediate_predicate "allowUnfreePredicate" attrs);
         }
-      else if !(availableOnHost attrs) && !allowUnsupportedSystem then
+      else if
+        # `lib.meta.availableOn hostPlatform attrs` body inlined — drops
+        # both the curry and body lambdas from the per-derivation path.
+        !(
+          (
+            !(attrs ? meta.platforms)
+            || builtins.elem hostSystem attrs.meta.platforms
+            || any matchesHost attrs.meta.platforms
+          )
+          && all (e: !matchesHost e) (attrs.meta.badPlatforms or [ ])
+        )
+        && !allowUnsupportedSystem
+      then
         let
           toPretty' = toPretty {
             allowPrettyValues = true;
