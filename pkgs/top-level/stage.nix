@@ -156,7 +156,11 @@ let
           ;
       } res self super;
 
-      conflictingAttrs = lib.intersectAttrs res super;
+      # On evaluators with lazyAttrsUnion, probing super for every all-packages
+      # attr would force every by-name shard, defeating the lazy union.  CI's
+      # by-name validity check already enforces this invariant.
+      conflictingAttrs =
+        if builtins ? lazyAttrsUnion then { } else lib.intersectAttrs res super;
     in
     assert lib.assertMsg (conflictingAttrs == { })
       "The following attributes were defined both in `pkgs/top-level/all-packages.nix` and elsewhere, most likely in `pkgs/by-name/`: ${lib.concatStringsSep ", " (lib.attrNames conflictingAttrs)}";

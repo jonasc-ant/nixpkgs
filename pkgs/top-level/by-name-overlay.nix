@@ -38,8 +38,11 @@ let
 
   # The attribute set mapping names to the package files defining them
   # This is defined up here in order to allow reuse of the value (it's kind of expensive to compute)
-  # if the overlay has to be applied multiple times
-  packageFiles = mergeAttrsList (mapAttrsToList namesForShard (readDir baseDirectory));
+  # if the overlay has to be applied multiple times.  shardFiles is split out so the
+  # lazyAttrsUnion path below can keep per-shard readDir thunks shared across stages.
+  shards = readDir baseDirectory;
+  shardFiles = mapAttrs namesForShard shards;
+  packageFiles = mergeAttrsList (lib.attrValues shardFiles);
 in
 self: super:
 {
@@ -51,4 +54,9 @@ self: super:
   # Because at that point the code in ./stage.nix can be changed to not allow definitions in `all-packages.nix` to override ones from `pkgs/by-name` anymore and throw an error if that happens instead.
   _internalCallByNamePackageFile = file: self.callPackage file { };
 }
-// mapAttrs (name: self._internalCallByNamePackageFile) packageFiles
+// (builtins.lazyAttrsUnion or (_: mapAttrs (name: self._internalCallByNamePackageFile) packageFiles)) (
+  mapAttrsToList (shard: files: {
+    prefix = shard;
+    value = mapAttrs (name: self._internalCallByNamePackageFile) files;
+  }) shardFiles
+)
