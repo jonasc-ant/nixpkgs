@@ -1,13 +1,6 @@
 # Provide an initial copy of the NixOS channel so that the user
 # doesn't need to run "nix-channel --update" first.
 
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
-
 let
   # This is copied into the installer image, so it's important that it is filtered
   # to avoid including a large .git directory.
@@ -21,13 +14,19 @@ let
   # has ~95k entries; `lib.cleanSource` wraps the predicate in a compose
   # layer (AND with a constant `_: _: true`) and `cleanSourceFilter` itself
   # calls `lib.hasSuffix` three times, totalling ~12 interpreted λ-calls per
-  # entry.  This walk is forced for both the main config and the manual
-  # sub-evaluation, so the long form below removes well over a million
-  # function calls from the iso evaluation while producing a byte-identical
+  # entry, so the long form below removes well over a million function
+  # calls from the iso evaluation while producing a byte-identical
   # store path.
+  #
+  # The binding lives outside the module function so the import cache
+  # shares one thunk across every module-system fixed point that pulls
+  # this file in (the combined installer iso evaluates a `latest_kernel`
+  # specialisation via `extendModules`, which would otherwise force a
+  # second full walk of the tree).  `../../../..` resolves to the same
+  # directory as `pkgs.path` for both checkout and flake evaluations.
   nixpkgs = builtins.path {
     name = "source";
-    path = pkgs.path;
+    path = ../../../..;
     filter =
       name: type:
       let
@@ -54,7 +53,16 @@ let
         || type == "unknown"
       );
   };
+in
 
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+
+let
   # We need a copy of the Nix expressions for Nixpkgs and NixOS on the
   # CD.  These are installed into the "nixos" channel of the root
   # user, as expected by nixos-rebuild/nixos-install. FIXME: merge
