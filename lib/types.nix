@@ -1218,54 +1218,73 @@ rec {
             }) vs
           ) extras;
 
-          fieldDefs =
+          # Slow-path per-field `mergeDefinitions` results, memoised so
+          # that `final` and `fieldMerges` share the per-key thunk (no
+          # double work when a finalise inspects `fields.${n}`). Lazy:
+          # keys that hit the fast path below never force their entry.
+          slowMerges = mapAttrs (
             n: field:
-            (byField.${n} or [ ])
-            ++ (extrasByField.${n} or [ ])
-            ++ lib.optional (field ? default) {
-              file = "default of record field `${showOption (loc ++ [ n ])}'";
-              value = lib.mkOptionDefault field.default;
-            };
+            mergeDefinitions (loc ++ [ n ]) field.type (
+              (byField.${n} or [ ])
+              ++ (extrasByField.${n} or [ ])
+              ++ lib.optional (field ? default) {
+                file = "default of record field `${showOption (loc ++ [ n ])}'";
+                value = lib.mkOptionDefault field.default;
+              }
+            )
+          ) fields;
 
-          # Per-field `mergeDefinitions` results (exposed to `finalise`
-          # via `fields = fieldMerges`). Fast path: a field with no user
+          # Per-field final values. Fast path: a field with no user
           # definition and no finalise contribution resolves to its own
-          # default. Skip the discharge/filterOverrides/sort/check
+          # default — skip the discharge/filterOverrides/sort/check
           # pipeline and hand the default straight to `type.merge` (so
-          # nested record/submodule/coercedTo defaults still expand),
-          # returning a stub compatible with the few finalise callers
-          # that inspect `.isDefined` / `.defsFinal'.highestPrio`.
-          fieldMerges = mapAttrs (
+          # nested record/submodule/coercedTo defaults still expand).
+          # The `apply` post-process is fused into this same pass so the
+          # second mapAttrs over `fields` is gone.
+          final = mapAttrs (
             n: field:
-            if !(byField ? ${n}) && !(extrasByField ? ${n}) && (field ? default) then
-              let
-                ln = loc ++ [ n ];
-                defs = [
-                  {
-                    file = "default of record field `${showOption ln}'";
-                    value = field.default;
-                  }
-                ];
-              in
-              {
-                mergedValue =
+            let
+              raw =
+                if !(byField ? ${n}) && !(extrasByField ? ${n}) && (field ? default) then
+                  let
+                    ln = loc ++ [ n ];
+                    defs = [
+                      {
+                        file = "default of record field `${showOption ln}'";
+                        value = field.default;
+                      }
+                    ];
+                  in
                   if field.type.merge ? v2 then
                     (checkV2MergeCoherence ln field.type (field.type.merge.v2 {
                       loc = ln;
                       inherit defs;
                     })).value
                   else
-                    field.type.merge ln defs;
+                    field.type.merge ln defs
+                else
+                  slowMerges.${n}.mergedValue;
+            in
+            if field ? apply then field.apply raw else raw
+          ) fields;
+
+          # Per-field `mergeDefinitions`-shaped results, exposed to
+          # `finalise` via `fields = fieldMerges`. Lazy — only forced
+          # by the handful of finalise callers that inspect
+          # `.isDefined` / `.defsFinal'.highestPrio`. Fast-path keys
+          # return a stub compatible with those callers; slow-path keys
+          # share the memoised `slowMerges` entry.
+          fieldMerges = mapAttrs (
+            n: field:
+            if !(byField ? ${n}) && !(extrasByField ? ${n}) && (field ? default) then
+              {
+                mergedValue = final.${n};
                 isDefined = true;
                 defsFinal'.highestPrio = 1500; # = lib.mkOptionDefault priority
               }
             else
-              mergeDefinitions (loc ++ [ n ]) field.type (fieldDefs n field)
+              slowMerges.${n}
           ) fields;
-
-          final = mapAttrs (
-            n: m: if fields.${n} ? apply then fields.${n}.apply m.mergedValue else m.mergedValue
-          ) fieldMerges;
         in
         if unknown != { } then
           throw ''
