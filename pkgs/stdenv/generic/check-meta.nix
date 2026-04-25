@@ -53,7 +53,16 @@ let
     problemsType
     genCheckProblems
     ;
-  checkProblems = genCheckProblems config;
+  problemsImpl = genCheckProblems config;
+  inherit (problemsImpl) checkProblems;
+
+  # Shared all-clear result — hoisted so the per-derivation fast path
+  # returns a single module-level constant instead of allocating a fresh
+  # attrset for every derivation.
+  allClearConst = {
+    valid = "yes";
+    handled = true;
+  };
 
   # If we're in hydra, we can dispense with the more verbose error
   # messages and make problems easier to spot.
@@ -743,33 +752,130 @@ let
     builtins.seq (foldl' giveWarning null warnings) withError;
 
   assertValidity =
-    { meta, attrs }:
-    let
-      invalid = checkValidity attrs;
-      problems = checkProblems attrs;
-    in
-    if isNull invalid then
-      if isNull problems then
-        {
-          valid = "yes";
-          handled = true;
-        }
+    # Module-level fast path mirroring the `checkValidity` guard above,
+    # plus `problemsImpl.foldable`: under default config the per-derivation
+    # body of `checkProblems` is the singleton-broken arm, whose checks are
+    # equivalent to the inlined broken/manual-problems arm below. Folding
+    # both `checkValidity` and `checkProblems` into this body collapses the
+    # all-clear path from 3 lambda applications per derivation to 1.
+    if
+      !config.checkMeta
+      && blocklist == [ ]
+      && allowNonSource
+      && !(config ? allowNonSourcePredicate)
+      && problemsImpl.foldable
+    then
+      let
+        inherit (problemsImpl) slowPath allowBroken allowBrokenPredicate;
+      in
+      { meta, attrs }:
+      let
+        # `checkValidity` fast-path body inlined verbatim — see the
+        # comments there for the per-arm rationale.
+        invalid =
+          if
+            attrs ? meta.license && isUnfree attrs.meta.license
+            && !allowUnfree && !allowUnfreePredicate attrs && !(hasAllowlistedLicense attrs)
+          then
+            {
+              reason = "unfree";
+              msg = "has an unfree license (‘${showLicense attrs.meta.license}’)";
+              remediation = remediate_allowlist "Unfree" (remediate_predicate "allowUnfreePredicate" attrs);
+            }
+          else if
+            !(
+              (
+                !(attrs ? meta.platforms)
+                || builtins.elem hostSystem attrs.meta.platforms
+                || any matchesHost attrs.meta.platforms
+              )
+              && all (e: !matchesHost e) (attrs.meta.badPlatforms or [ ])
+            )
+            && !allowUnsupportedSystem
+          then
+            let
+              toPretty' = toPretty {
+                allowPrettyValues = true;
+                indent = "  ";
+              };
+            in
+            {
+              reason = "unsupported";
+              msg = ''
+                is not available on the requested hostPlatform:
+                  hostPlatform.system = "${hostPlatform.system}"
+                  package.meta.platforms = ${toPretty' (attrs.meta.platforms or [ ])}
+                  package.meta.badPlatforms = ${toPretty' (attrs.meta.badPlatforms or [ ])}
+              '';
+              remediation = remediate_allowlist "UnsupportedSystem" "";
+            }
+          else if
+            (attrs.meta.knownVulnerabilities or [ ]) != [ ] && !allowInsecure && !allowInsecurePredicate attrs
+          then
+            {
+              reason = "insecure";
+              msg = "is marked as insecure";
+              remediation = remediate_insecure attrs;
+            }
+          else
+            null;
+      in
+      if isNull invalid then
+        # `checkProblems` singleton-broken body inlined: any package that
+        # is marked broken (and not allow-listed) or carries manual
+        # `meta.problems` defers to the problems slow path so the error
+        # and warning shapes are byte-identical to the unfolded variant.
+        # Packages with manual problems whose handlers all resolve to
+        # "ignore" reach `slowPath` here instead of short-circuiting; that
+        # yields `{ valid = "warn"; handled = true; }`, which is
+        # observationally equivalent for every consumer of `validity`.
+        if
+          attrs.meta.broken or false && !allowBroken && !allowBrokenPredicate attrs
+          || attrs.meta.problems or { } != { }
+        then
+          let problems = slowPath attrs; in
+          {
+            valid = if isNull problems.error then "warn" else "no";
+            handled = handle {
+              inherit attrs meta;
+              inherit (problems) error warnings;
+            };
+          }
+        else
+          allClearConst
       else
         {
-          valid = if isNull problems.error then "warn" else "no";
+          valid = "no";
           handled = handle {
             inherit attrs meta;
-            inherit (problems) error warnings;
+            error = invalid;
           };
         }
     else
-      {
-        valid = "no";
-        handled = handle {
-          inherit attrs meta;
-          error = invalid;
+      { meta, attrs }:
+      let
+        invalid = checkValidity attrs;
+        problems = checkProblems attrs;
+      in
+      if isNull invalid then
+        if isNull problems then
+          allClearConst
+        else
+          {
+            valid = if isNull problems.error then "warn" else "no";
+            handled = handle {
+              inherit attrs meta;
+              inherit (problems) error warnings;
+            };
+          }
+      else
+        {
+          valid = "no";
+          handled = handle {
+            inherit attrs meta;
+            error = invalid;
+          };
         };
-      };
 
 in
 {

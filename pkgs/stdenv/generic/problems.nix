@@ -511,66 +511,76 @@ rec {
           null
         else
           slowPath attrs;
+
+      # Config-static specialization: when exactly one automatic problem
+      # survives the `!= "ignore"` filter above AND its handler is the same
+      # for every package (`staticHandler` non-null), the fast-path
+      # `all`-predicate `cond -> handler=="ignore"` reduces exactly to
+      # `!cond` — drop the per-derivation lambda wrapper. Under default
+      # config only `broken` survives (`maintainerless` is statically
+      # `ignore`), so this is the common path.
+      isSingleton =
+        length automaticProblemsConfigCache == 1
+        && staticHandler (builtins.head automaticProblemsConfigCache).kindName != null;
+      singleton = builtins.head automaticProblemsConfigCache;
+      singletonCond = singleton.condition;
+
+      # Inline of the `broken` automatic-problem condition body — hoisted
+      # so check-meta.nix can capture the same predicates when `foldable`
+      # below holds. Mirrors `automaticProblems` above.
+      allowBroken = config.allowBroken || builtins.getEnv "NIXPKGS_ALLOW_BROKEN" == "1";
+      allowBrokenPredicate =
+        if config ? allowBrokenPredicate then
+          lib.warnIf (lib.oldestSupportedReleaseIsAtLeast 2605)
+            "config.allowBrokenPredicate is deprecated, use config.problems.handlers.myPackage.broken = \"warn\" for individual packages instead."
+            config.allowBrokenPredicate
+        else
+          x: false;
+
+      checkProblems =
+        if isSingleton then
+          if singleton.kindName == "broken" then
+            attrs:
+              let manualProblems = attrs.meta.problems or { }; in
+              if
+                !(attrs.meta.broken or false && !allowBroken && !allowBrokenPredicate attrs)
+                && (
+                  manualProblems == { }
+                  || all (name: handlerForProblem (getName attrs) name (manualProblems.${name}.kind or name) == "ignore") (
+                    attrNames manualProblems
+                  )
+                )
+              then
+                null
+              else
+                slowPath attrs
+          else
+            attrs:
+              let manualProblems = attrs.meta.problems or { }; in
+              if
+                !(singletonCond attrs)
+                && (
+                  manualProblems == { }
+                  || all (name: handlerForProblem (getName attrs) name (manualProblems.${name}.kind or name) == "ignore") (
+                    attrNames manualProblems
+                  )
+                )
+              then
+                null
+              else
+                slowPath attrs
+        else
+          genericBody;
     in
-    # Config-static specialization: when exactly one automatic problem
-    # survives the `!= "ignore"` filter above AND its handler is the same
-    # for every package (`staticHandler` non-null), the fast-path
-    # `all`-predicate `cond -> handler=="ignore"` reduces exactly to
-    # `!cond` — drop the per-derivation lambda wrapper. Under default
-    # config only `broken` survives (`maintainerless` is statically
-    # `ignore`), so this is the common path.
-    if
-      length automaticProblemsConfigCache == 1
-      && staticHandler (builtins.head automaticProblemsConfigCache).kindName != null
-    then
-      let
-        singleton = builtins.head automaticProblemsConfigCache;
-        singletonCond = singleton.condition;
-        # When the surviving singleton is `broken`, additionally inline its
-        # condition body so the per-derivation path is a bare attrset probe
-        # with no lambda hop at all. The allowBroken / allowBrokenPredicate
-        # captures mirror those in `automaticProblems` above.
-        allowBroken = config.allowBroken || builtins.getEnv "NIXPKGS_ALLOW_BROKEN" == "1";
-        allowBrokenPredicate =
-          if config ? allowBrokenPredicate then
-            lib.warnIf (lib.oldestSupportedReleaseIsAtLeast 2605)
-              "config.allowBrokenPredicate is deprecated, use config.problems.handlers.myPackage.broken = \"warn\" for individual packages instead."
-              config.allowBrokenPredicate
-          else
-            x: false;
-      in
-      if singleton.kindName == "broken" then
-        attrs:
-          let manualProblems = attrs.meta.problems or { }; in
-          if
-            !(attrs.meta.broken or false && !allowBroken && !allowBrokenPredicate attrs)
-            && (
-              manualProblems == { }
-              || all (name: handlerForProblem (getName attrs) name (manualProblems.${name}.kind or name) == "ignore") (
-                attrNames manualProblems
-              )
-            )
-          then
-            null
-          else
-            slowPath attrs
-      else
-        attrs:
-          let manualProblems = attrs.meta.problems or { }; in
-          if
-            !(singletonCond attrs)
-            && (
-              manualProblems == { }
-              || all (name: handlerForProblem (getName attrs) name (manualProblems.${name}.kind or name) == "ignore") (
-                attrNames manualProblems
-              )
-            )
-          then
-            null
-          else
-            slowPath attrs
-    else
-      genericBody;
+    {
+      inherit checkProblems slowPath allowBroken allowBrokenPredicate;
+      # `true` when the per-derivation body is exactly the singleton-broken
+      # fast path above: its checks are then equivalent to the inlined
+      # broken/manual-problems arm in check-meta.nix's assertValidity, so
+      # the caller can skip the `checkProblems attrs` call entirely on the
+      # all-clear path and defer straight to `slowPath` on a hit.
+      foldable = isSingleton && singleton.kindName == "broken";
+    };
 
   processProblems =
     pname: problemsToHandle:
