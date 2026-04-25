@@ -15,7 +15,6 @@ let
 
   inherit (lib.attrsets)
     mapAttrs
-    mapAttrsToList
     mergeAttrsList
     ;
 
@@ -55,8 +54,5 @@ self: super:
   _internalCallByNamePackageFile = file: self.callPackage file { };
 }
 // (builtins.lazyAttrsUnion or (_: mapAttrs (name: self._internalCallByNamePackageFile) packageFiles)) (
-  mapAttrsToList (shard: files: {
-    prefix = shard;
-    value = mapAttrs (name: self._internalCallByNamePackageFile) files;
-  }) shardFiles
+  mapAttrs (shard: files: mapAttrs (name: self._internalCallByNamePackageFile) files) shardFiles
 )
