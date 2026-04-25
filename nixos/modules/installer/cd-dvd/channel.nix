@@ -15,7 +15,45 @@ let
   # location of nixpkgs.
   # In the future we might want to expose the ISO image from the flake and use
   # `self.outPath` directly instead.
-  nixpkgs = lib.cleanSource pkgs.path;
+  #
+  # This is equivalent to `lib.cleanSource pkgs.path` but spelled out so the
+  # per-entry filter is a single 2-arg lambda using only builtins.  The tree
+  # has ~95k entries; `lib.cleanSource` wraps the predicate in a compose
+  # layer (AND with a constant `_: _: true`) and `cleanSourceFilter` itself
+  # calls `lib.hasSuffix` three times, totalling ~12 interpreted λ-calls per
+  # entry.  This walk is forced for both the main config and the manual
+  # sub-evaluation, so the long form below removes well over a million
+  # function calls from the iso evaluation while producing a byte-identical
+  # store path.
+  nixpkgs = builtins.path {
+    name = "source";
+    path = pkgs.path;
+    filter =
+      name: type:
+      let
+        baseName = baseNameOf name;
+      in
+      !(
+        # Keep this in sync with lib.cleanSourceFilter.
+        baseName == ".git"
+        || (
+          type == "directory"
+          && (
+            baseName == ".svn"
+            || baseName == "CVS"
+            || baseName == ".hg"
+            || baseName == ".jj"
+            || baseName == ".pijul"
+            || baseName == "_darcs"
+          )
+        )
+        || builtins.match ''.*(~|\.o|\.so)'' baseName != null
+        || builtins.match ''\.sw[a-z]'' baseName != null
+        || builtins.match ''\..*\.sw[a-z]'' baseName != null
+        || (type == "symlink" && builtins.match ''result.*'' baseName != null)
+        || type == "unknown"
+      );
+  };
 
   # We need a copy of the Nix expressions for Nixpkgs and NixOS on the
   # CD.  These are installed into the "nixos" channel of the root
@@ -25,7 +63,7 @@ let
     pkgs.runCommand "nixos-${config.system.nixos.version}" { preferLocalBuild = true; }
       ''
         mkdir -p $out
-        cp -prd ${nixpkgs.outPath} $out/nixos
+        cp -prd ${nixpkgs} $out/nixos
         chmod -R u+w $out/nixos
         if [ ! -e $out/nixos/nixpkgs ]; then
           ln -s . $out/nixos/nixpkgs
